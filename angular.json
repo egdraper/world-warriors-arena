@@ -64,7 +64,8 @@
               "browserTarget": "world-warriors-arena:build:production"
             },
             "development": {
-              "browserTarget": "world-warriors-arena:build:development"
+              "browserTarget": "world-warriors-arena:build:development",
+              "port": 4210
             }
           },
           "defaultConfiguration": "development"
