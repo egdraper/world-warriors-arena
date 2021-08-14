@@ -1,4 +1,5 @@
 import { Component } from '@angular/core';
+import { Engine } from './engine/engine';
 
 @Component({
   selector: 'world-warriors-arena-root',
@@ -6,5 +7,9 @@ import { Component } from '@angular/core';
   styleUrls: ['./app.component.scss'],
 })
 export class AppComponent {
-  title = 'world-warriors-arena';
+  constructor(private engine: Engine) {}
+
+  public ngOnInit(): void {
+    this.engine.startEngine()
+  }
 }
