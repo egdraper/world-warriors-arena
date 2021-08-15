@@ -22,7 +22,7 @@ export class Engine {
       }
     })
 
-    requestAnimationFrame(this.startEngine.bind(this));
+    requestAnimationFrame(this.startEngine.bind(this)); 
     this.frame >= 60 ? this.frame = 1 : this.frame++
   }
 }

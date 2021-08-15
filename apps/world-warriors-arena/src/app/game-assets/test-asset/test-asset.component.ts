@@ -34,7 +34,7 @@ export class TestAssetComponent implements OnInit {
 
   
    this.gameComponents.push(creature)
-    this.gameComponents.push(creature2)
+   this.gameComponents.push(creature2)
 
    this.engine.startAnimationTrigger(creature)
     this.engine.startAnimationTrigger(creature2)
