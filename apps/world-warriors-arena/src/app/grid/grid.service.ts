@@ -1,13 +1,18 @@
 import { Injectable } from '@angular/core';
+import { CanvasService } from '../canvas/canvas.service';
 import { Cell, GridDetails, RelativePositionCell } from '../models/cell.model';
 
 @Injectable()
 export class GridService {
+  public height = 15 
+  public width = 15
   public grid: {[cell: string]: Cell } = { }
   public gridDisplayLite: GridDetails
   public gridDisplay: Cell[][] = [];
 
   public createGrid(width: number, height: number) {
+    this.height = height
+    this.width = width
     this.generateGrid(width, height)
   }
 
