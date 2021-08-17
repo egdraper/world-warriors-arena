@@ -7,6 +7,7 @@ import { GridService } from './grid/grid.service';
 import { CanvasComponent } from './canvas/canvas.component';
 import { CanvasService } from './canvas/canvas.service';
 import { AssetsService } from './game-assets/assets.service';
+import { DrawService } from './engine/draw.service';
 
 @NgModule({
   declarations: [AppComponent, CanvasComponent],
@@ -15,7 +16,8 @@ import { AssetsService } from './game-assets/assets.service';
     Engine,
     GridService,
     CanvasService,
-    AssetsService
+    AssetsService,
+    DrawService,
   ],
   bootstrap: [AppComponent],
 })

@@ -1,46 +1,57 @@
 import { ThisReceiver } from "@angular/compiler";
 import { CONTEXT_NAME } from "@angular/compiler/src/render3/view/util";
 import { ElementRef, Injectable } from "@angular/core";
+import { DrawService } from "../engine/draw.service";
 import { GridService } from "../grid/grid.service";
 
 @Injectable()
 export class CanvasService {
-  constructor(private gridService: GridService) { }
+  private image = new Image()
+  public forgroundCanvas: ElementRef<HTMLCanvasElement>;
+  public forgroundCTX: CanvasRenderingContext2D;
+ 
+  public backgroundCanvas: ElementRef<HTMLCanvasElement>;
+  public backgroundCTX: CanvasRenderingContext2D;
 
-  public canvas: ElementRef<HTMLCanvasElement>;
-  public ctx: CanvasRenderingContext2D;
+
+
+  constructor(private gridService: GridService,
+    private drawService: DrawService
+    ) {
+    this.image.src = `../../../assets/images/25pxgrass.png`
+    this.image.onload = () => {
+      this.drawGrid()
+      this.drawService.drawBackground$.subscribe(this.drawGrid.bind(this))
+    }
+  }
 
   public drawGrid(): void {
-    const image = new Image()
-    image.src = `../../../assets/images/grass1.png`
-    image.onload = () => {
-      for (let h = 0; h < this.gridService.height; h++) {
-        for (let w = 0; w < this.gridService.width; w++) {
-          const xrnd = Math.floor(Math.random() * 3)
-          const yrnd = Math.floor(Math.random() * 3)
+    for (let h = 0; h < this.gridService.height; h++) {
+      for (let w = 0; w < this.gridService.width; w++) {
+        const xrnd = Math.floor(Math.random() * 3)
 
-          this.ctx.imageSmoothingEnabled = false
-          this.ctx.drawImage(image, xrnd * 25, yrnd * 25, 50, 50, h * 50, w * 50, 50, 50)
-        }
+
+        this.backgroundCTX.imageSmoothingEnabled = false
+        this.backgroundCTX.drawImage(this.image, xrnd * 25, 0, 50, 50, h * 50, w * 50, 50 * 2, 50 * 2)
       }
+    }
 
-      for (let h = 0; h <= this.gridService.height; h++) {
-        for (let w = 0; w <= this.gridService.width; w++) {
-          this.ctx.beginPath()
-          this.ctx.moveTo(w * 50, h * 50)
-          this.ctx.lineTo(w * 50 , (h * 50) + 50)
-          this.ctx.lineWidth = 1;
-          this.ctx.strokeStyle = "rgba(0, 0 ,0,.5)"
-          this.ctx.stroke()
+    for (let h = 0; h <= this.gridService.height; h++) {
+      for (let w = 0; w <= this.gridService.width; w++) {
+        this.backgroundCTX.beginPath()
+        this.backgroundCTX.moveTo(w * 50, h * 50)
+        this.backgroundCTX.lineTo(w * 50, (h * 50) + 50)
+        this.backgroundCTX.lineWidth = 1;
+        this.backgroundCTX.strokeStyle = "rgba(0, 0 ,0,.5)"
+        this.backgroundCTX.stroke()
 
-    
-          this.ctx.beginPath()
-          this.ctx.moveTo(w * 50, h * 50)
-          this.ctx.lineTo((w * 50) + 50, h * 50)
-          this.ctx.strokeStyle = "rgba(0,0,0,.5)"
-          this.ctx.lineWidth = 1;
-          this.ctx.stroke()
-        }
+
+        this.backgroundCTX.beginPath()
+        this.backgroundCTX.moveTo(w * 50, h * 50)
+        this.backgroundCTX.lineTo((w * 50) + 50, h * 50)
+        this.backgroundCTX.strokeStyle = "rgba(0,0,0,.5)"
+        this.backgroundCTX.lineWidth = 1;
+        this.backgroundCTX.stroke()
       }
     }
   }
