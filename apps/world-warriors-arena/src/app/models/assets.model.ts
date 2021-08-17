@@ -20,6 +20,6 @@ export abstract class Asset extends GameComponents {
 
 export class motionAsset extends Asset {
 
-  
+
 
 }
