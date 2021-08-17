@@ -8,7 +8,7 @@ export class Character extends Asset {
     public image = new Image()
   ) {
     super();
-    const rndInt = Math.floor(Math.random() * 2) + 1
+    const rndInt = Math.floor(Math.random() * 5) + 1
 
     image.src = `../../../assets/images/character_00${rndInt}.png`
     image.onload = function () {
