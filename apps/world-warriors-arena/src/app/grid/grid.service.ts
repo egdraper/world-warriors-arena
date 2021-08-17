@@ -16,6 +16,19 @@ export class GridService {
     this.generateGrid(width, height)
   }
 
+  public getGridCellByCoordinate(x: number, y: number): Cell {
+    let foundCell: Cell
+    this.gridDisplay.forEach(row => {
+      row.forEach(cell => {
+        if((cell.posX < x && cell.posX + 50 >= x ) && (cell.posY < y && cell.posY + 50 >= y)) {
+          foundCell = cell
+        }
+      })
+    })
+
+    return foundCell
+  }
+
   private generateGrid(width: number, height: number, name: string = "No Name") {
     this.gridDisplayLite = {
       height,

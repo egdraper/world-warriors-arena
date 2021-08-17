@@ -3,6 +3,7 @@ import { CanvasService } from './canvas/canvas.service';
 import { Engine } from './engine/engine';
 import { AssetsService } from './game-assets/assets.service';
 import { GridService } from './grid/grid.service';
+import { Cell } from './models/cell.model';
 
 @Component({
   selector: 'world-warriors-arena-root',
@@ -10,6 +11,7 @@ import { GridService } from './grid/grid.service';
   styleUrls: ['./app.component.scss'],
 })
 export class AppComponent {
+  public selectedCell: Cell
   constructor(
     public grid: GridService,
     private engine: Engine,
@@ -29,5 +31,9 @@ export class AppComponent {
 
   public onAddCharacterClick(): void {
     this.assetService.addCharacter()
+  }
+
+  public onGridClick(event: {clickX: number, clickY: number}): void {
+    this.selectedCell = this.grid.getGridCellByCoordinate(event.clickX, event.clickY)
   }
 }
