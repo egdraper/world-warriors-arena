@@ -18,7 +18,7 @@ export class CanvasService {
   constructor(private gridService: GridService,
     private drawService: DrawService
     ) {
-    this.image.src = `../../../assets/images/25px grass.png`
+    this.image.src = `../../../assets/images/25pxgrass.png`
     this.image.onload = () => {
       this.drawGrid()
       this.drawService.drawBackground$.subscribe(this.drawGrid.bind(this))
