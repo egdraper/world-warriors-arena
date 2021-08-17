@@ -1,3 +1,6 @@
-<canvas #myCanvas id="myCanvas"
+<canvas #backgroundCanvas id="backgroundCanvas"
+  (click)="onCanvasClick($event)"
+></canvas>
+<canvas #forgroundCanvas id="forgroundCanvas"
   (click)="onCanvasClick($event)"
 ></canvas>

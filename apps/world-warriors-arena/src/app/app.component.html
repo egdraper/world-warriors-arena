@@ -2,7 +2,5 @@
 <h1 [style.color]="'white'"> Selected Cell (x:{{selectedCell?.x}} - y:{{selectedCell?.y}}) </h1>
 <button (click)="onAddCharacterClick()">Add Character</button>
 <world-warriors-arena-canvas
-  [height]="grid.height"
-  [width]="grid.width"
   (gridClick)="onGridClick($event)"
 ></world-warriors-arena-canvas>
