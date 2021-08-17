@@ -1,14 +1,32 @@
 import { Injectable } from '@angular/core';
+import { CanvasService } from '../canvas/canvas.service';
 import { Cell, GridDetails, RelativePositionCell } from '../models/cell.model';
 
 @Injectable()
 export class GridService {
+  public height = 15 
+  public width = 15
   public grid: {[cell: string]: Cell } = { }
   public gridDisplayLite: GridDetails
   public gridDisplay: Cell[][] = [];
 
   public createGrid(width: number, height: number) {
+    this.height = height
+    this.width = width
     this.generateGrid(width, height)
+  }
+
+  public getGridCellByCoordinate(x: number, y: number): Cell {
+    let foundCell: Cell
+    this.gridDisplay.forEach(row => {
+      row.forEach(cell => {
+        if((cell.posX < x && cell.posX + 50 >= x ) && (cell.posY < y && cell.posY + 50 >= y)) {
+          foundCell = cell
+        }
+      })
+    })
+
+    return foundCell
   }
 
   private generateGrid(width: number, height: number, name: string = "No Name") {

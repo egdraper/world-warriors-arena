@@ -13,14 +13,14 @@ export class Character extends Asset {
     image.src = `../../../assets/images/character_00${rndInt}.png`
     image.onload = function () {
       canvasService.ctx.imageSmoothingEnabled = false
-      canvasService.ctx.drawImage(image, 26, 0, 26, 36, 0, 0, 26 * 5, 36 * 5)
+      canvasService.ctx.drawImage(image, 26, 0, 26, 36, 0, 0, 26 * 2, 36 * 2)
     }
   }
 
   public frameCounter = 0
   public frameXPosition = [0, 26, 52, 26]
   public update() {
-    this.canvasService.ctx.drawImage(this.image, this.frameXPosition[this.frameCounter], 0, 26, 36, 0, 0, 26 * 5, 36 * 5)
+    this.canvasService.ctx.drawImage(this.image, this.frameXPosition[this.frameCounter], 0, 26, 36, 0, 0, 26 * 2, 36 * 2)
     if (this.frameCounter < 3) {
       this.frameCounter++
     } else {
