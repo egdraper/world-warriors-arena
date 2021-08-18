@@ -7,15 +7,18 @@ import { GridService } from "../grid/grid.service";
 @Injectable()
 export class CanvasService {
   private image = new Image()
+  
+  public overlayCanvas: ElementRef<HTMLCanvasElement>;
+  public overlayCTX: CanvasRenderingContext2D;
+  
   public forgroundCanvas: ElementRef<HTMLCanvasElement>;
   public forgroundCTX: CanvasRenderingContext2D;
- 
+   
   public backgroundCanvas: ElementRef<HTMLCanvasElement>;
   public backgroundCTX: CanvasRenderingContext2D;
 
-
-
-  constructor(private gridService: GridService,
+  constructor(
+    private gridService: GridService,
     private drawService: DrawService
     ) {
     this.image.src = `../../../assets/images/25pxgrass.png`

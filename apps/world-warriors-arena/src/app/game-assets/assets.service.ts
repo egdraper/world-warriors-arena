@@ -3,7 +3,9 @@ import { CanvasService } from "../canvas/canvas.service";
 import { DrawService } from "../engine/draw.service";
 import { Engine } from "../engine/engine";
 import { Asset } from "../models/assets.model";
+import { Cell } from "../models/cell.model";
 import { Character } from "./character";
+import { clickAnimation } from "./click-animation";
 
 @Injectable()
 export class AssetsService {
@@ -23,6 +25,15 @@ export class AssetsService {
     this.engine.startAnimationTrigger(player)
 
     this.gameComponents.push(player)
+  }
+
+  public addClickAnimation(cell: Cell): void {
+    const animation = new clickAnimation(this.canvas, this.drawService, this.engine, cell)
+    animation.animationFrame = 2
+
+    this.engine.startAnimationTrigger(animation)
+    
+    this.gameComponents.push(animation)
   }
 }
 

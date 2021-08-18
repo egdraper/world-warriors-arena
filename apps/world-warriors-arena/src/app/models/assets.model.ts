@@ -2,7 +2,7 @@ import { v4 as uuidv4 } from 'uuid';
 
 export abstract class GameComponents {
   public id: string
-  public animationFrame: number[] = [10, 20, 30, 40, 50, 60]
+  public animationFrame: number[] | number = [10, 20, 30, 40, 50, 60]
 
   // eslint-disable-next-line @typescript-eslint/no-empty-function
   public update(): void { }

@@ -20,9 +20,16 @@ export class Engine {
 
   public startEngine(): any {
     this.assets.forEach(asset => {   
-      if (asset.animationFrame.find(_frame => _frame === this.frame)) {
-        this.drawService.drawForground$.next()
-        asset.update()
+      if(Array.isArray(asset.animationFrame)){
+        if (asset.animationFrame.find(_frame => _frame === this.frame)) {
+          this.drawService.drawForground$.next()
+          asset.update()
+        }
+      } else {
+        if(this.frame % asset.animationFrame === 0) {
+          asset.update()
+          this.drawService.drawForground$.next()
+        }
       }
     })
     requestAnimationFrame(this.startEngine.bind(this)); 
