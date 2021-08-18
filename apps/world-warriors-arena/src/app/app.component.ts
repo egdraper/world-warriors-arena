@@ -35,5 +35,7 @@ export class AppComponent {
 
   public onGridClick(event: {clickX: number, clickY: number}): void {
     this.selectedCell = this.grid.getGridCellByCoordinate(event.clickX, event.clickY)
+    
+    this.assetService.addClickAnimation(this.selectedCell)
   }
 }

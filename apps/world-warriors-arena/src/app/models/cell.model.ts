@@ -1,3 +1,5 @@
+import { GameComponents, MotionAsset } from "./assets.model"
+
 export interface Cell {
   id: string;
   x: number;
@@ -7,6 +9,7 @@ export interface Cell {
   obstacle?: boolean;
   neighbors?: Cell[];
   destination?: boolean;
+  occupiedBy?: MotionAsset
   imgUrl?: string;
   imgIndexX?: number;
   imgIndexY?: number;

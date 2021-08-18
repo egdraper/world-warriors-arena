@@ -1,6 +1,8 @@
-<canvas #backgroundCanvas id="backgroundCanvas"
-  (click)="onCanvasClick($event)"
+<canvas #backgroundCanvas id="backgroundCanvas"></canvas>
+<canvas #overlayCanvas 
+id="overlayCanvas"
 ></canvas>
-<canvas #forgroundCanvas id="forgroundCanvas"
-  (click)="onCanvasClick($event)"
+
+<canvas #forgroundCanvas id="forgroundCanvas"  
+(click)="onCanvasClick($event)"
 ></canvas>
