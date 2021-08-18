@@ -17,9 +17,10 @@ export class DrawService {
   public drawAnimatedAssets(): void {
     if(this.canvasService.foregroundCTX) {
     this.canvasService.foregroundCTX.clearRect(0, 0, this.gridService.width * 50, this.gridService.height * 50);
+    // it goes through the grid service and gets each character from the grid. 
     this.gridService.gridDisplay.forEach(row => {
       row.forEach((cell: Cell) => {
-        if(cell.occupiedBy) {
+        if(cell.occupiedBy) { // <<-- cell.occupiedBy is where we are storing the GameComponent/MotionAsset (see cell.model)
           const gameComponent = cell.occupiedBy
           this.canvasService.foregroundCTX.drawImage(
             gameComponent.image, 

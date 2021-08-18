@@ -26,7 +26,7 @@ export class AssetsService {
     const gridCell = this.gridService.grid[`x${rndInt}:y${rndInt2}`]
     const player = new Character(this.canvas, this.drawService, gridCell)
 
-    gridCell.occupiedBy = player
+    gridCell.occupiedBy = player  // <--- adding the character into the occupiedBy Spot
 
     player.animationFrame = [20, 40, 60]
 
