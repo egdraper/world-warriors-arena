@@ -37,12 +37,5 @@ export class AppComponent {
     this.selectedCell = this.grid.getGridCellByCoordinate(event.clickX, event.clickY)
     
     this.assetService.addClickAnimation(this.selectedCell)
-    this.canvasService.overlayCTX.clearRect(0, 0, this.grid.width * 50, this.grid.height * 50);
-    this.canvasService.overlayCTX.imageSmoothingEnabled = false
-    this.canvasService.overlayCTX.beginPath()
-    this.canvasService.overlayCTX.rect(this.selectedCell.posX, this.selectedCell.posY, 50, 50);
-    this.canvasService.overlayCTX.strokeStyle = "rgba(200,0,0)"
-    this.canvasService.overlayCTX.lineWidth = 3;
-    this.canvasService.overlayCTX.stroke()
   }
 }

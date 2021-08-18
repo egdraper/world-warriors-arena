@@ -37,8 +37,8 @@ export class CanvasComponent  {
     this.forgroundContext = this.forgroundCanvas.nativeElement.getContext('2d');
     this.forgroundContext.canvas.height = this.gridService.height * 50
     this.forgroundContext.canvas.width = this.gridService.width * 50
-    this.canvasService.forgroundCTX = this.forgroundContext
-    this.canvasService.forgroundCanvas = this.forgroundCanvas
+    this.canvasService.foregroundCTX = this.forgroundContext
+    this.canvasService.foregroundCanvas = this.forgroundCanvas
     
     // Overlay
     this.overlayContext = this.overlayCanvas.nativeElement.getContext('2d');
@@ -48,7 +48,7 @@ export class CanvasComponent  {
     this.canvasService.overlayCanvas = this.overlayCanvas
         
     this.canvasService.overlayCTX.scale(1, 1)
-    this.canvasService.forgroundCTX.scale(1, 1)
+    this.canvasService.foregroundCTX.scale(1, 1)
     this.canvasService.backgroundCTX.scale(1, 1)
   }
 

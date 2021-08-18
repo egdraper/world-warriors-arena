@@ -11,20 +11,19 @@ export class CanvasService {
   public overlayCanvas: ElementRef<HTMLCanvasElement>;
   public overlayCTX: CanvasRenderingContext2D;
   
-  public forgroundCanvas: ElementRef<HTMLCanvasElement>;
-  public forgroundCTX: CanvasRenderingContext2D;
+  public foregroundCanvas: ElementRef<HTMLCanvasElement>;
+  public foregroundCTX: CanvasRenderingContext2D;
    
   public backgroundCanvas: ElementRef<HTMLCanvasElement>;
   public backgroundCTX: CanvasRenderingContext2D;
 
   constructor(
     private gridService: GridService,
-    private drawService: DrawService
     ) {
     this.image.src = `../../../assets/images/25pxgrass.png`
     this.image.onload = () => {
       this.drawGrid()
-      this.drawService.drawBackground$.subscribe(this.drawGrid.bind(this))
+      // this.drawService.drawBackground$.subscribe(this.drawGrid.bind(this))
     }
   }
 
