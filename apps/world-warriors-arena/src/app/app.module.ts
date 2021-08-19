@@ -8,6 +8,7 @@ import { CanvasComponent } from './canvas/canvas.component';
 import { CanvasService } from './canvas/canvas.service';
 import { AssetsService } from './game-assets/assets.service';
 import { DrawService } from './engine/draw.service';
+import { ShortestPath } from './engine/shortest-path';
 
 @NgModule({
   declarations: [AppComponent, CanvasComponent],
@@ -18,6 +19,7 @@ import { DrawService } from './engine/draw.service';
     CanvasService,
     AssetsService,
     DrawService,
+    ShortestPath
   ],
   bootstrap: [AppComponent],
 })

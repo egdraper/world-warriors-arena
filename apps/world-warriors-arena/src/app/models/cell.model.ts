@@ -1,4 +1,4 @@
-import { GameComponents, MotionAsset } from "./assets.model"
+import { GameComponent, MotionAsset } from "./assets.model"
 
 export interface Cell {
   id: string;
