@@ -10,7 +10,7 @@ export interface Cell {
   neighbors?: Cell[];
   destination?: boolean;
   occupiedBy?: MotionAsset
-  imgUrl?: string;
+  image?: HTMLImageElement;
   imgIndexX?: number;
   imgIndexY?: number;
   imgWidth?: number;

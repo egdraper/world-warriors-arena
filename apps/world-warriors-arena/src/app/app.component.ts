@@ -20,7 +20,7 @@ export class AppComponent {
     private canvasService: CanvasService,
     private shortestPath: ShortestPath
   ) {
-    this.grid.createGrid(15,15)
+    this.grid.createGrid(15, 15)
   }
 
   public ngOnInit(): void {
@@ -35,14 +35,17 @@ export class AppComponent {
     this.assetService.addCharacter()
   }
 
-  public onGridClick(event: {clickX: number, clickY: number}): void {
-    const cellStart = this.grid.getGridCellByCoordinate(25, 25)
-    const character = cellStart.occupiedBy
+  public onGridClick(event: { clickX: number, clickY: number }): void {
     this.selectedCell = this.grid.getGridCellByCoordinate(event.clickX, event.clickY)
-    character.move(cellStart, this.selectedCell)
     
-    const shortestPath = this.shortestPath.find(cellStart, this.selectedCell, this.assetService.gameComponents)
-    console.log(shortestPath)
-    this.assetService.addClickAnimation(this.selectedCell)
+    if (this.selectedCell.occupiedBy) {
+      this.assetService.gameComponents.forEach(asset => asset.clickAnimation = undefined)
+      const character = this.selectedCell.occupiedBy
+      this.assetService.selectedGameComponent = character
+      this.assetService.selectedGameComponent.selectCharacter()
+    } else {
+      this.assetService.selectedGameComponent.startMovement(this.assetService.selectedGameComponent.cell, this.selectedCell, this.assetService.gameComponents)
+      this.assetService.addClickAnimation(this.selectedCell, `../../../assets/images/DestinationX.png`)
+    }
   }
 }

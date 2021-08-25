@@ -8,6 +8,7 @@ import { Cell } from "../models/cell.model";
 export class DrawService {
   public drawForeground$ = new Subject()
   public drawBackground$ = new Subject()
+  public foregroundImages: File[] = []
 
   constructor(
     public canvasService: CanvasService,
@@ -17,23 +18,55 @@ export class DrawService {
   public drawAnimatedAssets(): void {
     if (this.canvasService.foregroundCTX) {
       this.canvasService.foregroundCTX.clearRect(0, 0, this.gridService.width * 50, this.gridService.height * 50);
-     
-      // it goes through the grid service and gets each character from the grid. 
+
       this.gridService.gridDisplay.forEach(row => {
         row.forEach((cell: Cell) => {
-          if (cell.occupiedBy) { // <<-- cell.occupiedBy is where we are storing the GameComponent/MotionAsset (see cell.model)
+          // OBSTACLES
+          if (cell.obstacle) {
+            this.canvasService.foregroundCTX.drawImage(
+              cell.image,
+              cell.imgIndexX,
+              cell.imgIndexY,
+              50,
+              80,
+              cell.posX,
+              cell.posY - 30,
+              25 * 2,
+              40 * 2)
+          }
+
+          // GAME COMPONENTS
+          if (cell.occupiedBy) {
             const gameComponent = cell.occupiedBy
+
             this.canvasService.foregroundCTX.drawImage(
               gameComponent.image,
               gameComponent.frameXPosition[gameComponent.frameCounter],
-              0,
+              gameComponent.frameYPosition,
               26,
               36,
               gameComponent.positionX,
               gameComponent.positionY - 40,
               26 * 2,
-              36 * 2)
+              36 * 2
+            )
+
+            if (gameComponent.clickAnimation) {
+              this.canvasService.overlayCTX.clearRect(0, 0, 1500, 1500);
+              this.canvasService.overlayCTX.drawImage(
+                gameComponent.clickAnimation.image,
+                gameComponent.clickAnimation.frameXPosition[gameComponent.clickAnimation.frameXCounter],
+                gameComponent.clickAnimation.frameYPosition[gameComponent.clickAnimation.frameYCounter],
+                25,
+                25,
+                gameComponent.positionX,
+                gameComponent.positionY,
+                25 * 2,
+                25 * 2
+              )
+            }
           }
+
         })
       })
     }

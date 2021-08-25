@@ -20,7 +20,7 @@ export class CanvasService {
   constructor(
     private gridService: GridService,
     ) {
-    this.image.src = `../../../assets/images/25pxgrass.png`
+    this.image.src = `../../../assets/images/StoneFloor1.png`
     this.image.onload = () => {
       this.drawGrid()
       // this.drawService.drawBackground$.subscribe(this.drawGrid.bind(this))

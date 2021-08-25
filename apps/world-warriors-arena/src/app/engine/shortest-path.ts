@@ -10,9 +10,7 @@ export class ShortestPath {
   public maxSearchRange = 1000
   public searchIndex = 0
   public totalDistance = 0
-
-  private odd = true
-     
+   
   public setGrid(grid: {[cell: string]: any }) {
     this.grid = grid;
   }
@@ -62,7 +60,7 @@ export class ShortestPath {
               return;
             }
 
-            const creatureOnSquare = this.creaturesOnGrid.find(a => a.location.cell.id === cell.id)
+            const creatureOnSquare = this.creaturesOnGrid.find(a => a.cell.id === cell.id)
 
             if ((!cell.obstacle && !creatureOnSquare) && !store.some(i => index === i)) {
               if (!visited[`x${cell.x}:y${cell.y}`]) {
@@ -131,7 +129,7 @@ export class ShortestPath {
   }
 
   public isBadLocation(end: Cell): boolean {
-    return end.obstacle || this.creaturesOnGrid.find(a => a.location.cell.id === end.id) 
+    return end.obstacle || this.creaturesOnGrid.find(a => a.cell.id === end.id) 
   }
 
   private alternateDiagonal(visited: Visited, index: number): any {

@@ -2,23 +2,30 @@ import { Injectable } from "@angular/core";
 import { CanvasService } from "../canvas/canvas.service";
 import { DrawService } from "../engine/draw.service";
 import { Engine } from "../engine/engine";
+import { ShortestPath } from "../engine/shortest-path";
 import { GridService } from "../grid/grid.service";
-import { Asset } from "../models/assets.model";
+import { Asset, MotionAsset } from "../models/assets.model";
 import { Cell } from "../models/cell.model";
 import { Character } from "./character";
-import { clickAnimation } from "./click-animation";
+import { ClickAnimation } from "./click-animation";
 
 @Injectable()
 export class AssetsService {
-  public gameComponents: Asset[] = []
+  public gameComponents: MotionAsset[] = []
+  public selectedGameComponent: MotionAsset
 
   constructor(
     private drawService: DrawService,
     private canvas: CanvasService,
     private gridService: GridService,
-    private engine: Engine) {
+    private shortestPath: ShortestPath,
+    private engine: Engine) { }
 
-     }
+  public addObstacleImage(cell: Cell, imageUrl: string): void {
+    cell.image = new Image()
+    cell.image.src = imageUrl
+    cell.obstacle = true
+  }   
 
   public addCharacter(imgUrl?: string): void {
     // const rndInt = Math.floor(Math.random() * 5) + 1
@@ -38,17 +45,17 @@ export class AssetsService {
     const gridCell1 = this.gridService.grid[`x2:y2`]
     const gridCell2 = this.gridService.grid[`x0:y2`]
     const gridCell3 = this.gridService.grid[`x3:y0`]
-    const player = new Character(this.canvas, this.drawService, gridCell1, this.gridService)
-    const player1 = new Character(this.canvas, this.drawService, gridCell2, this.gridService)
-    const player2= new Character(this.canvas, this.drawService, gridCell3, this.gridService)
+    const player = new Character(this.canvas, this.drawService, gridCell1, this.gridService, this.shortestPath, this.engine)
+    const player1 = new Character(this.canvas, this.drawService, gridCell2, this.gridService, this.shortestPath, this.engine)
+    const player2= new Character(this.canvas, this.drawService, gridCell3, this.gridService, this.shortestPath, this.engine)
 
     gridCell1.occupiedBy = player  // <--- adding the character into the occupiedBy Spot
     gridCell2.occupiedBy = player1  // <--- adding the character into the occupiedBy Spot
     gridCell3.occupiedBy = player2  // <--- adding the character into the occupiedBy Spot
 
-    player.animationFrame = 10
-    player1.animationFrame = 10
-    player2.animationFrame = 10
+    player.animationFrame = [20, 40, 60 ] // set to 10 for walking speed
+    player1.animationFrame = 20
+    player2.animationFrame = 20
 
     this.engine.startAnimationTrigger(player)
     this.engine.startAnimationTrigger(player1)
@@ -58,13 +65,13 @@ export class AssetsService {
     this.gameComponents.push(player2)
   }
 
-  public addClickAnimation(cell: Cell): void {
-    const animation = new clickAnimation(this.canvas, this.drawService, this.engine, cell)
-    animation.animationFrame = 2
+  public addClickAnimation(cell: Cell, imgSrc: string): void {
+    // const animation = new ClickAnimation(this.canvas, this.drawService, this.engine, cell, imgSrc)
+  //   animation.animationFrame = 2
 
-    this.engine.startAnimationTrigger(animation)
+  //   this.engine.startAnimationTrigger(animation)
     
-    this.gameComponents.push(animation)
+  //   this.gameComponents.push(animation)
   }
 }
 

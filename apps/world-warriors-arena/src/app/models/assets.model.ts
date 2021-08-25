@@ -1,15 +1,17 @@
 import { v4 as uuidv4 } from 'uuid';
+import { Engine } from '../engine/engine';
+import { ShortestPath } from '../engine/shortest-path';
+import { ClickAnimation } from '../game-assets/click-animation';
 import { GridService } from '../grid/grid.service';
 import { Cell } from './cell.model';
 
 export abstract class GameComponent {
   public id: string
-  public animationFrame: number[] | number = [10, 20, 30, 40, 50, 60]
+  public animationFrame: number[] | number = 10
   public cell: Cell = null
 
-  // eslint-disable-next-line @typescript-eslint/no-empty-function
   public abstract update(): void
-  public move(): void {}
+  public move(): void { }
 
   constructor() {
     this.id = uuidv4()
@@ -17,20 +19,13 @@ export abstract class GameComponent {
 }
 
 export abstract class Asset extends GameComponent {
-  //public name: string = ""
-}
-
-export abstract class MotionAsset extends Asset {
+  public image = new Image()
   public positionX = 0
   public positionY = 0
   public frameCounter = 0
-  public frameXPosition = [0, 26, 52, 26]
-  public image = new Image()
 
-  constructor(public grid: GridService) {
-    super()
-  }
-   
+  public setDirection(keyEvent: KeyboardEvent): void { return }
+
   public update() {
     if (this.frameCounter < 3) {
       this.frameCounter++
@@ -38,16 +33,130 @@ export abstract class MotionAsset extends Asset {
       this.frameCounter = 0
     }
   }
+}
 
-  public move(startCell?: Cell, endingCell?: Cell) {
-    this.positionX += 1
-    this.positionY += 1
+export abstract class MotionAsset extends Asset {
+  public frameXPosition = [0, 26, 52, 26]
+  public frameYPosition = 0
+  public moving = false
+  public movementResolve: any
+  public nextCell: Cell
+  public currentPath: Cell[] = []
+  public clickAnimation: ClickAnimation
 
-    if(this.positionY % 50 === 0 && this.positionX % 50 === 0) {
+  private redirection: { start: Cell, end: Cell, charactersOnGrid: MotionAsset[] }
+
+  public set spriteDirection(value: string) {
+    if (value === "down") { this.frameYPosition = 0 }
+    if (value === "up") { this.frameYPosition = 108 }
+    if (value === "left") { this.frameYPosition = 36 }
+    if (value === "right") { this.frameYPosition = 72 }
+  }
+
+  constructor(
+    public grid: GridService,
+    public shortestPath: ShortestPath,
+    public engineService: Engine) {
+    super()
+
+  }
+
+  public selectCharacter(): void {
+    this.clickAnimation = new ClickAnimation(this.engineService, `../../../assets/images/ExplosionClick1.png`)
+  }
+
+  public setDirection(keyEvent: KeyboardEvent): void {
+    if (keyEvent.code === 'KeyW') {
+      this.spriteDirection = "up"
+    }
+
+    if (keyEvent.code === 'KeyA') {
+      this.spriteDirection = "left"
+    }
+
+    if (keyEvent.code === 'KeyD') {
+      this.spriteDirection = "right"
+    }
+
+    if (keyEvent.code === 'KeyS') {
+      this.spriteDirection = "down"
+    }
+  }
+
+  public startMovement(startCell: Cell, endCell: Cell, charactersOnGrid: MotionAsset[]): void {
+    if(this.moving) {
+      this.redirection = {start: undefined, end: endCell, charactersOnGrid: charactersOnGrid } 
+      return
+    } else {
+      this.redirection = undefined
+    }
+
+    this.currentPath = this.shortestPath.find(startCell, endCell, charactersOnGrid)
+    this.moving = true
+    const currentCell = this.currentPath.pop() // removes cell the character is standing on
+    currentCell.occupiedBy = undefined
+    this.nextCell = this.currentPath.pop()
+    this.nextCell.occupiedBy = this
+    this.setSpriteDirection()
+    this.animationFrame = 10
+  }
+
+  public endMovement(): void {
+    this.currentPath = null
+    this.moving = false
+    this.animationFrame = 20
+  }
+
+
+  public move() {
+    // called automatically every 1/60 of a second from the engine
+    if (!this.moving) { return }
+
+    let nextXMove = 0
+    let nextYMove = 0
+    let speed = 2
+
+    if (this.nextCell.x !== this.cell.x) { nextXMove = this.nextCell.x > this.cell.x ? speed : speed * -1 }
+    if (this.nextCell.y !== this.cell.y) { nextYMove = this.nextCell.y > this.cell.y ? speed : speed * -1 }
+
+    this.positionX += nextXMove
+    this.positionY += nextYMove
+
+    if (this.positionY % 50 === 0 && this.positionX % 50 === 0) {
       this.cell = this.grid.grid[`x${this.positionX / 50}:y${this.positionY / 50}`]
-      this.cell.occupiedBy = this
+
+      this.nextCell = this.currentPath.length > 0
+        ? this.currentPath.pop()
+        : null
+
+        
+        if(this.redirection) {
+          this.cell.occupiedBy = undefined
+          this.endMovement()
+          this.startMovement(this.cell, this.redirection.end, this.redirection.charactersOnGrid)
+        }
+
+        // TODO: Re-calculate path if something has moved into it
+        
+        if (!this.nextCell) {
+          this.endMovement()
+        } else {     
+          
+        this.cell.occupiedBy = undefined
+        this.nextCell.occupiedBy = this
+        this.setSpriteDirection()
+      }
+    }
+  }
+
+  private setSpriteDirection(): void {
+    if (this.nextCell.x !== this.cell.x) {
+      this.spriteDirection = this.nextCell.x > this.cell.x ? "right" : "left"
+    } else if (this.nextCell.y !== this.cell.y) {
+      this.spriteDirection = this.nextCell.y > this.cell.y ? "down" : "up"
     }
   }
 }
+
 
 

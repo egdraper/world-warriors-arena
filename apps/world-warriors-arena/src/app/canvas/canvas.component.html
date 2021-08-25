@@ -3,6 +3,9 @@
 id="overlayCanvas"
 ></canvas>
 
-<canvas #forgroundCanvas id="forgroundCanvas"  
-(click)="onCanvasClick($event)"
-></canvas>
+<canvas #foregroundCanvas id="foregroundCanvas"  
+  (mousedown)="onCanvasClick($event)"
+  (mousemove)="onMouseMove($event)"
+  (mouseup)="onMouseUp($event)"
+  (keydown)="onKeyPress($event)"
+  ></canvas>
