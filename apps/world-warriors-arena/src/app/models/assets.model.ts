@@ -1,31 +1,33 @@
 import { v4 as uuidv4 } from 'uuid';
 import { Engine } from '../engine/engine';
 import { ShortestPath } from '../engine/shortest-path';
-import { ClickAnimation } from '../game-assets/click-animation';
+import { SelectionIndicator } from '../game-assets/selection-indicator';
 import { GridService } from '../grid/grid.service';
 import { Cell } from './cell.model';
 
-export abstract class GameComponent {
+export class GameComponent {
   public id: string
-  public animationFrame: number[] | number = 10
-  public cell: Cell = null
-
-  public abstract update(): void
-  public move(): void { }
+  public cell: Cell = null  
 
   constructor() {
     this.id = uuidv4()
   }
 }
 
-export abstract class Asset extends GameComponent {
+export class AnimationComponent extends GameComponent {
+  public animationFrame: number[] | number = 10
+  public update(): void {}
+  public move(): void {}  
+}
+
+export class Asset extends AnimationComponent {
   public image = new Image()
   public positionX = 0
   public positionY = 0
   public frameCounter = 0
-
+  
   public setDirection(keyEvent: KeyboardEvent): void { return }
-
+  
   public update() {
     if (this.frameCounter < 3) {
       this.frameCounter++
@@ -42,10 +44,10 @@ export abstract class MotionAsset extends Asset {
   public movementResolve: any
   public nextCell: Cell
   public currentPath: Cell[] = []
-  public clickAnimation: ClickAnimation
-
+  public selectionIndicator: SelectionIndicator
+  
   private redirection: { start: Cell, end: Cell, charactersOnGrid: MotionAsset[] }
-
+  
   public set spriteDirection(value: string) {
     if (value === "down") { this.frameYPosition = 0 }
     if (value === "up") { this.frameYPosition = 108 }
@@ -57,12 +59,11 @@ export abstract class MotionAsset extends Asset {
     public grid: GridService,
     public shortestPath: ShortestPath,
     public engineService: Engine) {
-    super()
-
+      super()
   }
 
   public selectCharacter(): void {
-    this.clickAnimation = new ClickAnimation(this.engineService, `../../../assets/images/ExplosionClick1.png`)
+    this.selectionIndicator = new SelectionIndicator(6, this.engineService, `../../../assets/images/ExplosionClick1.png`)
   }
 
   public setDirection(keyEvent: KeyboardEvent): void {

@@ -1,10 +1,9 @@
 import { Component } from '@angular/core';
 import { CanvasService } from './canvas/canvas.service';
 import { Engine } from './engine/engine';
-import { ShortestPath } from './engine/shortest-path';
 import { AssetsService } from './game-assets/assets.service';
-import { GridService } from './grid/grid.service';
 import { Cell } from './models/cell.model';
+import { GridService } from './grid/grid.service';
 
 @Component({
   selector: 'world-warriors-arena-root',
@@ -14,11 +13,10 @@ import { Cell } from './models/cell.model';
 export class AppComponent {
   public selectedCell: Cell
   constructor(
-    public grid: GridService,
     private engine: Engine,
     private assetService: AssetsService,
     private canvasService: CanvasService,
-    private shortestPath: ShortestPath
+    public grid: GridService,
   ) {
     this.grid.createGrid(15, 15)
   }
@@ -39,12 +37,14 @@ export class AppComponent {
     this.selectedCell = this.grid.getGridCellByCoordinate(event.clickX, event.clickY)
     
     if (this.selectedCell.occupiedBy) {
-      this.assetService.gameComponents.forEach(asset => asset.clickAnimation = undefined)
       const character = this.selectedCell.occupiedBy
+      this.assetService.gameComponents.forEach(asset => asset.selectionIndicator = undefined)
       this.assetService.selectedGameComponent = character
       this.assetService.selectedGameComponent.selectCharacter()
     } else {
-      this.assetService.selectedGameComponent.startMovement(this.assetService.selectedGameComponent.cell, this.selectedCell, this.assetService.gameComponents)
+      if(this.assetService.selectedGameComponent) {
+        this.assetService.selectedGameComponent.startMovement(this.assetService.selectedGameComponent.cell, this.selectedCell, this.assetService.gameComponents)
+      }
       this.assetService.addClickAnimation(this.selectedCell, `../../../assets/images/DestinationX.png`)
     }
   }

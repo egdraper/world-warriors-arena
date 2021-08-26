@@ -14,12 +14,12 @@ import { ShortestPath } from './engine/shortest-path';
   declarations: [AppComponent, CanvasComponent],
   imports: [BrowserModule],
   providers: [
-    Engine,
-    GridService,
-    CanvasService,
     AssetsService,
+    CanvasService,
+    ShortestPath,
     DrawService,
-    ShortestPath
+    GridService,
+    Engine,
   ],
   bootstrap: [AppComponent],
 })

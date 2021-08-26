@@ -1,21 +1,32 @@
 import { Injectable } from "@angular/core";
+
 import { removeFromArray } from "../common/functions";
-import { GameComponent } from "../models/assets.model";
+import { ShortLivedAnimation } from "../game-assets/click-animation";
+import { AnimationComponent } from "../models/assets.model";
 import { DrawService } from "./draw.service";
 
 @Injectable()
 export class Engine {
-  public assets: GameComponent[] = []
+  public assets: AnimationComponent[] = []
+  public shortLivedAnimations: ShortLivedAnimation[] = []
   public frame: number = 1
 
   constructor(private drawService: DrawService) { }
 
-  public startAnimationTrigger(gameComponent: GameComponent) {
-    this.assets.push(gameComponent)
+  public startShortLiveAnimation(animation: ShortLivedAnimation): void {
+    this.shortLivedAnimations.push(animation)
   }
 
-  public stopAnimation(gameComponent: GameComponent) {
-    this.assets = removeFromArray(this.assets, (asset) => asset.id === gameComponent.id)
+  public endShortLivedAnimation(animation: ShortLivedAnimation): void {
+    this.shortLivedAnimations = removeFromArray(this.shortLivedAnimations, animation => animation.id === animation.id)
+  }
+
+  public startAnimationTrigger(animationComponent: AnimationComponent) {
+    this.assets.push(animationComponent)
+  }
+
+  public stopAnimation(animationComponent: AnimationComponent) {
+    this.assets = removeFromArray(this.assets, (asset) => asset.id === animationComponent.id)
   }
 
   public startEngine(): any {
@@ -38,10 +49,18 @@ export class Engine {
         asset.move()
       }
     })
+
+    if(this.shortLivedAnimations.length > 0) {
+      this.shortLivedAnimations.forEach(animation => {
+        if (this.frame % animation.animationFrame === 0) { animation.update() }
+        this.drawService.drawShortLivedAnimation(animation)
+      })
+    }
   
     this.drawService.drawAnimatedAssets()
+
     requestAnimationFrame(this.startEngine.bind(this)); 
-    console.log(this.frame)
+
     this.frame >= 60 ? this.frame = 1 : this.frame++
   }
 }

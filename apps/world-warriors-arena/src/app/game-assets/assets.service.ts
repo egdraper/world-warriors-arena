@@ -4,7 +4,7 @@ import { DrawService } from "../engine/draw.service";
 import { Engine } from "../engine/engine";
 import { ShortestPath } from "../engine/shortest-path";
 import { GridService } from "../grid/grid.service";
-import { Asset, MotionAsset } from "../models/assets.model";
+import { MotionAsset } from "../models/assets.model";
 import { Cell } from "../models/cell.model";
 import { Character } from "./character";
 import { ClickAnimation } from "./click-animation";
@@ -17,8 +17,8 @@ export class AssetsService {
   constructor(
     private drawService: DrawService,
     private canvas: CanvasService,
-    private gridService: GridService,
     private shortestPath: ShortestPath,
+    private gridService: GridService,
     private engine: Engine) { }
 
   public addObstacleImage(cell: Cell, imageUrl: string): void {
@@ -66,12 +66,9 @@ export class AssetsService {
   }
 
   public addClickAnimation(cell: Cell, imgSrc: string): void {
-    // const animation = new ClickAnimation(this.canvas, this.drawService, this.engine, cell, imgSrc)
-  //   animation.animationFrame = 2
-
-  //   this.engine.startAnimationTrigger(animation)
+    const animation = new ClickAnimation(52, this.engine, imgSrc, cell)
     
-  //   this.gameComponents.push(animation)
+
   }
 }
 

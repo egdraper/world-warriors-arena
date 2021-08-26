@@ -1,6 +1,7 @@
 import { Injectable } from "@angular/core";
 import { Subject } from "rxjs";
 import { CanvasService } from "../canvas/canvas.service";
+import { ShortLivedAnimation } from "../game-assets/click-animation";
 import { GridService } from "../grid/grid.service";
 import { Cell } from "../models/cell.model";
 
@@ -11,9 +12,34 @@ export class DrawService {
   public foregroundImages: File[] = []
 
   constructor(
+    public gridService: GridService,
     public canvasService: CanvasService,
-    public gridService: GridService
-  ) { }
+  ) {
+
+   }
+
+  public drawShortLivedAnimation(animation: ShortLivedAnimation): void {
+    if(!animation.cell) { return }
+    
+    this.canvasService.foregroundCTX.imageSmoothingEnabled = false
+    this.canvasService.backgroundCTX.imageSmoothingEnabled = false
+    this.canvasService.overlayCTX.imageSmoothingEnabled = false
+    this.canvasService.overlayCTX.clearRect(animation.cell.posX, animation.cell.posY, 50, 50);
+
+    this.canvasService.overlayCTX.drawImage(
+      animation.image,
+      animation.frameXPosition[animation.frameXCounter],
+      animation.frameYPosition[animation.frameYCounter],
+      25,
+      25,
+      animation.cell.posX,
+      animation.cell.posY,
+      25 * 2,
+      25 * 2
+    )
+  }
+
+
 
   public drawAnimatedAssets(): void {
     if (this.canvasService.foregroundCTX) {
@@ -51,12 +77,12 @@ export class DrawService {
               36 * 2
             )
 
-            if (gameComponent.clickAnimation) {
-              this.canvasService.overlayCTX.clearRect(0, 0, 1500, 1500);
+            if (gameComponent.selectionIndicator) {
+              this.canvasService.overlayCTX.clearRect(gameComponent.positionX, gameComponent.positionY, 25 * 2, 25 * 2);
               this.canvasService.overlayCTX.drawImage(
-                gameComponent.clickAnimation.image,
-                gameComponent.clickAnimation.frameXPosition[gameComponent.clickAnimation.frameXCounter],
-                gameComponent.clickAnimation.frameYPosition[gameComponent.clickAnimation.frameYCounter],
+                gameComponent.selectionIndicator.image,
+                gameComponent.selectionIndicator.frameXPosition[gameComponent.selectionIndicator.frameXCounter],
+                gameComponent.selectionIndicator.frameYPosition[gameComponent.selectionIndicator.frameYCounter],
                 25,
                 25,
                 gameComponent.positionX,
