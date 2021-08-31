@@ -14,9 +14,7 @@ export class DrawService {
   constructor(
     public gridService: GridService,
     public canvasService: CanvasService,
-  ) {
-
-   }
+  ) { }
 
   public drawShortLivedAnimation(animation: ShortLivedAnimation): void {
     if(!animation.cell) { return }

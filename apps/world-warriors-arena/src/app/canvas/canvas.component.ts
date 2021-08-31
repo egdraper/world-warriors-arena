@@ -63,7 +63,7 @@ export class CanvasComponent  {
   }
 
   public onCanvasClick(event: any):void {
-    console.log(`click:${event.offsetX}`)
+    // console.log(`click:${event.offsetX}`)
     this.mouseIsDown = true
      const clickX = event.offsetX
      const clickY = event.offsetY
@@ -85,7 +85,7 @@ export class CanvasComponent  {
   }
 
   public onMouseUp(event: any):void {
-    console.log(`up:${event.offsetX}`)
+    // console.log(`up:${event.offsetX}`)
     this.mouseIsDown = false
   }
 }

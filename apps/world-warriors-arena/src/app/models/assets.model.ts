@@ -1,6 +1,7 @@
 import { v4 as uuidv4 } from 'uuid';
 import { Engine } from '../engine/engine';
 import { ShortestPath } from '../engine/shortest-path';
+import { ClickAnimation } from '../game-assets/click-animation';
 import { SelectionIndicator } from '../game-assets/selection-indicator';
 import { GridService } from '../grid/grid.service';
 import { Cell } from './cell.model';
@@ -41,12 +42,12 @@ export abstract class MotionAsset extends Asset {
   public frameXPosition = [0, 26, 52, 26]
   public frameYPosition = 0
   public moving = false
-  public movementResolve: any
-  public nextCell: Cell
   public currentPath: Cell[] = []
   public selectionIndicator: SelectionIndicator
+  public destinationIndicator: ClickAnimation
   
   private redirection: { start: Cell, end: Cell, charactersOnGrid: MotionAsset[] }
+  private nextCell: Cell
   
   public set spriteDirection(value: string) {
     if (value === "down") { this.frameYPosition = 0 }
@@ -85,6 +86,8 @@ export abstract class MotionAsset extends Asset {
   }
 
   public startMovement(startCell: Cell, endCell: Cell, charactersOnGrid: MotionAsset[]): void {
+    this.destinationIndicator = new ClickAnimation(350, this.engineService, `../../../assets/images/DestinationX.png`, endCell)
+
     if(this.moving) {
       this.redirection = {start: undefined, end: endCell, charactersOnGrid: charactersOnGrid } 
       return
@@ -106,6 +109,8 @@ export abstract class MotionAsset extends Asset {
     this.currentPath = null
     this.moving = false
     this.animationFrame = 20
+    this.destinationIndicator.forceStop()
+    this.destinationIndicator=undefined
   }
 
 

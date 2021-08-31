@@ -1,13 +1,13 @@
 import { Engine } from "../engine/engine";
 import { v4 as uuidv4 } from 'uuid';
 import { Cell } from "../models/cell.model";
-import { CanvasService } from "../canvas/canvas.service";
 
 export class ShortLivedAnimation {
+  public image = new Image()
+
   public id: string
   public animationFrame: number = 1
   public cyclesRemaining: number = 0
-  public image = new Image()
   public longLive = false
   public frameXCounter = 0
   public frameYCounter = 0
@@ -29,6 +29,10 @@ export class ShortLivedAnimation {
     }
 
     this.cyclesRemaining--
+  }
+
+  public forceStop(): void {
+    this.engineService.endShortLivedAnimation(this)
   }
 }
 

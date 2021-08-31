@@ -44,14 +44,14 @@ export class CanvasService {
         this.backgroundCTX.moveTo(w * 50, h * 50)
         this.backgroundCTX.lineTo(w * 50, (h * 50) + 50)
         this.backgroundCTX.lineWidth = 1;
-        this.backgroundCTX.strokeStyle = "rgba(0, 0 ,0,.5)"
+        this.backgroundCTX.strokeStyle = "rgba(255, 255 ,255,.5)"
         this.backgroundCTX.stroke()
 
 
         this.backgroundCTX.beginPath()
         this.backgroundCTX.moveTo(w * 50, h * 50)
         this.backgroundCTX.lineTo((w * 50) + 50, h * 50)
-        this.backgroundCTX.strokeStyle = "rgba(0,0,0,.5)"
+        this.backgroundCTX.strokeStyle = "rgba(255,255,0,.5)"
         this.backgroundCTX.lineWidth = 1;
         this.backgroundCTX.stroke()
       }
