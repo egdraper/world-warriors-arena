@@ -16,6 +16,9 @@ export class CanvasService {
    
   public backgroundCanvas: ElementRef<HTMLCanvasElement>;
   public backgroundCTX: CanvasRenderingContext2D;
+  
+  public fogCanvas: ElementRef<HTMLCanvasElement>;
+  public fogCTX: CanvasRenderingContext2D;
 
   constructor(
     private gridService: GridService,

@@ -13,13 +13,16 @@ export class CanvasComponent  {
   @ViewChild('overlayCanvas') overlayCanvas: ElementRef<HTMLCanvasElement>;
   @ViewChild('foregroundCanvas') foregroundCanvas: ElementRef<HTMLCanvasElement>;
   @ViewChild('backgroundCanvas') backgroundCanvas: ElementRef<HTMLCanvasElement>;
+  @ViewChild('fogCanvas') fogCanvas: ElementRef<HTMLCanvasElement>;
   @Output() gridClick = new EventEmitter<{clickX: number, clickY: number}>()
 
   public overlayContext: CanvasRenderingContext2D;
   public foregroundContext: CanvasRenderingContext2D;
   public backgroundContext: CanvasRenderingContext2D;
+  public fogContext: CanvasRenderingContext2D;
 
   private mouseIsDown = false
+  private controlPressed = false
 
   constructor(
     private canvasService: CanvasService,
@@ -52,13 +55,32 @@ export class CanvasComponent  {
     this.canvasService.overlayCTX = this.overlayContext
     this.canvasService.overlayCanvas = this.overlayCanvas
     this.canvasService.overlayCTX.scale(1, 1)
+
+    // Fog
+    this.fogContext = this.fogCanvas.nativeElement.getContext('2d');
+    this.fogContext.canvas.height = this.gridService.height * 50
+    this.fogContext.canvas.width = this.gridService.width * 50
+    this.canvasService.fogCTX = this.fogContext
+    this.canvasService.fogCanvas = this.fogCanvas
+    this.canvasService.fogCTX.scale(1, 1)
         
   }
 
   @HostListener("document:keydown", ["$event"]) 
-  public onKeyPress(event: KeyboardEvent): void {
+  public onKeyDown(event: KeyboardEvent): void {
     if(this.assetService.selectedGameComponent) {
       this.assetService.selectedGameComponent.setDirection(event)
+    }
+
+    if(event.key === "Control") {
+      this.controlPressed = true
+    }
+  }
+
+  @HostListener("document:keyup", ["$event"]) 
+  public onKeyUp(event: KeyboardEvent): void {
+    if(event.key === "Control") {
+      this.controlPressed = false
     }
   }
 
@@ -71,7 +93,7 @@ export class CanvasComponent  {
   }
 
   public onMouseMove(event: any):void {
-    if(this.mouseIsDown) {
+    if(this.mouseIsDown && this.controlPressed) {
       
       const cellStart = this.gridService.getGridCellByCoordinate(event.offsetX, event.offsetY)   
       if(!cellStart.obstacle) {

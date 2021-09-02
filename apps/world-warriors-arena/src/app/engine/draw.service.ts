@@ -16,6 +16,25 @@ export class DrawService {
     public canvasService: CanvasService,
   ) { }
 
+  public drawFog(): void {
+    this.canvasService.fogCTX.globalCompositeOperation = 'destination-over'
+    this.canvasService.fogCTX.clearRect(0, 0, this.gridService.width * 50, this.gridService.height * 50);
+    this.canvasService.fogCTX.globalAlpha = 0.8;
+    this.canvasService.fogCTX.fillStyle = 'black';
+    this.canvasService.fogCTX.fillRect(   
+      0,
+      0,
+      this.gridService.width * 50,
+      this.gridService.height * 50
+      )
+  }
+
+  public clearFogLineOfSight(cell: Cell, obstacle: Cell): void {
+
+      this.traceCell(cell, obstacle)
+
+  }
+
   public drawShortLivedAnimation(animation: ShortLivedAnimation): void {
     if(!animation.cell) { return }
     
@@ -93,6 +112,229 @@ export class DrawService {
 
         })
       })
+    }
+  }
+
+  private traceCell(cell: Cell, obstacle: Cell): void {
+    const ctx = this.canvasService.fogCTX
+    ctx.beginPath();
+    ctx.moveTo(cell.posX + 25, cell.posY + 25);
+
+    let point1x
+    let point1y
+
+    let point2x
+    let point2y
+    if (cell.posX === obstacle.posX && cell.posY < obstacle.posY) {
+      point1x = obstacle.posX
+      point1y = obstacle.posY 
+      point2x = obstacle.posX + 50
+      point2y = obstacle.posY 
+    } else if (cell.posX === obstacle.posX && cell.posY > obstacle.posY) {
+      point1x = obstacle.posX
+      point1y = obstacle.posY + 50
+      point2x = obstacle.posX + 50
+      point2y = obstacle.posY + 50
+    } else if (cell.posY === obstacle.posY && cell.posX > obstacle.posX) {
+      point1x = obstacle.posX + 50
+      point1y = obstacle.posY
+      point2x = obstacle.posX + 50
+      point2y = obstacle.posY + 50
+    } else if (cell.posY === obstacle.posY && cell.posX < obstacle.posX) {
+      point1x = obstacle.posX 
+      point1y = obstacle.posY 
+      point2x = obstacle.posX 
+      point2y = obstacle.posY + 50
+    } else if (cell.posX > obstacle.posX && cell.posY < obstacle.posY) {
+      if (obstacle.neighbors[0].obstacle) {
+        point1x = obstacle.posX + 50
+        point1y = obstacle.posY
+        point2x = obstacle.posX + 50
+        point2y = obstacle.posY + 50
+      } else if (obstacle.neighbors[1].obstacle) {
+        point1x = obstacle.posX
+        point1y = obstacle.posY
+        point2x = obstacle.posX + 50
+        point2y = obstacle.posY
+      } else {
+        point1x = obstacle.posX
+        point1y = obstacle.posY
+        point2x = obstacle.posX + 50
+        point2y = obstacle.posY + 50
+      }
+    } else if (cell.posX < obstacle.posX && cell.posY < obstacle.posY) {
+      if (obstacle.neighbors[3].obstacle) {
+        point1x = obstacle.posX
+        point1y = obstacle.posY
+        point2x = obstacle.posX + 50
+        point2y = obstacle.posY
+      } else if (obstacle.neighbors[0].obstacle) {
+        point1x = obstacle.posX
+        point1y = obstacle.posY
+        point2x = obstacle.posX
+        point2y = obstacle.posY + 50
+      } else {
+        point1x = obstacle.posX
+        point1y = obstacle.posY + 50
+        point2x = obstacle.posX + 50
+        point2y = obstacle.posY
+      }
+    } else if (cell.posX > obstacle.posX && cell.posY > obstacle.posY) {
+      if (obstacle.neighbors[1].obstacle) {
+        point1x = obstacle.posX
+        point1y = obstacle.posY + 50
+        point2x = obstacle.posX + 50
+        point2y = obstacle.posY + 50
+      } else if (obstacle.neighbors[2].obstacle) {
+        point1x = obstacle.posX + 50
+        point1y = obstacle.posY
+        point2x = obstacle.posX + 50
+        point2y = obstacle.posY + 50
+      } else {
+        point1x = obstacle.posX
+        point1y = obstacle.posY + 50
+        point2x = obstacle.posX + 50
+        point2y = obstacle.posY
+      }
+    } else if (cell.posX < obstacle.posX && cell.posY > obstacle.posY) {
+      if (obstacle.neighbors[3].obstacle) {
+        point1x = obstacle.posX
+        point1y = obstacle.posY + 50
+        point2x = obstacle.posX + 50
+        point2y = obstacle.posY + 50
+      } else if (obstacle.neighbors[2].obstacle) {
+        point1x = obstacle.posX
+        point1y = obstacle.posY
+        point2x = obstacle.posX
+        point2y = obstacle.posY + 50
+      } else {
+        point1x = obstacle.posX
+        point1y = obstacle.posY
+        point2x = obstacle.posX + 50
+        point2y = obstacle.posY + 50
+      }
+    }
+
+    const obstacle1 = this.checkForObstacle(cell.posX + 25, cell.posY + 25, point1x, point1y, obstacle)
+    const obstacle2 = this.checkForObstacle(cell.posX + 25, cell.posY + 25, point2x, point2y, obstacle)
+
+    if (obstacle1 && obstacle2) {
+      return
+    } else {
+      ctx.filter = "blur(10px)";  // "feather"
+      ctx.lineTo(point1x, point1y);
+      ctx.lineTo(point2x, point2y);
+      ctx.lineTo(cell.posX + 25, cell.posY + 25);
+      ctx.closePath();
+      ctx.strokeStyle = "black"
+      ctx.stroke();
+      ctx.fillStyle = "black";
+      ctx.fill();
+    }
+  }
+
+  private checkForObstacle(centerX: number, centerY: number, pointX: number, pointY: number, obstacle: Cell): boolean {
+    const assetCell = this.gridService.getGridCellByCoordinate(centerX, centerY)
+
+    const upLine = assetCell.x === obstacle.x && assetCell.y > obstacle.y
+    const rightLine = assetCell.y === obstacle.y && assetCell.x < obstacle.x
+    const downLine = assetCell.x === obstacle.x && assetCell.y < obstacle.y
+    const leftLine = assetCell.y === obstacle.y && assetCell.x > obstacle.x
+    const bottomRightQuadrant = centerX < pointX && centerY < pointY
+    const bottomLeftQuadrant = centerX > pointX && centerY < pointY
+    const topRightQuadrant = centerX < pointX && centerY > pointY
+    const topLeftQuadrant = centerX > pointX && centerY > pointY
+    
+    if (upLine) {
+      return this.traceStraitLine(assetCell, obstacle, 0)
+    } else if (rightLine) {
+      return this.traceStraitLine(assetCell, obstacle, 1)
+    } else if (downLine) {
+      return this.traceStraitLine(assetCell, obstacle, 2)
+    } else if (leftLine) {
+      return this.traceStraitLine(assetCell, obstacle, 3)
+    } else if (bottomRightQuadrant) {
+      const xRatioMultiplier = 1
+      const yRatioMultiplier = 1
+      const yLength = pointY - centerY
+      const xLength = pointX - centerX
+
+      return this.traceLine(xRatioMultiplier, yRatioMultiplier, yLength, xLength, centerX, centerY, pointX, pointY, obstacle)
+    } else if (topRightQuadrant) {
+      const xRatioMultiplier = 1
+      const yRatioMultiplier = -1
+      const yLength = centerY - pointY
+      const xLength = pointX - centerX
+
+      return this.traceLine(xRatioMultiplier, yRatioMultiplier, yLength, xLength, centerX, centerY, pointX, pointY, obstacle)
+    } else if (topLeftQuadrant) {
+      const xRatioMultiplier = -1
+      const yRatioMultiplier = -1
+      const yLength = centerY - pointY
+      const xLength = centerX - pointX
+
+      return this.traceLine(xRatioMultiplier, yRatioMultiplier, yLength, xLength, centerX, centerY, pointX, pointY, obstacle)
+    } else if (bottomLeftQuadrant) {
+      const xRatioMultiplier = -1
+      const yRatioMultiplier = 1
+      const yLength = pointY - centerY
+      const xLength = centerX - pointX
+
+      return this.traceLine(xRatioMultiplier, yRatioMultiplier, yLength, xLength, centerX, centerY, pointX, pointY, obstacle)
+    } 
+
+
+
+
+
+    return false
+  }
+
+  private traceLine(xRatioMultiplier: number, yRatioMultiplier: number, yLength: number, xLength: number, centerX: number, centerY: number, pointX: number, pointY: number, obstacle: Cell): boolean {
+    console.log(yLength + "/" + xLength)
+    console.log(yLength / 25 + "/" + xLength / 25)
+    console.log(yLength / 5 + "/" + xLength / 5)
+
+    const yRatio = yLength / 25
+    const xRatio = xLength / 25
+
+    let checkLocationY = centerY
+    let checkLocationX = centerX
+
+    let reachedDestination = false
+    let foundObstacle = false
+
+    while (!reachedDestination) {
+      checkLocationX += (xRatio * xRatioMultiplier)
+      checkLocationY += (yRatio * yRatioMultiplier)
+
+      if (checkLocationX === pointX && checkLocationY === pointY) {
+        reachedDestination = true
+      } else {
+        const cell = this.gridService.getGridCellByCoordinate(checkLocationX, checkLocationY)
+
+        foundObstacle = cell.obstacle
+        if (foundObstacle) {
+          reachedDestination = true
+        }
+
+      }
+    }
+
+    return foundObstacle
+  }
+
+  private traceStraitLine(assetCell: Cell, obstacle: Cell, direction: number): boolean {
+
+    if (assetCell.neighbors[direction].obstacle ) { 
+      return assetCell.neighbors[direction].id !== obstacle.id
+    }
+
+        
+    if (assetCell.id === obstacle.id) {
+      return false
+    } else {
+      return this.traceStraitLine(assetCell.neighbors[direction], obstacle, direction)
     }
   }
 }
