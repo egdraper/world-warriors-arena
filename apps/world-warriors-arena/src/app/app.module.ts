@@ -9,6 +9,7 @@ import { CanvasService } from './canvas/canvas.service';
 import { AssetsService } from './game-assets/assets.service';
 import { DrawService } from './engine/draw.service';
 import { ShortestPath } from './engine/shortest-path';
+import { FogOfWarService } from './engine/visibility.service';
 
 @NgModule({
   declarations: [AppComponent, CanvasComponent],
@@ -19,6 +20,7 @@ import { ShortestPath } from './engine/shortest-path';
     ShortestPath,
     DrawService,
     GridService,
+    FogOfWarService,
     Engine,
   ],
   bootstrap: [AppComponent],

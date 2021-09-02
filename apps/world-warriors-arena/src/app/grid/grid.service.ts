@@ -3,11 +3,12 @@ import { Cell, GridDetails, RelativePositionCell } from '../models/cell.model';
 
 @Injectable()
 export class GridService {
-  public height = 15 
-  public width = 15
+  public height = 50 
+  public width = 50
   public grid: {[cell: string]: Cell } = { }
   public gridDisplayLite: GridDetails
   public gridDisplay: Cell[][] = [];
+  public obstacles: string[] = []
 
   public createGrid(width: number, height: number) {
     this.height = height

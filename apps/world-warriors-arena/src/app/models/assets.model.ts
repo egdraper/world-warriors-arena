@@ -1,4 +1,6 @@
 import { v4 as uuidv4 } from 'uuid';
+import { CanvasService } from '../canvas/canvas.service';
+import { DrawService } from '../engine/draw.service';
 import { Engine } from '../engine/engine';
 import { ShortestPath } from '../engine/shortest-path';
 import { ClickAnimation } from '../game-assets/click-animation';
@@ -59,7 +61,9 @@ export abstract class MotionAsset extends Asset {
   constructor(
     public grid: GridService,
     public shortestPath: ShortestPath,
-    public engineService: Engine) {
+    public engineService: Engine,
+    public drawService: DrawService,
+    public canvasService: CanvasService) {
       super()
   }
 
@@ -147,7 +151,11 @@ export abstract class MotionAsset extends Asset {
         if (!this.nextCell) {
           this.endMovement()
         } else {     
-          
+        
+        // this.grid.obstacles.forEach(cellId => {
+        //   if(this.grid.grid[cellId].obstacle) { this.drawService.clearFogLineOfSight(this.nextCell, this.grid.grid[cellId]) }
+        // })
+        this.drawService.clearFogLineOfSight(this.nextCell) 
         this.cell.occupiedBy = undefined
         this.nextCell.occupiedBy = this
         this.setSpriteDirection()

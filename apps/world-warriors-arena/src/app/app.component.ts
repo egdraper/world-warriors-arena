@@ -6,6 +6,7 @@ import { Cell } from './models/cell.model';
 import { GridService } from './grid/grid.service';
 import { Asset } from './models/assets.model';
 import { DrawService } from './engine/draw.service';
+import { FogOfWarService } from './engine/visibility.service';
 
 @Component({
   selector: 'world-warriors-arena-root',
@@ -19,9 +20,10 @@ export class AppComponent {
     private assetService: AssetsService,
     private canvasService: CanvasService,
     public grid: GridService,
-    public drawService: DrawService
+    public drawService: DrawService,
+    public visibilityService: FogOfWarService
   ) {
-    this.grid.createGrid(15, 15)
+    this.grid.createGrid(30, 30)
   }
 
   public ngOnInit(): void {
@@ -34,11 +36,12 @@ export class AppComponent {
   }
 
   public onAddCharacterClick(): void {
+    this.visibilityService.preloadVisibility()
     this.assetService.addCharacter()
   }
 
   public onGridClick(event: { clickX: number, clickY: number }): void {
-    this.selectedCell = this.grid.getGridCellByCoordinate(event.clickX, event.clickY)
+    // this.selectedCell = this.grid.getGridCellByCoordinate(event.clickX, event.clickY)
     
     // const ctx = this.canvasService.backgroundCTX
     // ctx.clearRect(0, 0, this.grid.width * 50, this.grid.height * 50);
@@ -47,28 +50,20 @@ export class AppComponent {
     // const testCell = this.grid.getGridCellByCoordinate(250, 250)
     // this.traceCell(testCell, this.selectedCell)
 
-    this.drawService.drawFog()
-    this.canvasService.fogCTX.globalCompositeOperation = 'destination-out'
-    this.grid.gridDisplay.forEach(row => {
-      row.forEach(cell => {
-        if(cell.obstacle) { this.drawService.clearFogLineOfSight(this.selectedCell, cell) }
-      })
-    })
 
+    this.selectedCell = this.grid.getGridCellByCoordinate(event.clickX, event.clickY)
 
-    // this.selectedCell = this.grid.getGridCellByCoordinate(event.clickX, event.clickY)
-
-    // if (this.selectedCell.occupiedBy) {
-    //   const character = this.selectedCell.occupiedBy
-    //   this.assetService.gameComponents.forEach(asset => asset.selectionIndicator = undefined)
-    //   this.assetService.selectedGameComponent = character
-    //   this.assetService.selectedGameComponent.selectCharacter()
-    // } else {
-    //   if(this.assetService.selectedGameComponent) {
-    //     this.assetService.selectedGameComponent.startMovement(this.assetService.selectedGameComponent.cell, this.selectedCell, this.assetService.gameComponents)
-    //   }
-    // //   this.assetService.addClickAnimation(this.selectedCell, `../../../assets/images/DestinationX.png`)
-    // }
+    if (this.selectedCell.occupiedBy) {
+      const character = this.selectedCell.occupiedBy
+      this.assetService.gameComponents.forEach(asset => asset.selectionIndicator = undefined)
+      this.assetService.selectedGameComponent = character
+      this.assetService.selectedGameComponent.selectCharacter()
+    } else {
+      if(this.assetService.selectedGameComponent) {
+        this.assetService.selectedGameComponent.startMovement(this.assetService.selectedGameComponent.cell, this.selectedCell, this.assetService.gameComponents)
+      }
+    //   this.assetService.addClickAnimation(this.selectedCell, `../../../assets/images/DestinationX.png`)
+    }
   }
 
  

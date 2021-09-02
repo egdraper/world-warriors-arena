@@ -20,7 +20,7 @@ export class Character extends MotionAsset {
     public shortestPath: ShortestPath,
     public engine: Engine,
   ) {
-    super(grid, shortestPath, engine);
+    super(grid, shortestPath, engine, drawService, canvasService);
     
     // sets the starting cell location
     this.positionX = cell.posX

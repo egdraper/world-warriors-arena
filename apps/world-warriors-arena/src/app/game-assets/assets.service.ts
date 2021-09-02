@@ -25,6 +25,7 @@ export class AssetsService {
     cell.image = new Image()
     cell.image.src = imageUrl
     cell.obstacle = true
+    this.gridService.obstacles.push(cell.id)
   }   
 
   public addCharacter(imgUrl?: string): void {
