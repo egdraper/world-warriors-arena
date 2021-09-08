@@ -16,11 +16,17 @@ export class CanvasService {
    
   public backgroundCanvas: ElementRef<HTMLCanvasElement>;
   public backgroundCTX: CanvasRenderingContext2D;
+  
+  public fogCanvas: ElementRef<HTMLCanvasElement>;
+  public fogCTX: CanvasRenderingContext2D;
+
+  public blackoutCanvas: ElementRef<HTMLCanvasElement>;
+  public blackoutCTX: CanvasRenderingContext2D;
 
   constructor(
     private gridService: GridService,
     ) {
-    this.image.src = `../../../assets/images/25pxgrass.png`
+    this.image.src = `../../../assets/images/StoneFloor1.png`
     this.image.onload = () => {
       this.drawGrid()
       // this.drawService.drawBackground$.subscribe(this.drawGrid.bind(this))
@@ -44,14 +50,14 @@ export class CanvasService {
         this.backgroundCTX.moveTo(w * 50, h * 50)
         this.backgroundCTX.lineTo(w * 50, (h * 50) + 50)
         this.backgroundCTX.lineWidth = 1;
-        this.backgroundCTX.strokeStyle = "rgba(0, 0 ,0,.5)"
+        this.backgroundCTX.strokeStyle = "rgba(255, 255 ,255,.5)"
         this.backgroundCTX.stroke()
 
 
         this.backgroundCTX.beginPath()
         this.backgroundCTX.moveTo(w * 50, h * 50)
         this.backgroundCTX.lineTo((w * 50) + 50, h * 50)
-        this.backgroundCTX.strokeStyle = "rgba(0,0,0,.5)"
+        this.backgroundCTX.strokeStyle = "rgba(255,255,0,.5)"
         this.backgroundCTX.lineWidth = 1;
         this.backgroundCTX.stroke()
       }

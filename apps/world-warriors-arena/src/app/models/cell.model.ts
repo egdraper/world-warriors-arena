@@ -1,4 +1,4 @@
-import { GameComponents, MotionAsset } from "./assets.model"
+import { GameComponent, MotionAsset } from "./assets.model"
 
 export interface Cell {
   id: string;
@@ -10,7 +10,7 @@ export interface Cell {
   neighbors?: Cell[];
   destination?: boolean;
   occupiedBy?: MotionAsset
-  imgUrl?: string;
+  image?: HTMLImageElement;
   imgIndexX?: number;
   imgIndexY?: number;
   imgWidth?: number;

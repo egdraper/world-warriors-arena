@@ -1,22 +1,21 @@
 import { Injectable } from "@angular/core";
-import { CreatureAsset } from '../creature.asset';
-import { Cell, Visited } from '@hive-force/spells';
+import { GameComponent } from "../models/assets.model";
+import { Cell, Visited } from "../models/cell.model";
+
 
 @Injectable()
 export class ShortestPath {
   public grid: {[cell: string]: any } = { };
-  public creaturesOnGrid = []
+  public creaturesOnGrid: any[] = []
   public maxSearchRange = 1000
   public searchIndex = 0
   public totalDistance = 0
-
-  private odd = true
-     
+   
   public setGrid(grid: {[cell: string]: any }) {
     this.grid = grid;
   }
   
-  public find(start: Cell, end: Cell, creaturesOnGrid: Array<CreatureAsset> ): Cell[] {
+  public find(start: Cell, end: Cell, creaturesOnGrid: Array<GameComponent> ): Cell[] {
     this.creaturesOnGrid = creaturesOnGrid
     end.destination = true; // css styling
     end = this.verifyClosetLocation(start, end)
@@ -25,7 +24,7 @@ export class ShortestPath {
 
   private start(start: Cell, end: Cell): Cell[] {
     this.searchIndex = 0
-    const visited = { };
+    const visited: any = { };
     visited[`x${start.x}:y${start.y}`] = { cell: start, steps: { moves: 0, distance: 0, odd: true } };
 
     this.visitedNow(end, visited);
@@ -45,7 +44,7 @@ export class ShortestPath {
     return shortest;
   }
 
-  private visitedNow(endingPoint: Cell, visited: Visited) {
+  private visitedNow(endingPoint: Cell, visited: any) {
     
     if ((visited[`x${endingPoint.x}:y${endingPoint.y}`] && visited[`x${endingPoint.x}:y${endingPoint.y}`].cell === endingPoint)) {
       return;
@@ -56,12 +55,12 @@ export class ShortestPath {
         if (!visited[visitedCell].checked) {
           const store: number[] = [ ];
 
-          visited[visitedCell].cell.neighbors.forEach((cell, index) => {
+          visited[visitedCell].cell.neighbors.forEach((cell: Cell, index: number) => {
             if (!cell) {
               return;
             }
 
-            const creatureOnSquare = this.creaturesOnGrid.find(a => a.location.cell.id === cell.id)
+            const creatureOnSquare = this.creaturesOnGrid.find(a => a.cell.id === cell.id)
 
             if ((!cell.obstacle && !creatureOnSquare) && !store.some(i => index === i)) {
               if (!visited[`x${cell.x}:y${cell.y}`]) {
@@ -130,7 +129,7 @@ export class ShortestPath {
   }
 
   public isBadLocation(end: Cell): boolean {
-    return end.obstacle || this.creaturesOnGrid.find(a => a.location.cell.id === end.id) 
+    return end.obstacle || this.creaturesOnGrid.find(a => a.cell.id === end.id) 
   }
 
   private alternateDiagonal(visited: Visited, index: number): any {

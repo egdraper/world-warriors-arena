@@ -1,14 +1,14 @@
 import { Injectable } from '@angular/core';
-import { CanvasService } from '../canvas/canvas.service';
 import { Cell, GridDetails, RelativePositionCell } from '../models/cell.model';
 
 @Injectable()
 export class GridService {
-  public height = 15 
-  public width = 15
+  public height = 50 
+  public width = 50
   public grid: {[cell: string]: Cell } = { }
   public gridDisplayLite: GridDetails
   public gridDisplay: Cell[][] = [];
+  public obstacles: string[] = []
 
   public createGrid(width: number, height: number) {
     this.height = height
@@ -56,7 +56,7 @@ export class GridService {
             posY: i * 50,
             obstacle: false,
             id: `x${l}:y${i}`,
-            imgUrl: "../../../assets/rock-flowers.png",
+            image: null,
 
             
             imgIndexX: (Math.floor(Math.random() * 3)) * -50,

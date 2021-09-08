@@ -8,16 +8,20 @@ import { CanvasComponent } from './canvas/canvas.component';
 import { CanvasService } from './canvas/canvas.service';
 import { AssetsService } from './game-assets/assets.service';
 import { DrawService } from './engine/draw.service';
+import { ShortestPath } from './engine/shortest-path';
+import { FogOfWarService } from './engine/visibility.service';
 
 @NgModule({
   declarations: [AppComponent, CanvasComponent],
   imports: [BrowserModule],
   providers: [
-    Engine,
-    GridService,
-    CanvasService,
     AssetsService,
+    CanvasService,
+    ShortestPath,
     DrawService,
+    GridService,
+    FogOfWarService,
+    Engine,
   ],
   bootstrap: [AppComponent],
 })

@@ -1,43 +1,62 @@
-import { Injectable } from "@angular/core";
-import { CanvasService } from "../canvas/canvas.service";
-import { DrawService } from "../engine/draw.service";
 import { Engine } from "../engine/engine";
-import { Asset } from "../models/assets.model";
+import { v4 as uuidv4 } from 'uuid';
 import { Cell } from "../models/cell.model";
 
-export class clickAnimation extends Asset {
+export class ShortLivedAnimation {
   public image = new Image()
-  constructor(
-    public canvasService: CanvasService,
-    public drawService: DrawService,
-    public engineService: Engine,
-    public cell: Cell,
-    ) {
-      super();
-      this.image.src = `../../../assets/images/ExplosionClick1.png`
-  }
 
+  public id: string
+  public animationFrame: number = 1
+  public cyclesRemaining: number = 0
+  public longLive = false
   public frameXCounter = 0
   public frameYCounter = 0
   public frameXPosition = [0, 25, 50]
   public frameYPosition = [0, 25, 50]
- 
+
+  constructor(
+    public numberOfCycles: number,
+    public engineService: Engine,
+    public cell?: Cell
+  ) {
+    this.cyclesRemaining = numberOfCycles
+    this.id = uuidv4()
+  }
+
+  public update(): void {
+    if (this.cyclesRemaining === 0 && !this.longLive) {
+      this.engineService.endShortLivedAnimation(this)
+    }
+
+    this.cyclesRemaining--
+  }
+
+  public forceStop(): void {
+    this.engineService.endShortLivedAnimation(this)
+  }
+}
+
+export class ClickAnimation extends ShortLivedAnimation {
+  public animationFrame = 5
+
+  constructor(
+    public numberOfCycles: number,
+    public engineService: Engine,
+    public imgSrc: string,
+    public cell?: Cell
+  ) {
+    super(numberOfCycles, engineService)
+    this.image.src = this.imgSrc
+
+    this.engineService.shortLivedAnimations.push(this)
+  }
+
   public update() {
-    this.canvasService.overlayCTX.clearRect(0, 0, 1500, 1500);
-    this.canvasService.overlayCTX.drawImage(
-      this.image,
-      this.frameXPosition[this.frameXCounter],
-      this.frameYPosition[this.frameYCounter], 
-      25,
-      25,
-      this.cell.posX,
-      this.cell.posY,
-      25 * 2,
-      25 * 2
-    )
-  
-    if(this.frameXCounter === 2 && this.frameYCounter === 2) {
-      this.engineService.stopAnimation(this)
+    super.update()
+    if (this.frameXCounter === 2 && this.frameYCounter === 2) {
+      this.frameXCounter = 0
+      this.frameYCounter = 0
+      return
     }
 
     if (this.frameXCounter < 2) {
@@ -45,6 +64,6 @@ export class clickAnimation extends Asset {
     } else {
       this.frameXCounter = 0
       this.frameYCounter++
-    }    
+    }
   }
 }
