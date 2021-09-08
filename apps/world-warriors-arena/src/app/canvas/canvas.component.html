@@ -7,11 +7,17 @@ id="overlayCanvas"
 
   ></canvas>
 
+
   <canvas #fogCanvas id="fogCanvas"
+
+  >
+  </canvas>
+
+  
+  <canvas #blackoutCanvas id="blackoutCanvas"  
   (mousedown)="onCanvasClick($event)"
   (mousemove)="onMouseMove($event)"
   (mouseup)="onMouseUp($event)"
   (keydown)="onKeyDown($event)"
   (keyup)="onKeyUp($event)"
-  >
-  </canvas>
+  ></canvas>

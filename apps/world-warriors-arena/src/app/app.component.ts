@@ -23,7 +23,7 @@ export class AppComponent {
     public drawService: DrawService,
     public visibilityService: FogOfWarService
   ) {
-    this.grid.createGrid(30, 30)
+    this.grid.createGrid(30, 20)
   }
 
   public ngOnInit(): void {
@@ -37,6 +37,8 @@ export class AppComponent {
 
   public onAddCharacterClick(): void {
     this.visibilityService.preloadVisibility()
+    this.visibilityService.fogEnabled = true
+    this.drawService.drawBlackoutFog()
     this.assetService.addCharacter()
   }
 

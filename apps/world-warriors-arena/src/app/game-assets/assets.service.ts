@@ -44,26 +44,22 @@ export class AssetsService {
 
 
     const gridCell1 = this.gridService.grid[`x2:y2`]
-    const gridCell2 = this.gridService.grid[`x0:y2`]
-    const gridCell3 = this.gridService.grid[`x3:y0`]
+
     const player = new Character(this.canvas, this.drawService, gridCell1, this.gridService, this.shortestPath, this.engine)
-    const player1 = new Character(this.canvas, this.drawService, gridCell2, this.gridService, this.shortestPath, this.engine)
-    const player2= new Character(this.canvas, this.drawService, gridCell3, this.gridService, this.shortestPath, this.engine)
+
 
     gridCell1.occupiedBy = player  // <--- adding the character into the occupiedBy Spot
-    gridCell2.occupiedBy = player1  // <--- adding the character into the occupiedBy Spot
-    gridCell3.occupiedBy = player2  // <--- adding the character into the occupiedBy Spot
 
     player.animationFrame = [20, 40, 60 ] // set to 10 for walking speed
-    player1.animationFrame = 20
-    player2.animationFrame = 20
+
 
     this.engine.startAnimationTrigger(player)
-    this.engine.startAnimationTrigger(player1)
-    this.engine.startAnimationTrigger(player2)
+
     this.gameComponents.push(player)
-    this.gameComponents.push(player1)
-    this.gameComponents.push(player2)
+    
+    this.drawService.clearFogLineOfSight(gridCell1)
+    this.drawService.drawOnlyVisibleObstacle(gridCell1.id)
+
   }
 
   public addClickAnimation(cell: Cell, imgSrc: string): void {

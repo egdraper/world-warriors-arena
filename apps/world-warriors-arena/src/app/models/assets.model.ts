@@ -148,7 +148,8 @@ export abstract class MotionAsset extends Asset {
 
         // TODO: Re-calculate path if something has moved into it
         
-        if (!this.nextCell) {
+        if (!this.nextCell) {  
+          this.drawService.clearFogLineOfSight(this.cell)  
           this.endMovement()
         } else {     
         
@@ -156,6 +157,7 @@ export abstract class MotionAsset extends Asset {
         //   if(this.grid.grid[cellId].obstacle) { this.drawService.clearFogLineOfSight(this.nextCell, this.grid.grid[cellId]) }
         // })
         this.drawService.clearFogLineOfSight(this.nextCell) 
+        this.drawService.drawOnlyVisibleObstacle(this.nextCell.id)
         this.cell.occupiedBy = undefined
         this.nextCell.occupiedBy = this
         this.setSpriteDirection()

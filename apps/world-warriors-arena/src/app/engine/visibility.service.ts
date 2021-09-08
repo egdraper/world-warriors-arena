@@ -6,6 +6,8 @@ import { Cell } from "../models/cell.model";
 @Injectable() 
 export class FogOfWarService {
   public visibleCell: {[id: string]: any[]} = {}
+  public visitedVisibleCell: {[id: string]: any[]} = {}
+  public fogEnabled: boolean = false
 
   constructor(
     private canvasService: CanvasService,
@@ -29,99 +31,176 @@ export class FogOfWarService {
     const ctx = this.canvasService.fogCTX
     ctx.beginPath();
     ctx.moveTo(cell.posX + 25, cell.posY + 25);
+    const straitDownLine = cell.posX === obstacle.posX && cell.posY < obstacle.posY
+    const straitUpLine = cell.posX === obstacle.posX && cell.posY > obstacle.posY
+    const straitLeftLine = cell.posY === obstacle.posY && cell.posX > obstacle.posX
+    const straitRightLIne = cell.posY === obstacle.posY && cell.posX < obstacle.posX
+    const bottomLeftQuadrant = cell.posX > obstacle.posX && cell.posY < obstacle.posY
+    const bottomRightQuadrant = cell.posX < obstacle.posX && cell.posY < obstacle.posY
+    const topLeftQuadrant = cell.posX > obstacle.posX && cell.posY > obstacle.posY
+    const topRightQuadrant = cell.posX < obstacle.posX && cell.posY > obstacle.posY
 
     let point1x
     let point1y
 
     let point2x
     let point2y
-    if (cell.posX === obstacle.posX && cell.posY < obstacle.posY) {
+
+    let point1offsetX
+    let point1offsetY
+    let point2offsetX
+    let point2offsetY
+    if (straitDownLine) {
       point1x = obstacle.posX
       point1y = obstacle.posY 
       point2x = obstacle.posX + 50
       point2y = obstacle.posY 
-    } else if (cell.posX === obstacle.posX && cell.posY > obstacle.posY) {
+      point1offsetX = point1x 
+      point1offsetY = point1y + 50
+      point2offsetX = point2x 
+      point2offsetY = point2y + 50
+    } else if (straitUpLine) {
       point1x = obstacle.posX
       point1y = obstacle.posY + 50
       point2x = obstacle.posX + 50
       point2y = obstacle.posY + 50
-    } else if (cell.posY === obstacle.posY && cell.posX > obstacle.posX) {
+      point1offsetX = point1x 
+      point1offsetY = point1y - 50
+      point2offsetX = point2x 
+      point2offsetY = point2y - 50
+    } else if (straitLeftLine) {
       point1x = obstacle.posX + 50
       point1y = obstacle.posY
       point2x = obstacle.posX + 50
       point2y = obstacle.posY + 50
-    } else if (cell.posY === obstacle.posY && cell.posX < obstacle.posX) {
+      point1offsetX = point1x - 50
+      point1offsetY = point1y 
+      point2offsetX = point2x - 50
+      point2offsetY = point2y 
+    } else if (straitRightLIne) {
       point1x = obstacle.posX 
       point1y = obstacle.posY 
       point2x = obstacle.posX 
       point2y = obstacle.posY + 50
-    } else if (cell.posX > obstacle.posX && cell.posY < obstacle.posY) {
+      point1offsetX = point1x + 50
+      point1offsetY = point1y 
+      point2offsetX = point2x + 50
+      point2offsetY = point2y 
+    } else if (bottomLeftQuadrant) {
       if (obstacle.neighbors[0].obstacle) {
         point1x = obstacle.posX + 50
         point1y = obstacle.posY
         point2x = obstacle.posX + 50
         point2y = obstacle.posY + 50
+        point1offsetX = point1x - 50
+        point1offsetY = point1y 
+        point2offsetX = point2x - 50
+        point2offsetY = point2y
       } else if (obstacle.neighbors[1].obstacle) {
         point1x = obstacle.posX
         point1y = obstacle.posY
         point2x = obstacle.posX + 50
         point2y = obstacle.posY
+        point1offsetX = point1x 
+        point1offsetY = point1y + 50
+        point2offsetX = point2x 
+        point2offsetY = point2y + 50
       } else {
         point1x = obstacle.posX
         point1y = obstacle.posY
         point2x = obstacle.posX + 50
         point2y = obstacle.posY + 50
+        point1offsetX = point1x 
+        point1offsetY = point1y + 50
+        point2offsetX = point2x 
+        point2offsetY = point2y + 50
       }
-    } else if (cell.posX < obstacle.posX && cell.posY < obstacle.posY) {
+    } else if (bottomRightQuadrant) {
       if (obstacle.neighbors[3].obstacle) {
         point1x = obstacle.posX
         point1y = obstacle.posY
         point2x = obstacle.posX + 50
         point2y = obstacle.posY
+        point1offsetX = point1x
+        point1offsetY = point1y + 50
+        point2offsetX = point2x
+        point2offsetY = point2y + 50
       } else if (obstacle.neighbors[0].obstacle) {
         point1x = obstacle.posX
         point1y = obstacle.posY
         point2x = obstacle.posX
         point2y = obstacle.posY + 50
+        point1offsetX = point1x + 50
+        point1offsetY = point1y 
+        point2offsetX = point2x + 50
+        point2offsetY = point2y 
       } else {
         point1x = obstacle.posX
         point1y = obstacle.posY + 50
         point2x = obstacle.posX + 50
         point2y = obstacle.posY
+        point1offsetX = point1x + 50
+        point1offsetY = point1y 
+        point2offsetX = point2x + 50
+        point2offsetY = point2y 
       }
-    } else if (cell.posX > obstacle.posX && cell.posY > obstacle.posY) {
+    } else if (topLeftQuadrant) {
       if (obstacle.neighbors[1].obstacle) {
         point1x = obstacle.posX
         point1y = obstacle.posY + 50
         point2x = obstacle.posX + 50
         point2y = obstacle.posY + 50
+        point1offsetX = point1x 
+        point1offsetY = point1y - 50
+        point2offsetX = point2x 
+        point2offsetY = point2y - 50
       } else if (obstacle.neighbors[2].obstacle) {
         point1x = obstacle.posX + 50
         point1y = obstacle.posY
         point2x = obstacle.posX + 50
         point2y = obstacle.posY + 50
+        point1offsetX = point1x - 50
+        point1offsetY = point1y 
+        point2offsetX = point2x - 50
+        point2offsetY = point2y 
       } else {
         point1x = obstacle.posX
         point1y = obstacle.posY + 50
         point2x = obstacle.posX + 50
         point2y = obstacle.posY
+        point1offsetX = point1x - 50
+        point1offsetY = point1y 
+        point2offsetX = point2x - 50
+        point2offsetY = point2y 
       }
-    } else if (cell.posX < obstacle.posX && cell.posY > obstacle.posY) {
+    } else if (topRightQuadrant) {
       if (obstacle.neighbors[3].obstacle) {
         point1x = obstacle.posX
         point1y = obstacle.posY + 50
         point2x = obstacle.posX + 50
         point2y = obstacle.posY + 50
+        point1offsetX = point1x 
+        point1offsetY = point1y - 50
+        point2offsetX = point2x 
+        point2offsetY = point2y - 50
       } else if (obstacle.neighbors[2].obstacle) {
         point1x = obstacle.posX
         point1y = obstacle.posY
         point2x = obstacle.posX
         point2y = obstacle.posY + 50
+        point1offsetX = point1x + 50
+        point1offsetY = point1y 
+        point2offsetX = point2x + 50
+        point2offsetY = point2y 
       } else {
         point1x = obstacle.posX
         point1y = obstacle.posY
         point2x = obstacle.posX + 50
         point2y = obstacle.posY + 50
+        point1offsetX = point1x + 50
+        point1offsetY = point1y 
+        point2offsetX = point2x + 50
+        point2offsetY = point2y 
       }
     }
 
@@ -138,9 +217,15 @@ export class FogOfWarService {
         obstaclePoint1X: point1x,
         obstaclePoint1Y: point1y,
         obstaclePoint2X: point2x,
-        obstaclePoint2Y: point2y
+        obstaclePoint2Y: point2y,
+        point1offsetX,
+        point1offsetY,
+        point2offsetX,
+        point2offsetY,
+        obstacle: obstacle
       }
       this.visibleCell[cell.id].push(object)
+
     }
   }
 

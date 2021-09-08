@@ -20,6 +20,9 @@ export class CanvasService {
   public fogCanvas: ElementRef<HTMLCanvasElement>;
   public fogCTX: CanvasRenderingContext2D;
 
+  public blackoutCanvas: ElementRef<HTMLCanvasElement>;
+  public blackoutCTX: CanvasRenderingContext2D;
+
   constructor(
     private gridService: GridService,
     ) {
