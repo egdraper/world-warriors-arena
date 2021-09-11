@@ -53,6 +53,9 @@ export class AppComponent {
     // this.traceCell(testCell, this.selectedCell)
 
 
+    
+
+
     this.selectedCell = this.grid.getGridCellByCoordinate(event.clickX, event.clickY)
 
     if (this.selectedCell.occupiedBy) {

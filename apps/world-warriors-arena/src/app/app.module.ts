@@ -10,9 +10,10 @@ import { AssetsService } from './game-assets/assets.service';
 import { DrawService } from './engine/draw.service';
 import { ShortestPath } from './engine/shortest-path';
 import { FogOfWarService } from './engine/visibility.service';
+import { EditorPalleteComponent } from './editor/editor-pallete/editor-pallete.component';
 
 @NgModule({
-  declarations: [AppComponent, CanvasComponent],
+  declarations: [AppComponent, CanvasComponent, EditorPalleteComponent],
   imports: [BrowserModule],
   providers: [
     AssetsService,
