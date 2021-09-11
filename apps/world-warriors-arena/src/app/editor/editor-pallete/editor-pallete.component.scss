@@ -1,0 +1,13 @@
+.pallet-container {
+  display: flex;
+  flex-wrap: wrap;
+}
+
+.image-container {
+  margin: 2px;
+  border: solid 1px slategrey;
+
+  :hover {
+    filter: blur(1px);
+  }
+}

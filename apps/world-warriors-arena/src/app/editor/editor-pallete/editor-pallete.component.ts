@@ -10,6 +10,7 @@ export class EditorPalleteComponent implements OnInit {
   constructor() { }
 
   ngOnInit(): void {
+    
   }
 
 }
