@@ -1,1 +1,27 @@
-<p>editor-pallete works!</p>
+<button (click)="baseClicked()">Base</button>
+<button (click)="paintClicked()">Paint</button>
+<button (click)="editModeClicked()">EditMode</button>
+
+<!-- <img
+src="assets/images/tileA5_world.png"
+(click)="imageClick($event)"
+/> -->
+<div class="pallet-container">  
+  <div *ngFor="let image of imageArray"
+    class="image-container"
+    (click)="tileClick(image)">
+
+    <div 
+      [style.width.px]="32"
+      [style.height.px]="32"
+      [style.overflow]="'hidden'">
+      <img
+        src="{{ image.imgSrc.src }}"
+        [style.top.px]="(-image.y) + (-image.yPos)"
+        [style.left.px]="(-image.x) + (-image.xPos)"
+        [style.position]="'relative'"/>
+    </div>
+  </div>
+</div>
+
+
