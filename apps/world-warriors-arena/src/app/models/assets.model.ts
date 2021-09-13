@@ -8,6 +8,17 @@ import { SelectionIndicator } from '../game-assets/selection-indicator';
 import { GridService } from '../grid/grid.service';
 import { Cell } from './cell.model';
 
+export class SpriteTile {
+  spriteSheet: HTMLImageElement
+  spriteGridPosX: number
+  spriteGridPosY: number
+  tileHeight: number
+  tileWidth: number
+  tileOffsetX: number
+  tileOffsetY: number
+  multiplier: number
+}
+
 export class GameComponent {
   public id: string
   public cell: Cell = null  

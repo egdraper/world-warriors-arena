@@ -23,7 +23,7 @@ export class AppComponent {
     public drawService: DrawService,
     public visibilityService: FogOfWarService
   ) {
-    this.grid.createGrid(30, 20)
+    this.grid.createGrid(10, 10)
   }
 
   public ngOnInit(): void {

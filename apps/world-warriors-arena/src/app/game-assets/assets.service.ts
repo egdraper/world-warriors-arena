@@ -21,9 +21,14 @@ export class AssetsService {
     private gridService: GridService,
     private engine: Engine) { }
 
-  public addObstacleImage(cell: Cell, imageUrl: string): void {
-    cell.image = new Image()
-    cell.image.src = imageUrl
+  public addObstacleImage(cell: Cell, imageUrl: string | HTMLImageElement): void {
+    if( typeof imageUrl === "string") {
+      cell.image = new Image()
+      cell.image.src = imageUrl
+    } else {
+      cell.image = imageUrl
+    }
+
     cell.obstacle = true
     this.gridService.obstacles.push(cell.id)
   }   

@@ -149,12 +149,12 @@ export class DrawService {
               cell.image,
               cell.imgIndexX,
               cell.imgIndexY,
-              50,
-              80,
-              cell.posX,
-              cell.posY - 30,
-              25 * 2,
-              40 * 2)
+              cell.imgWidth,
+              cell.imgHeight,
+              cell.posX + cell.imgOffsetX,
+              cell.posY + cell.imgOffsetY,
+              cell.imgWidth,
+              cell.imgHeight  )
           }
 
           // GAME COMPONENTS

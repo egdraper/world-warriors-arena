@@ -224,8 +224,8 @@ export class FogOfWarService {
         point2offsetY,
         obstacle: obstacle
       }
+      console.log(object)
       this.visibleCell[cell.id].push(object)
-
     }
   }
 
@@ -279,10 +279,6 @@ export class FogOfWarService {
       return this.traceLine(xRatioMultiplier, yRatioMultiplier, yLength, xLength, centerX, centerY, pointX, pointY, obstacle)
     } 
 
-
-
-
-
     return false
   }
 
@@ -303,12 +299,15 @@ export class FogOfWarService {
       if (checkLocationX === pointX && checkLocationY === pointY) {
         reachedDestination = true
       } else {
+        try {
         const cell = this.gridService.getGridCellByCoordinate(checkLocationX, checkLocationY)
-
         foundObstacle = cell.obstacle
         if (foundObstacle) {
           reachedDestination = true
         }
+       } catch (e) {
+         console.log(e, checkLocationX, checkLocationY)
+       }
 
       }
     }

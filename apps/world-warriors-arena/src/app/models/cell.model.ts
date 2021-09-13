@@ -2,19 +2,21 @@ import { GameComponent, MotionAsset } from "./assets.model"
 
 export interface Cell {
   id: string;
-  x: number;
-  y: number;
-  posX?: number;
-  posY?: number;
+  x: number; // X Grid Coordinates
+  y: number; // Y Grid Coordinates
+  posX?: number; // X Pixel Coordinates
+  posY?: number; // Y Pixel Coordinates
   obstacle?: boolean;
   neighbors?: Cell[];
   destination?: boolean;
   occupiedBy?: MotionAsset
   image?: HTMLImageElement;
-  imgIndexX?: number;
-  imgIndexY?: number;
-  imgWidth?: number;
-  imgHeight?: number;
+  imgIndexX?: number; // X Pixel Location Sprite sheet
+  imgIndexY?: number; // Y Pixel Location Sprite Sheet
+  imgWidth?: number; // Sprite asset width
+  imgHeight?: number; // Sprite asset height
+  imgOffsetX?: number // X Offsets sprite asset grid
+  imgOffsetY?: number // Y Offsets sprite asset on grid
 }
 
 export interface RelativePositionCell extends Cell {

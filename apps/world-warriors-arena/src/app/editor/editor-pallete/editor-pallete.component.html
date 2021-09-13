@@ -10,15 +10,14 @@ src="assets/images/tileA5_world.png"
   <div *ngFor="let image of imageArray"
     class="image-container"
     (click)="tileClick(image)">
-
     <div 
-      [style.width.px]="32"
-      [style.height.px]="32"
+      [style.width.px]="(image.tileWidth * image.multiplier)"
+      [style.height.px]="image.tileHeight * image.multiplier"
       [style.overflow]="'hidden'">
       <img
-        src="{{ image.imgSrc.src }}"
-        [style.top.px]="(-image.y) + (-image.yPos)"
-        [style.left.px]="(-image.x) + (-image.xPos)"
+        src="{{ image.spriteSheet.src }}"
+        [style.top.px]="(-image.spriteGridPosY * image.multiplier)"
+        [style.left.px]="(-image.spriteGridPosX * image.multiplier)"
         [style.position]="'relative'"/>
     </div>
   </div>

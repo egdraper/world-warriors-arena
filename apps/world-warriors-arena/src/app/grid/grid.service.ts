@@ -22,10 +22,12 @@ export class GridService {
       row.forEach(cell => {
         if((cell.posX < x && cell.posX + 50 >= x ) && (cell.posY < y && cell.posY + 50 >= y)) {
           foundCell = cell
+          if(!foundCell) {
+            debugger
+          }
         }
       })
     })
-
     return foundCell
   }
 

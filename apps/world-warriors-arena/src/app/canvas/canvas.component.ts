@@ -1,4 +1,5 @@
 import { Component, ElementRef, EventEmitter, HostListener, Output, ViewChild } from '@angular/core';
+import { EditorService } from '../editor/editor-pallete/editor.service';
 import { AssetsService } from '../game-assets/assets.service';
 import { GridService } from '../grid/grid.service';
 
@@ -29,7 +30,8 @@ export class CanvasComponent {
   constructor(
     private canvasService: CanvasService,
     private gridService: GridService,
-    private assetService: AssetsService
+    private assetService: AssetsService,
+    private editorService: EditorService,
   ) { }
 
   // this needs to be put in a public function so we can pass in grid information 
@@ -102,15 +104,32 @@ export class CanvasComponent {
   }
 
   public onMouseMove(event: any): void {
+    if (event.offsetX < 0 || event.offsetY < 0) { return }
+
     if (this.mouseIsDown && this.controlPressed) {
       const cellStart = this.gridService.getGridCellByCoordinate(event.offsetX, event.offsetY)
-      if (!cellStart.obstacle) {
-        const yrnd = Math.floor(Math.random() * 3)
-        const xrnd = Math.floor(Math.random() * 3)
-        cellStart.imgIndexX = xrnd * 50
-        cellStart.imgIndexY = yrnd * 80
-        this.assetService.addObstacleImage(cellStart, `../../../assets/images/SPIKE-WALL-ALL2.png`)
-      }
+      if (!cellStart || cellStart.obstacle) { return }
+
+      const yrnd = Math.floor(Math.random() * 3)
+      const xrnd = Math.floor(Math.random() * 3)
+      cellStart.imgIndexX = xrnd * 50
+      cellStart.imgIndexY = yrnd * 80
+      cellStart.imgWidth = 50
+      cellStart.imgHeight = 80
+      cellStart.imgOffsetX = 0
+      cellStart.imgOffsetY = -30
+      this.assetService.addObstacleImage(cellStart, `../../../assets/images/SPIKE-WALL-ALL2.png`)
+
+    } else if (this.mouseIsDown && this.editorService.selectedAsset) {
+      const cellStart = this.gridService.getGridCellByCoordinate(event.offsetX, event.offsetY)
+      if (!cellStart || cellStart.obstacle) { return }
+      cellStart.imgIndexX = this.editorService.selectedAsset.spriteGridPosX * this.editorService.selectedAsset.multiplier
+      cellStart.imgIndexY = this.editorService.selectedAsset.spriteGridPosY * this.editorService.selectedAsset.multiplier
+      cellStart.imgWidth = (this.editorService.selectedAsset.tileWidth * this.editorService.selectedAsset.multiplier)
+      cellStart.imgHeight = (this.editorService.selectedAsset.tileHeight * this.editorService.selectedAsset.multiplier)
+      cellStart.imgOffsetX = this.editorService.selectedAsset.tileOffsetX 
+      cellStart.imgOffsetY = this.editorService.selectedAsset.tileOffsetY
+      this.assetService.addObstacleImage(cellStart, this.editorService.selectedAsset.spriteSheet)
     }
   }
 

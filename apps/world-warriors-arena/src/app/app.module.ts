@@ -11,6 +11,7 @@ import { DrawService } from './engine/draw.service';
 import { ShortestPath } from './engine/shortest-path';
 import { FogOfWarService } from './engine/visibility.service';
 import { EditorPalleteComponent } from './editor/editor-pallete/editor-pallete.component';
+import { EditorService } from './editor/editor-pallete/editor.service';
 
 @NgModule({
   declarations: [AppComponent, CanvasComponent, EditorPalleteComponent],
@@ -21,6 +22,7 @@ import { EditorPalleteComponent } from './editor/editor-pallete/editor-pallete.c
     ShortestPath,
     DrawService,
     GridService,
+    EditorService,
     FogOfWarService,
     Engine,
   ],
