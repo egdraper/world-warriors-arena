@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { TileAssets } from '../../game-assets/tile-assets.db';
 import { GridService } from '../../grid/grid.service';
 import { SpriteTile } from '../../models/assets.model';
 import { EditorService } from './editor.service';
@@ -19,8 +20,11 @@ export class EditorPalleteComponent implements OnInit {
     private gridService: GridService) { }
 
   ngOnInit(): void {
-    this.imageArray.push(this.editorService.getAsset("tree1"))
-    this.imageArray.push(this.editorService.getAsset("tree2"))
+
+    Object.keys(TileAssets).forEach(tile => {
+      this.imageArray.push(this.editorService.getAsset(tile))
+
+    })
   }
 
   public tileClick(tile: SpriteTile): void {

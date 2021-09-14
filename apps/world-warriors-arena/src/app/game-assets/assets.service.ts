@@ -33,6 +33,24 @@ export class AssetsService {
     this.gridService.obstacles.push(cell.id)
   }   
 
+  public addDefaultBoarder(): void {
+    this.gridService.gridDisplay.forEach(row => {
+      row.forEach(cell => {
+        if(cell.x === 0 || cell.y === 0 || cell.x === this.gridService.width-1 || cell.y === this.gridService.height-1) {
+          const yrnd = Math.floor(Math.random() * 3)
+          const xrnd = Math.floor(Math.random() * 3)
+          cell.imgIndexX = xrnd * 50
+          cell.imgIndexY = yrnd * 80
+          cell.imgWidth = 50
+          cell.imgHeight = 80
+          cell.imgOffsetX = 0
+          cell.imgOffsetY = -30
+          this.addObstacleImage(cell, `../../../assets/images/SPIKE-WALL-ALL2.png`)
+        }
+      })
+    })
+  }
+
   public addCharacter(imgUrl?: string): void {
     // const rndInt = Math.floor(Math.random() * 5) + 1
     // const rndInt2 = Math.floor(Math.random() * 5) + 1

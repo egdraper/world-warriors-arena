@@ -168,12 +168,12 @@ export class DrawService {
               gameComponent.image,
               gameComponent.frameXPosition[gameComponent.frameCounter],
               gameComponent.frameYPosition,
-              26,
+              25,
               36,
               gameComponent.positionX,
               gameComponent.positionY - 40,
-              26 * 2,
-              36 * 2
+              50,
+              80
             )
 
             if (gameComponent.selectionIndicator) {

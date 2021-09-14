@@ -32,6 +32,7 @@ export class AppComponent {
 
   public ngAfterViewInit(): void {
     this.canvasService.drawGrid()
+    this.assetService.addDefaultBoarder()
     this.drawService.drawFog()
   }
 

@@ -17,6 +17,7 @@ export class SpriteTile {
   tileOffsetX: number
   tileOffsetY: number
   multiplier: number
+  visionBlocking: boolean
 }
 
 export class GameComponent {

@@ -1,6 +1,7 @@
 import { ThisReceiver } from "@angular/compiler";
 import { CONTEXT_NAME } from "@angular/compiler/src/render3/view/util";
 import { ElementRef, Injectable } from "@angular/core";
+import { RouterLinkWithHref } from "@angular/router";
 import { DrawService } from "../engine/draw.service";
 import { GridService } from "../grid/grid.service";
 

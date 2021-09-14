@@ -232,6 +232,9 @@ export class FogOfWarService {
   private checkForObstacle(centerX: number, centerY: number, pointX: number, pointY: number, obstacle: Cell): boolean {
     const assetCell = this.gridService.getGridCellByCoordinate(centerX, centerY)
 
+    
+
+
     const upLine = assetCell.x === obstacle.x && assetCell.y > obstacle.y
     const rightLine = assetCell.y === obstacle.y && assetCell.x < obstacle.x
     const downLine = assetCell.x === obstacle.x && assetCell.y < obstacle.y
