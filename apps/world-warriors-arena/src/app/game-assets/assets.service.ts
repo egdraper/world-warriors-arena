@@ -5,14 +5,17 @@ import { Engine } from "../engine/engine";
 import { ShortestPath } from "../engine/shortest-path";
 import { GridService } from "../grid/grid.service";
 import { MotionAsset } from "../models/assets.model";
-import { Cell } from "../models/cell.model";
+import { Cell, SpriteTile, TileAttachment } from "../models/cell.model";
 import { Character } from "./character";
 import { ClickAnimation } from "./click-animation";
+import { TileAssets } from "./tile-assets.db";
 
 @Injectable()
 export class AssetsService {
   public gameComponents: MotionAsset[] = []
   public selectedGameComponent: MotionAsset
+  public obstacles: string[] = []
+  public obstacleAttachments: {[cellId: string]: TileAttachment[] } = { }
 
   constructor(
     private drawService: DrawService,
@@ -21,31 +24,19 @@ export class AssetsService {
     private gridService: GridService,
     private engine: Engine) { }
 
-  public addObstacleImage(cell: Cell, imageUrl: string | HTMLImageElement): void {
-    if( typeof imageUrl === "string") {
-      cell.image = new Image()
-      cell.image.src = imageUrl
-    } else {
-      cell.image = imageUrl
-    }
-
-    cell.obstacle = true
-    this.gridService.obstacles.push(cell.id)
+  public addObstacleImage(cell: Cell): void {
+    // move obstacles to assets service
+    this.obstacles.push(cell.id)
+    this.obstacleAttachments[cell.id] = cell.imageTile.attachments
   }   
 
   public addDefaultBoarder(): void {
     this.gridService.gridDisplay.forEach(row => {
       row.forEach(cell => {
         if(cell.x === 0 || cell.y === 0 || cell.x === this.gridService.width-1 || cell.y === this.gridService.height-1) {
-          const yrnd = Math.floor(Math.random() * 3)
-          const xrnd = Math.floor(Math.random() * 3)
-          cell.imgIndexX = xrnd * 50
-          cell.imgIndexY = yrnd * 80
-          cell.imgWidth = 50
-          cell.imgHeight = 80
-          cell.imgOffsetX = 0
-          cell.imgOffsetY = -30
-          this.addObstacleImage(cell, `../../../assets/images/SPIKE-WALL-ALL2.png`)
+          cell.imageTile =  TileAssets.treeClump2 as SpriteTile
+          cell.visible = true
+          this.addObstacleImage(cell)
         }
       })
     })

@@ -8,17 +8,7 @@ import { SelectionIndicator } from '../game-assets/selection-indicator';
 import { GridService } from '../grid/grid.service';
 import { Cell } from './cell.model';
 
-export class SpriteTile {
-  spriteSheet: HTMLImageElement
-  spriteGridPosX: number
-  spriteGridPosY: number
-  tileHeight: number
-  tileWidth: number
-  tileOffsetX: number
-  tileOffsetY: number
-  multiplier: number
-  visionBlocking: boolean
-}
+
 
 export class GameComponent {
   public id: string
@@ -144,8 +134,8 @@ export abstract class MotionAsset extends Asset {
     this.positionX += nextXMove
     this.positionY += nextYMove
 
-    if (this.positionY % 50 === 0 && this.positionX % 50 === 0) {
-      this.cell = this.grid.grid[`x${this.positionX / 50}:y${this.positionY / 50}`]
+    if (this.positionY % 32 === 0 && this.positionX % 32 === 0) {
+      this.cell = this.grid.grid[`x${this.positionX / 32}:y${this.positionY / 32}`]
 
       this.nextCell = this.currentPath.length > 0
         ? this.currentPath.pop()

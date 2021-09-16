@@ -1,5 +1,4 @@
 import { Injectable } from "@angular/core";
-import { CanvasService } from "../canvas/canvas.service";
 import { GridService } from "../grid/grid.service";
 import { Cell } from "../models/cell.model";
 
@@ -10,16 +9,15 @@ export class FogOfWarService {
   public fogEnabled: boolean = false
 
   constructor(
-    private canvasService: CanvasService,
     private gridService: GridService
     ) { }
 
-  public preloadVisibility(): void {  
+  public preloadVisibility(obstacles: string[]): void {  
     this.gridService.gridDisplay.forEach(row => {
       row.forEach(cell => {
         if(!cell.obstacle) {
           this.visibleCell[cell.id] = []
-          this.gridService.obstacles.forEach(id => {
+          obstacles.forEach(id => {
             this.traceCell(cell, this.gridService.grid[id])
           })
         }
@@ -28,9 +26,6 @@ export class FogOfWarService {
   }
 
   public traceCell(cell: Cell, obstacle: Cell): void {
-    const ctx = this.canvasService.fogCTX
-    ctx.beginPath();
-    ctx.moveTo(cell.posX + 25, cell.posY + 25);
     const straitDownLine = cell.posX === obstacle.posX && cell.posY < obstacle.posY
     const straitUpLine = cell.posX === obstacle.posX && cell.posY > obstacle.posY
     const straitLeftLine = cell.posY === obstacle.posY && cell.posX > obstacle.posX
@@ -53,167 +48,167 @@ export class FogOfWarService {
     if (straitDownLine) {
       point1x = obstacle.posX
       point1y = obstacle.posY 
-      point2x = obstacle.posX + 50
+      point2x = obstacle.posX + 32
       point2y = obstacle.posY 
       point1offsetX = point1x 
-      point1offsetY = point1y + 50
+      point1offsetY = point1y + 32
       point2offsetX = point2x 
-      point2offsetY = point2y + 50
+      point2offsetY = point2y + 32
     } else if (straitUpLine) {
       point1x = obstacle.posX
-      point1y = obstacle.posY + 50
-      point2x = obstacle.posX + 50
-      point2y = obstacle.posY + 50
+      point1y = obstacle.posY + 32
+      point2x = obstacle.posX + 32
+      point2y = obstacle.posY + 32
       point1offsetX = point1x 
-      point1offsetY = point1y - 50
+      point1offsetY = point1y - 32
       point2offsetX = point2x 
-      point2offsetY = point2y - 50
+      point2offsetY = point2y - 32
     } else if (straitLeftLine) {
-      point1x = obstacle.posX + 50
+      point1x = obstacle.posX + 32
       point1y = obstacle.posY
-      point2x = obstacle.posX + 50
-      point2y = obstacle.posY + 50
-      point1offsetX = point1x - 50
+      point2x = obstacle.posX + 32
+      point2y = obstacle.posY + 32
+      point1offsetX = point1x - 32
       point1offsetY = point1y 
-      point2offsetX = point2x - 50
+      point2offsetX = point2x - 32
       point2offsetY = point2y 
     } else if (straitRightLIne) {
       point1x = obstacle.posX 
       point1y = obstacle.posY 
       point2x = obstacle.posX 
-      point2y = obstacle.posY + 50
-      point1offsetX = point1x + 50
+      point2y = obstacle.posY + 32
+      point1offsetX = point1x + 32
       point1offsetY = point1y 
-      point2offsetX = point2x + 50
+      point2offsetX = point2x + 32
       point2offsetY = point2y 
     } else if (bottomLeftQuadrant) {
       if (obstacle.neighbors[0].obstacle) {
-        point1x = obstacle.posX + 50
+        point1x = obstacle.posX + 32
         point1y = obstacle.posY
-        point2x = obstacle.posX + 50
-        point2y = obstacle.posY + 50
-        point1offsetX = point1x - 50
+        point2x = obstacle.posX + 32
+        point2y = obstacle.posY + 32
+        point1offsetX = point1x - 32
         point1offsetY = point1y 
-        point2offsetX = point2x - 50
+        point2offsetX = point2x - 32
         point2offsetY = point2y
       } else if (obstacle.neighbors[1].obstacle) {
         point1x = obstacle.posX
         point1y = obstacle.posY
-        point2x = obstacle.posX + 50
+        point2x = obstacle.posX + 32
         point2y = obstacle.posY
         point1offsetX = point1x 
-        point1offsetY = point1y + 50
+        point1offsetY = point1y + 32
         point2offsetX = point2x 
-        point2offsetY = point2y + 50
+        point2offsetY = point2y + 32
       } else {
         point1x = obstacle.posX
         point1y = obstacle.posY
-        point2x = obstacle.posX + 50
-        point2y = obstacle.posY + 50
+        point2x = obstacle.posX + 32
+        point2y = obstacle.posY + 32
         point1offsetX = point1x 
-        point1offsetY = point1y + 50
+        point1offsetY = point1y + 32
         point2offsetX = point2x 
-        point2offsetY = point2y + 50
+        point2offsetY = point2y + 32
       }
     } else if (bottomRightQuadrant) {
       if (obstacle.neighbors[3].obstacle) {
         point1x = obstacle.posX
         point1y = obstacle.posY
-        point2x = obstacle.posX + 50
+        point2x = obstacle.posX + 32
         point2y = obstacle.posY
         point1offsetX = point1x
-        point1offsetY = point1y + 50
+        point1offsetY = point1y + 32
         point2offsetX = point2x
-        point2offsetY = point2y + 50
+        point2offsetY = point2y + 32
       } else if (obstacle.neighbors[0].obstacle) {
         point1x = obstacle.posX
         point1y = obstacle.posY
         point2x = obstacle.posX
-        point2y = obstacle.posY + 50
-        point1offsetX = point1x + 50
+        point2y = obstacle.posY + 32
+        point1offsetX = point1x + 32
         point1offsetY = point1y 
-        point2offsetX = point2x + 50
+        point2offsetX = point2x + 32
         point2offsetY = point2y 
       } else {
         point1x = obstacle.posX
-        point1y = obstacle.posY + 50
-        point2x = obstacle.posX + 50
+        point1y = obstacle.posY + 32
+        point2x = obstacle.posX + 32
         point2y = obstacle.posY
-        point1offsetX = point1x + 50
+        point1offsetX = point1x + 32
         point1offsetY = point1y 
-        point2offsetX = point2x + 50
+        point2offsetX = point2x + 32
         point2offsetY = point2y 
       }
     } else if (topLeftQuadrant) {
       if (obstacle.neighbors[1].obstacle) {
         point1x = obstacle.posX
-        point1y = obstacle.posY + 50
-        point2x = obstacle.posX + 50
-        point2y = obstacle.posY + 50
+        point1y = obstacle.posY + 32
+        point2x = obstacle.posX + 32
+        point2y = obstacle.posY + 32
         point1offsetX = point1x 
-        point1offsetY = point1y - 50
+        point1offsetY = point1y - 32
         point2offsetX = point2x 
-        point2offsetY = point2y - 50
+        point2offsetY = point2y - 32
       } else if (obstacle.neighbors[2].obstacle) {
-        point1x = obstacle.posX + 50
+        point1x = obstacle.posX + 32
         point1y = obstacle.posY
-        point2x = obstacle.posX + 50
-        point2y = obstacle.posY + 50
-        point1offsetX = point1x - 50
+        point2x = obstacle.posX + 32
+        point2y = obstacle.posY + 32
+        point1offsetX = point1x - 32
         point1offsetY = point1y 
-        point2offsetX = point2x - 50
+        point2offsetX = point2x - 32
         point2offsetY = point2y 
       } else {
         point1x = obstacle.posX
-        point1y = obstacle.posY + 50
-        point2x = obstacle.posX + 50
+        point1y = obstacle.posY + 32
+        point2x = obstacle.posX + 32
         point2y = obstacle.posY
-        point1offsetX = point1x - 50
+        point1offsetX = point1x - 32
         point1offsetY = point1y 
-        point2offsetX = point2x - 50
+        point2offsetX = point2x - 32
         point2offsetY = point2y 
       }
     } else if (topRightQuadrant) {
       if (obstacle.neighbors[3].obstacle) {
         point1x = obstacle.posX
-        point1y = obstacle.posY + 50
-        point2x = obstacle.posX + 50
-        point2y = obstacle.posY + 50
+        point1y = obstacle.posY + 32
+        point2x = obstacle.posX + 32
+        point2y = obstacle.posY + 32
         point1offsetX = point1x 
-        point1offsetY = point1y - 50
+        point1offsetY = point1y - 32
         point2offsetX = point2x 
-        point2offsetY = point2y - 50
+        point2offsetY = point2y - 32
       } else if (obstacle.neighbors[2].obstacle) {
         point1x = obstacle.posX
         point1y = obstacle.posY
         point2x = obstacle.posX
-        point2y = obstacle.posY + 50
-        point1offsetX = point1x + 50
+        point2y = obstacle.posY + 32
+        point1offsetX = point1x + 32
         point1offsetY = point1y 
-        point2offsetX = point2x + 50
+        point2offsetX = point2x + 32
         point2offsetY = point2y 
       } else {
         point1x = obstacle.posX
         point1y = obstacle.posY
-        point2x = obstacle.posX + 50
-        point2y = obstacle.posY + 50
-        point1offsetX = point1x + 50
+        point2x = obstacle.posX + 32
+        point2y = obstacle.posY + 32
+        point1offsetX = point1x + 32
         point1offsetY = point1y 
-        point2offsetX = point2x + 50
+        point2offsetX = point2x + 32
         point2offsetY = point2y 
       }
     }
 
-    const obstacle1 = this.checkForObstacle(cell.posX + 25, cell.posY + 25, point1x, point1y, obstacle)
-    const obstacle2 = this.checkForObstacle(cell.posX + 25, cell.posY + 25, point2x, point2y, obstacle)
+    const obstacle1 = this.checkForObstacle(cell.posX + 16, cell.posY + 16, point1x, point1y, obstacle)
+    const obstacle2 = this.checkForObstacle(cell.posX + 16, cell.posY + 16, point2x, point2y, obstacle)
 
     if (obstacle1 && obstacle2) {
       return
     } else {
       console.log(cell.id)
       const object = {
-        playerPointX: cell.posX + 25, 
-        playerPointY: cell.posY + 25,
+        playerPointX: cell.posX + 16, 
+        playerPointY: cell.posY + 16,
         obstaclePoint1X: point1x,
         obstaclePoint1Y: point1y,
         obstaclePoint2X: point2x,
@@ -286,8 +281,8 @@ export class FogOfWarService {
   }
 
   private traceLine(xRatioMultiplier: number, yRatioMultiplier: number, yLength: number, xLength: number, centerX: number, centerY: number, pointX: number, pointY: number, obstacle: Cell): boolean {
-    const yRatio = yLength / 25
-    const xRatio = xLength / 25
+    const yRatio = yLength / 16
+    const xRatio = xLength / 16
 
     let checkLocationY = centerY
     let checkLocationX = centerX

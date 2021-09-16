@@ -1,10 +1,10 @@
-import { ThrowStmt } from "@angular/compiler";
 import { Injectable } from "@angular/core";
 import { Subject } from "rxjs";
 import { CanvasService } from "../canvas/canvas.service";
+import { EditorService } from "../editor/editor-pallete/editor.service";
 import { ShortLivedAnimation } from "../game-assets/click-animation";
 import { GridService } from "../grid/grid.service";
-import { Cell } from "../models/cell.model";
+import { Cell, SpriteTile } from "../models/cell.model";
 import { FogOfWarService } from "./visibility.service";
 
 @Injectable()
@@ -13,23 +13,64 @@ export class DrawService {
   public drawBackground$ = new Subject()
   public foregroundImages: File[] = []
 
+  //TEMP
+  private image = new Image()
+
   constructor(
     public gridService: GridService,
     public canvasService: CanvasService,
     public fogOfWarService: FogOfWarService,
-  ) { }
+    public editorService: EditorService
+  ) {
+    
+    this.image.src = `../../../assets/images/StoneFloor1.png`
+    this.image.onload = () => {
+      this.drawGrid()
+    }
+   }
+
+  public drawGrid(): void {
+    for (let h = 0; h < this.gridService.height; h++) {
+      for (let w = 0; w < this.gridService.width; w++) {
+        const xrnd = Math.floor(Math.random() * 3)
+
+
+        this.canvasService.backgroundCTX.imageSmoothingEnabled = false
+        this.canvasService.backgroundCTX.drawImage(this.image, xrnd * 25, 0, 32, 32, h * 32, w * 32, 32 * 2, 32 * 2)
+      }
+    }
+
+    for (let h = 0; h <= this.gridService.height; h++) {
+      for (let w = 0; w <= this.gridService.width; w++) {
+        this.canvasService.backgroundCTX.beginPath()
+        this.canvasService.backgroundCTX.moveTo(w * 32, h * 32)
+        this.canvasService.backgroundCTX.lineTo(w * 32, (h * 32) + 32)
+        this.canvasService.backgroundCTX.lineWidth = 1;
+        this.canvasService.backgroundCTX.strokeStyle = "rgba(255, 255 ,255,.5)"
+        this.canvasService.backgroundCTX.stroke()
+
+
+        this.canvasService.backgroundCTX.beginPath()
+        this.canvasService.backgroundCTX.moveTo(w * 32, h * 32)
+        this.canvasService.backgroundCTX.lineTo((w * 32) + 32, h * 32)
+        this.canvasService.backgroundCTX.strokeStyle = "rgba(255,255,0,.5)"
+        this.canvasService.backgroundCTX.lineWidth = 1;
+        this.canvasService.backgroundCTX.stroke()
+      }
+    }
+  }
 
   public drawBlackoutFog(): void {
     if(this.fogOfWarService.fogEnabled) {
       this.canvasService.blackoutCTX.globalCompositeOperation = 'destination-over'
-      this.canvasService.blackoutCTX.clearRect(0, 0, this.gridService.width * 50, this.gridService.height * 50);
+      this.canvasService.blackoutCTX.clearRect(0, 0, this.gridService.width * 32, this.gridService.height * 32);
       this.canvasService.blackoutCTX.fillStyle = 'black';
       this.canvasService.blackoutCTX.globalAlpha = 0.9;
       this.canvasService.blackoutCTX.fillRect(   
         0,
         0,
-        this.gridService.width * 50,
-        this.gridService.height * 50
+        this.gridService.width * 32,
+        this.gridService.height * 32
         )
     }
     // this.addOpaqueFogLineOfSight()
@@ -38,14 +79,14 @@ export class DrawService {
   public drawFog(): void {
     if(this.fogOfWarService.fogEnabled) {
       this.canvasService.fogCTX.globalCompositeOperation = 'destination-over'
-      this.canvasService.fogCTX.clearRect(0, 0, this.gridService.width * 50, this.gridService.height * 50);
+      this.canvasService.fogCTX.clearRect(0, 0, this.gridService.width * 32, this.gridService.height * 32);
       this.canvasService.fogCTX.globalAlpha = 0.5;
       this.canvasService.fogCTX.fillStyle = 'black';
       this.canvasService.fogCTX.fillRect(   
         0,
         0,
-        this.gridService.width * 50,
-        this.gridService.height * 50
+        this.gridService.width * 32,
+        this.gridService.height * 32
         )
     }
     // this.addOpaqueFogLineOfSight()
@@ -106,7 +147,7 @@ export class DrawService {
     this.canvasService.foregroundCTX.imageSmoothingEnabled = false
     this.canvasService.backgroundCTX.imageSmoothingEnabled = false
     this.canvasService.overlayCTX.imageSmoothingEnabled = false
-    this.canvasService.overlayCTX.clearRect(animation.cell.posX, animation.cell.posY, 50, 50);
+    this.canvasService.overlayCTX.clearRect(animation.cell.posX, animation.cell.posY, 32, 32);
 
     this.canvasService.overlayCTX.drawImage(
       animation.image,
@@ -116,8 +157,8 @@ export class DrawService {
       25,
       animation.cell.posX,
       animation.cell.posY,
-      25 * 2,
-      25 * 2
+      32,
+      32
     )
   }
 
@@ -132,29 +173,51 @@ export class DrawService {
       80,
       drawObject.obstacle.posX,
       drawObject.obstacle.posY - 30,
-      25 * 2,
-      40 * 2)
+      32,
+      48)
     })
   }
 
   public drawAnimatedAssets(): void {
     if (this.canvasService.foregroundCTX) {
-      this.canvasService.foregroundCTX.clearRect(0, 0, this.gridService.width * 50, this.gridService.height * 50);
+      this.canvasService.foregroundCTX.clearRect(0, 0, this.gridService.width * 36, this.gridService.height * 36);
 
       this.gridService.gridDisplay.forEach(row => {
         row.forEach((cell: Cell) => {
           // OBSTACLES
-          if (cell.obstacle ) {
+          if (cell.visible && cell.imageTile ) {
             this.canvasService.foregroundCTX.drawImage(
-              cell.image,
-              cell.imgIndexX,
-              cell.imgIndexY,
-              cell.imgWidth,
-              cell.imgHeight,
-              cell.posX + cell.imgOffsetX,
-              cell.posY + cell.imgOffsetY,
-              cell.imgWidth,
-              cell.imgHeight  )
+              cell.imageTile.spriteSheet,
+              cell.imageTile.spriteGridPosX * cell.imageTile.multiplier,
+              cell.imageTile.spriteGridPosY * cell.imageTile.multiplier,
+              cell.imageTile.tileWidth * cell.imageTile.multiplier,
+              cell.imageTile.tileHeight * cell.imageTile.multiplier,
+              cell.posX + cell.imageTile.tileOffsetX,
+              cell.posY + cell.imageTile.tileOffsetY,
+              cell.imageTile.tileWidth * cell.imageTile.multiplier,
+              cell.imageTile.tileHeight * cell.imageTile.multiplier
+            )
+          
+            if(cell.imageTile.attachments) {
+              cell.imageTile.attachments.forEach(attachment => {
+                const spriteTile = this.editorService.getAsset(attachment.tileName) as SpriteTile
+                this.canvasService.foregroundCTX.drawImage(
+                  spriteTile.spriteSheet,
+                  spriteTile.spriteGridPosX * spriteTile.multiplier,
+                  spriteTile.spriteGridPosY * spriteTile.multiplier,
+                  spriteTile.tileWidth * spriteTile.multiplier,
+                  spriteTile.tileHeight * spriteTile.multiplier,
+                  cell.posX + attachment.xOffset,
+                  cell.posY + attachment.yOffset,
+                  spriteTile.tileWidth * spriteTile.multiplier,
+                  spriteTile.tileHeight * spriteTile.multiplier )
+              })
+
+            }
+            
+          
+          
+          
           }
 
           // GAME COMPONENTS
@@ -170,14 +233,14 @@ export class DrawService {
               gameComponent.frameYPosition,
               25,
               36,
-              gameComponent.positionX,
-              gameComponent.positionY - 40,
+              gameComponent.positionX - 8,
+              gameComponent.positionY -58,
               50,
               80
             )
 
             if (gameComponent.selectionIndicator) {
-              this.canvasService.overlayCTX.clearRect(gameComponent.positionX, gameComponent.positionY, 25 * 2, 25 * 2);
+              this.canvasService.overlayCTX.clearRect(gameComponent.positionX, gameComponent.positionY, 32, 32);
               this.canvasService.overlayCTX.drawImage(
                 gameComponent.selectionIndicator.image,
                 gameComponent.selectionIndicator.frameXPosition[gameComponent.selectionIndicator.frameXCounter],
@@ -186,8 +249,8 @@ export class DrawService {
                 25,
                 gameComponent.positionX,
                 gameComponent.positionY,
-                25 * 2,
-                25 * 2
+                32,
+                32
               )
             }
           }

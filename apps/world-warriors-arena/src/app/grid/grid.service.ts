@@ -3,12 +3,12 @@ import { Cell, GridDetails, RelativePositionCell } from '../models/cell.model';
 
 @Injectable()
 export class GridService {
-  public height = 50 
-  public width = 50
+  public height = 15 
+  public width = 15
   public grid: {[cell: string]: Cell } = { }
   public gridDisplayLite: GridDetails
   public gridDisplay: Cell[][] = [];
-  public obstacles: string[] = []
+ 
 
   public createGrid(width: number, height: number) {
     this.height = height
@@ -20,7 +20,7 @@ export class GridService {
     let foundCell: Cell
     this.gridDisplay.forEach(row => {
       row.forEach(cell => {
-        if((cell.posX < x && cell.posX + 50 >= x ) && (cell.posY < y && cell.posY + 50 >= y)) {
+        if((cell.posX < x && cell.posX + 32 >= x ) && (cell.posY < y && cell.posY + 32 >= y)) {
           foundCell = cell
           if(!foundCell) {
             debugger
@@ -54,17 +54,10 @@ export class GridService {
           : { 
             x: l,
             y: i,
-            posX: l * 50,
-            posY: i * 50,
+            posX: l * 32,
+            posY: i * 32,
             obstacle: false,
             id: `x${l}:y${i}`,
-            image: null,
-
-            
-            imgIndexX: (Math.floor(Math.random() * 3)) * -50,
-            imgIndexY: (Math.floor(Math.random() * 3)) * -50,
-            imgWidth: 150,
-            imgHeight: 150,
           };
 
         imgIndexX ++

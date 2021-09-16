@@ -7,16 +7,37 @@ export interface Cell {
   posX?: number; // X Pixel Coordinates
   posY?: number; // Y Pixel Coordinates
   obstacle?: boolean;
+  visible?: boolean;
   neighbors?: Cell[];
   destination?: boolean;
   occupiedBy?: MotionAsset
-  image?: HTMLImageElement;
-  imgIndexX?: number; // X Pixel Location Sprite sheet
-  imgIndexY?: number; // Y Pixel Location Sprite Sheet
-  imgWidth?: number; // Sprite asset width
-  imgHeight?: number; // Sprite asset height
-  imgOffsetX?: number // X Offsets sprite asset grid
-  imgOffsetY?: number // Y Offsets sprite asset on grid
+  imageTile?: SpriteTile;
+}
+
+export class TileAttachment {
+  neighborPosition: number // 0 up; 1 right; 2 down; 3 left, 4 up/right, 5 down/right, 6 down/left, 7 up/left
+  tileName: string
+  xOffset?: number
+  yOffset?: number
+}
+
+export class SpriteTile {
+  spriteSheet: HTMLImageElement
+  spriteGridPosX: number
+  spriteGridPosY: number
+  tileHeight: number
+  tileWidth: number
+  tileOffsetX: number
+  tileOffsetY: number
+  multiplier: number
+  visionBlocking: boolean
+  obstacleObstructionX: number
+  obstacleObstructionY: number
+  allowForPassThrough?: boolean
+  rarity?: number // express on a random placement how often it should be seen 1 being once in 20 on average
+  leftEndTileName?: string
+  rightEndTileName?: string
+  attachments?: TileAttachment[]
 }
 
 export interface RelativePositionCell extends Cell {
