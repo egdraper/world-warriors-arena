@@ -8,6 +8,8 @@ import { SelectionIndicator } from '../game-assets/selection-indicator';
 import { GridService } from '../grid/grid.service';
 import { Cell } from './cell.model';
 
+
+
 export class GameComponent {
   public id: string
   public cell: Cell = null  
@@ -132,8 +134,8 @@ export abstract class MotionAsset extends Asset {
     this.positionX += nextXMove
     this.positionY += nextYMove
 
-    if (this.positionY % 50 === 0 && this.positionX % 50 === 0) {
-      this.cell = this.grid.grid[`x${this.positionX / 50}:y${this.positionY / 50}`]
+    if (this.positionY % 32 === 0 && this.positionX % 32 === 0) {
+      this.cell = this.grid.grid[`x${this.positionX / 32}:y${this.positionY / 32}`]
 
       this.nextCell = this.currentPath.length > 0
         ? this.currentPath.pop()
@@ -157,7 +159,7 @@ export abstract class MotionAsset extends Asset {
         //   if(this.grid.grid[cellId].obstacle) { this.drawService.clearFogLineOfSight(this.nextCell, this.grid.grid[cellId]) }
         // })
         this.drawService.clearFogLineOfSight(this.nextCell) 
-        this.drawService.drawOnlyVisibleObstacle(this.nextCell.id)
+        // this.drawService.drawOnlyVisibleObstacle(this.nextCell.id)
         this.cell.occupiedBy = undefined
         this.nextCell.occupiedBy = this
         this.setSpriteDirection()

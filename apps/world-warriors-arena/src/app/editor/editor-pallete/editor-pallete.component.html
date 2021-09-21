@@ -1,0 +1,26 @@
+<button (click)="baseClicked()">Base</button>
+<button (click)="paintClicked()">Paint</button>
+<button (click)="editModeClicked()">EditMode</button>
+
+<!-- <img
+src="assets/images/tileA5_world.png"
+(click)="imageClick($event)"
+/> -->
+<div class="pallet-container">  
+  <div *ngFor="let image of imageArray"
+    class="image-container"
+    (click)="tileClick(image)">
+    <div 
+      [style.width.px]="(image.tileWidth * image.multiplier)"
+      [style.height.px]="image.tileHeight * image.multiplier"
+      [style.overflow]="'hidden'">
+      <img
+        src="{{ image.spriteSheet.src }}"
+        [style.top.px]="(-image.spriteGridPosY * image.multiplier)"
+        [style.left.px]="(-image.spriteGridPosX * image.multiplier)"
+        [style.position]="'relative'"/>
+    </div>
+  </div>
+</div>
+
+
