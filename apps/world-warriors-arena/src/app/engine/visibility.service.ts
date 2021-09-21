@@ -315,7 +315,7 @@ export class FogOfWarService {
 
   private traceStraitLine(assetCell: Cell, obstacle: Cell, direction: number): boolean {
 
-    if (assetCell.neighbors[direction].obstacle ) { 
+    if (assetCell.neighbors[direction] && assetCell.neighbors[direction].obstacle ) { 
       return assetCell.neighbors[direction].id !== obstacle.id
     }
 

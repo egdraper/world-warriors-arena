@@ -34,7 +34,7 @@ export class AssetsService {
     this.gridService.gridDisplay.forEach(row => {
       row.forEach(cell => {
         if(cell.x === 0 || cell.y === 0 || cell.x === this.gridService.width-1 || cell.y === this.gridService.height-1) {
-          cell.imageTile =  TileAssets.treeClump2 as SpriteTile
+          cell.imageTile =  TileAssets.centerTreeClump as SpriteTile
           cell.visible = true
           this.addObstacleImage(cell)
         }
@@ -72,7 +72,7 @@ export class AssetsService {
     this.gameComponents.push(player)
     
     this.drawService.clearFogLineOfSight(gridCell1)
-    this.drawService.drawOnlyVisibleObstacle(gridCell1.id)
+    // this.drawService.drawOnlyVisibleObstacle(gridCell1.id)
 
   }
 

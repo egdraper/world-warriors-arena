@@ -6,8 +6,9 @@ tileB_outside.src = "assets/images/tileB_outside.png"
 const tileA5_outside = new Image()
 tileA5_outside.src = "assets/images/tileA5_outside.png"
 
-export const BackgroundAsset: {[name: string]: SpriteTile | SpriteTile[]} = {
+export const BackgroundAsset: { [name: string]: SpriteTile | SpriteTile[] } = {
   greenGrass: [{
+    id: "greenGrass",
     spriteSheet: tileB_outside,
     spriteGridPosX: 8,
     spriteGridPosY: 4,
@@ -23,8 +24,9 @@ export const BackgroundAsset: {[name: string]: SpriteTile | SpriteTile[]} = {
   }],
 }
 
-export const TileAssets: {[name: string]: SpriteTile | SpriteTile[]} = {
+export const TileAssets: { [name: string]: SpriteTile | SpriteTile[] } = {
   tree1: {
+    id: "tree1",
     spriteSheet: tileB_outside,
     spriteGridPosX: 8,
     spriteGridPosY: 4,
@@ -38,6 +40,7 @@ export const TileAssets: {[name: string]: SpriteTile | SpriteTile[]} = {
     obstacleObstructionY: 1,
   },
   tree2: {
+    id: "tree2",
     spriteSheet: tileB_outside,
     spriteGridPosX: 8,
     spriteGridPosY: 0,
@@ -51,6 +54,7 @@ export const TileAssets: {[name: string]: SpriteTile | SpriteTile[]} = {
     obstacleObstructionY: 1,
   },
   treeStumpsForrest: [{
+    id: "treeStumpsForrest",
     spriteSheet: tileB_outside,
     spriteGridPosX: 14,
     spriteGridPosY: 4,
@@ -64,21 +68,33 @@ export const TileAssets: {[name: string]: SpriteTile | SpriteTile[]} = {
     obstacleObstructionY: 1,
     allowForPassThrough: true
   }],
-  treeClump1: {
+  leftTreeClump: {
+    id: "leftTreeClump",
     spriteSheet: tileB_outside,
     spriteGridPosX: 2,
     spriteGridPosY: 13,
     tileHeight: 3,
     tileWidth: 1,
     tileOffsetX: 0,
-    tileOffsetY: -80,
+    tileOffsetY: -64,
     multiplier: 32,
     visionBlocking: false,
     obstacleObstructionX: 1,
     obstacleObstructionY: 1,
-    rightEndTileName: "treeClump2"
+    centerTileName: "centerTreeClump",
+    topEndTileName: {
+      name: "leafTopLeft",
+      offset: -124
+    },
+    attachments: [{
+      tileName: "leafLeft1",
+      neighborPosition: 0,
+      xOffset: 0,
+      yOffset: -96
+    }]
   },
-  treeClump2: {
+  centerTreeClump: {
+    id: "centerTreeClump",
     spriteSheet: tileB_outside,
     spriteGridPosX: 3,
     spriteGridPosY: 14,
@@ -90,38 +106,96 @@ export const TileAssets: {[name: string]: SpriteTile | SpriteTile[]} = {
     visionBlocking: false,
     obstacleObstructionX: 1,
     obstacleObstructionY: 1,
-    leftEndTileName: "treeClump1",
-    rightEndTileName: "treeClump3",
+    leftEndTileName: "leftTreeClump",
+    rightEndTileName: "rightTreeClump",
+    topEndTileName: {
+      name: "leafTopCenter",
+      offset: -124
+    },
     attachments: [{
       tileName: "leafBottom1",
       neighborPosition: 0,
       xOffset: 0,
       yOffset: -64
-    
-    },{
+
+    }, {
       tileName: "leafCenter1",
       neighborPosition: 0,
       xOffset: 0,
-      yOffset: -96    
+      yOffset: -96
     }
-  
-  ]
+    ]
   },
-  treeClump3: {
+  rightTreeClump: {
+    id: "rightTreeClump",
     spriteSheet: tileB_outside,
     spriteGridPosX: 4,
     spriteGridPosY: 13,
     tileHeight: 3,
     tileWidth: 1,
     tileOffsetX: 0,
-    tileOffsetY: -80,
+    tileOffsetY: -64,
     multiplier: 32,
     visionBlocking: false,
     obstacleObstructionX: 1,
     obstacleObstructionY: 1,
-    leftEndTileName: "treeClump2",
+    centerTileName: "centerTreeClump",
+    topEndTileName: {
+      name: "leafRightTop",
+      offset: -124
+    },
+    attachments: [{
+      tileName: "leafRightCenter",
+      neighborPosition: 0,
+      xOffset: 0,
+      yOffset: -96
+    }
+    ]
+  },
+  leafTopCenter: {
+    id: "leafTopCenter",
+    spriteSheet: tileB_outside,
+    spriteGridPosX: 1,
+    spriteGridPosY: 10,
+    tileHeight: 1,
+    tileWidth: 1,
+    tileOffsetX: 0,
+    tileOffsetY: 0,
+    multiplier: 32,
+    visionBlocking: false,
+    obstacleObstructionX: 1,
+    obstacleObstructionY: 1,
+  },
+  leafTopRight: {
+    id: "leafTopRight",
+    spriteSheet: tileB_outside,
+    spriteGridPosX: 2,
+    spriteGridPosY: 10,
+    tileHeight: 1,
+    tileWidth: 1,
+    tileOffsetX: 0,
+    tileOffsetY: 0,
+    multiplier: 32,
+    visionBlocking: false,
+    obstacleObstructionX: 1,
+    obstacleObstructionY: 1,
+  },
+  leafTopLeft: {
+    id: "leafTopLeft",
+    spriteSheet: tileB_outside,
+    spriteGridPosX: 0,
+    spriteGridPosY: 10,
+    tileHeight: 1,
+    tileWidth: 1,
+    tileOffsetX: 0,
+    tileOffsetY: 0,
+    multiplier: 32,
+    visionBlocking: false,
+    obstacleObstructionX: 1,
+    obstacleObstructionY: 1,
   },
   treeLog: {
+    id: "treeLog",
     spriteSheet: tileB_outside,
     spriteGridPosX: 5,
     spriteGridPosY: 8,
@@ -135,6 +209,7 @@ export const TileAssets: {[name: string]: SpriteTile | SpriteTile[]} = {
     obstacleObstructionY: 1,
   },
   leafBottom1: {
+    id: "leafBottom1",
     spriteSheet: tileB_outside,
     spriteGridPosX: 1,
     spriteGridPosY: 12,
@@ -146,8 +221,65 @@ export const TileAssets: {[name: string]: SpriteTile | SpriteTile[]} = {
     visionBlocking: false,
     obstacleObstructionX: 0,
     obstacleObstructionY: 0,
-  }, 
+  },
+  leafLeft1: {
+    id: "leafLeftCenter",
+    spriteSheet: tileB_outside,
+    spriteGridPosX: 0,
+    spriteGridPosY: 11,
+    tileHeight: 1,
+    tileWidth: 1,
+    tileOffsetX: -0,
+    tileOffsetY: -32,
+    multiplier: 32,
+    visionBlocking: false,
+    obstacleObstructionX: 0,
+    obstacleObstructionY: 0,
+  },
+  leafLeft2: {
+    id: "leafLeftTop",
+    spriteSheet: tileB_outside,
+    spriteGridPosX: 0,
+    spriteGridPosY: 10,
+    tileHeight: 1,
+    tileWidth: 1,
+    tileOffsetX: -0,
+    tileOffsetY: -0,
+    multiplier: 32,
+    visionBlocking: false,
+    obstacleObstructionX: 0,
+    obstacleObstructionY: 0,
+  },
+  leafRightCenter: {
+    id: "leafRightCenter",
+    spriteSheet: tileB_outside,
+    spriteGridPosX: 2,
+    spriteGridPosY: 11,
+    tileHeight: 1,
+    tileWidth: 1,
+    tileOffsetX: -0,
+    tileOffsetY: -32,
+    multiplier: 32,
+    visionBlocking: false,
+    obstacleObstructionX: 0,
+    obstacleObstructionY: 0,
+  },
+  leafRightTop: {
+    id: "leafRightTop",
+    spriteSheet: tileB_outside,
+    spriteGridPosX: 2,
+    spriteGridPosY: 10,
+    tileHeight: 1,
+    tileWidth: 1,
+    tileOffsetX: -0,
+    tileOffsetY: -0,
+    multiplier: 32,
+    visionBlocking: false,
+    obstacleObstructionX: 0,
+    obstacleObstructionY: 0,
+  },
   leafCenter1: {
+    id: "leafCenter1",
     spriteSheet: tileB_outside,
     spriteGridPosX: 1,
     spriteGridPosY: 11,

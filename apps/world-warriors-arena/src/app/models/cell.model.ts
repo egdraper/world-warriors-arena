@@ -21,7 +21,13 @@ export class TileAttachment {
   yOffset?: number
 }
 
+export class EndTile {
+  name: string
+  offset: number
+}
+
 export class SpriteTile {
+  id: string
   spriteSheet: HTMLImageElement
   spriteGridPosX: number
   spriteGridPosY: number
@@ -37,6 +43,8 @@ export class SpriteTile {
   rarity?: number // express on a random placement how often it should be seen 1 being once in 20 on average
   leftEndTileName?: string
   rightEndTileName?: string
+  centerTileName?: string
+  topEndTileName?: EndTile
   attachments?: TileAttachment[]
 }
 
