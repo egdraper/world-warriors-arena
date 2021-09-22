@@ -3,6 +3,7 @@ import { Subject } from "rxjs";
 import { CanvasService } from "../canvas/canvas.service";
 import { EditorService } from "../editor/editor-pallete/editor.service";
 import { ShortLivedAnimation } from "../game-assets/click-animation";
+import { BackgroundAsset } from "../game-assets/tile-assets.db";
 import { GridService } from "../grid/grid.service";
 import { Cell, SpriteTile } from "../models/cell.model";
 import { FogOfWarService } from "./visibility.service";
@@ -32,11 +33,37 @@ export class DrawService {
   public drawGrid(): void {
     for (let h = 0; h < this.gridService.height; h++) {
       for (let w = 0; w < this.gridService.width; w++) {
-        const xrnd = Math.floor(Math.random() * 3)
-
+        
+        let weight = 0
+        BackgroundAsset.greenGrass.forEach(tile => {
+          tile.lowWeight = weight
+          weight += tile.rarity
+          tile.highWeight = weight
+        })
+        const rand = Math.floor(Math.random() * weight);
+        let spriteSheet = BackgroundAsset.greenGrass[0].spriteSheet
+        let xPos = 0
+        let yPos = 0
+        BackgroundAsset.greenGrass.forEach(tile => {
+          if(rand < tile.highWeight && rand >= tile.lowWeight) {
+            xPos = Math.floor(Math.random() * tile.spriteGridPosX.length)
+            yPos = Math.floor(Math.random() * tile.spriteGridPosY.length)
+            xPos = tile.spriteGridPosX[xPos]
+            yPos = tile.spriteGridPosY[yPos]
+          }
+        })
 
         this.canvasService.backgroundCTX.imageSmoothingEnabled = false
-        this.canvasService.backgroundCTX.drawImage(this.image, xrnd * 25, 0, 32, 32, h * 32, w * 32, 32 * 2, 32 * 2)
+        this.canvasService.backgroundCTX.drawImage(
+          spriteSheet,
+          xPos * 32,
+          yPos * 32,
+          32,
+          32,
+          w * 32,
+          h * 32,
+          32,
+          32)
       }
     }
 

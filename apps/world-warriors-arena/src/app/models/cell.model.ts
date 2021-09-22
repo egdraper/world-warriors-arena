@@ -26,6 +26,16 @@ export class EndTile {
   offset: number
 }
 
+export class SpriteBackgroundTile {
+  id: string
+  spriteSheet: HTMLImageElement
+  spriteGridPosX: number[]
+  spriteGridPosY: number[]
+  lowWeight?: number
+  highWeight?: number
+  rarity?: number // express on a random placement how often it should be seen 1 being once in 20 on average
+}
+
 export class SpriteTile {
   id: string
   spriteSheet: HTMLImageElement
@@ -40,7 +50,6 @@ export class SpriteTile {
   obstacleObstructionX: number
   obstacleObstructionY: number
   allowForPassThrough?: boolean
-  rarity?: number // express on a random placement how often it should be seen 1 being once in 20 on average
   leftEndTileName?: string
   rightEndTileName?: string
   centerTileName?: string

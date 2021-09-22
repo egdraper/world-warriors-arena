@@ -1,4 +1,4 @@
-import { SpriteTile } from "../models/cell.model"
+import { SpriteBackgroundTile, SpriteTile } from "../models/cell.model"
 
 
 const tileB_outside = new Image()
@@ -6,22 +6,44 @@ tileB_outside.src = "assets/images/tileB_outside.png"
 const tileA5_outside = new Image()
 tileA5_outside.src = "assets/images/tileA5_outside.png"
 
-export const BackgroundAsset: { [name: string]: SpriteTile | SpriteTile[] } = {
-  greenGrass: [{
+export const BackgroundAsset: { [name: string]: SpriteBackgroundTile[] } = {
+  greenGrass: [
+  {
     id: "greenGrass",
-    spriteSheet: tileB_outside,
-    spriteGridPosX: 8,
-    spriteGridPosY: 4,
-    tileHeight: 6,
-    tileWidth: 6,
-    tileOffsetX: -80,
-    tileOffsetY: -160,
-    multiplier: 32,
-    visionBlocking: true,
-    obstacleObstructionX: 1,
-    obstacleObstructionY: 1,
-    rarity: 20
-  }],
+    spriteSheet: tileA5_outside,
+    spriteGridPosX: [1],
+    spriteGridPosY: [0],
+    rarity: 100
+  },
+  {
+    id: "greenGrass",
+    spriteSheet: tileA5_outside,
+    spriteGridPosX: [2],
+    spriteGridPosY: [0],
+    rarity: 50
+  },
+  {
+    id: "greenGrass",
+    spriteSheet: tileA5_outside,
+    spriteGridPosX: [3],
+    spriteGridPosY: [0],
+    rarity: 13
+  },
+  {
+    id: "greenGrass",
+    spriteSheet: tileA5_outside,
+    spriteGridPosX: [0,1,2,3,4,5],
+    spriteGridPosY: [1],
+    rarity: 3
+  },
+  {
+    id: "greenGrass",
+    spriteSheet: tileA5_outside,
+    spriteGridPosX: [0,1,2,3,4,5],
+    spriteGridPosY: [2,3,4,5],
+    rarity: 2
+  },
+],
 }
 
 export const TileAssets: { [name: string]: SpriteTile | SpriteTile[] } = {
@@ -61,7 +83,7 @@ export const TileAssets: { [name: string]: SpriteTile | SpriteTile[] } = {
     tileHeight: 2,
     tileWidth: 2,
     tileOffsetX: -16,
-    tileOffsetY: -32,
+    tileOffsetY: -28,
     multiplier: 32,
     visionBlocking: false,
     obstacleObstructionX: 1,
@@ -202,7 +224,7 @@ export const TileAssets: { [name: string]: SpriteTile | SpriteTile[] } = {
     tileHeight: 2,
     tileWidth: 3,
     tileOffsetX: -0,
-    tileOffsetY: -32,
+    tileOffsetY: -16,
     multiplier: 32,
     visionBlocking: false,
     obstacleObstructionX: 3,
