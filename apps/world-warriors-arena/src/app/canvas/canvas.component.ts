@@ -109,7 +109,7 @@ export class CanvasComponent {
     if (this.mouseIsDown && this.controlPressed && this.editorService.selectedAsset) {
       const cellStart = this.gridService.getGridCellByCoordinate(event.offsetX, event.offsetY)
      
-      if (!cellStart || cellStart.obstacle) { return }
+      if (!cellStart) { return }
         const selectedAsset = this.editorService.selectedAsset
         cellStart.imageTile = selectedAsset
 

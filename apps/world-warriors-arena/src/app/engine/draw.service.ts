@@ -3,7 +3,7 @@ import { Subject } from "rxjs";
 import { CanvasService } from "../canvas/canvas.service";
 import { EditorService } from "../editor/editor-pallete/editor.service";
 import { ShortLivedAnimation } from "../game-assets/click-animation";
-import { BackgroundAsset } from "../game-assets/tile-assets.db";
+import { greenGrass } from "../game-assets/tiles.db.ts/greenGrass.db";
 import { GridService } from "../grid/grid.service";
 import { Cell, SpriteTile } from "../models/cell.model";
 import { FogOfWarService } from "./visibility.service";
@@ -14,9 +14,6 @@ export class DrawService {
   public drawBackground$ = new Subject()
   public foregroundImages: File[] = []
 
-  //TEMP
-  private image = new Image()
-
   constructor(
     public gridService: GridService,
     public canvasService: CanvasService,
@@ -24,10 +21,10 @@ export class DrawService {
     public editorService: EditorService
   ) {
 
-    this.image.src = `../../../assets/images/StoneFloor1.png`
-    this.image.onload = () => {
+     setTimeout(() => {
       this.drawGrid()
-    }
+     },1000) 
+
   }
 
   public drawGrid(): void {
@@ -35,16 +32,17 @@ export class DrawService {
       for (let w = 0; w < this.gridService.width; w++) {
         
         let weight = 0
-        BackgroundAsset.greenGrass.forEach(tile => {
+        this.editorService.findBackgroundCollection("greenGrass").forEach(tile => {
           tile.lowWeight = weight
           weight += tile.rarity
           tile.highWeight = weight
         })
         const rand = Math.floor(Math.random() * weight);
-        let spriteSheet = BackgroundAsset.greenGrass[0].spriteSheet
+        let spriteSheet = this.editorService.findBackgroundCollection("greenGrass")[0].spriteSheet
         let xPos = 0
         let yPos = 0
-        BackgroundAsset.greenGrass.forEach(tile => {
+
+        this.editorService.findBackgroundCollection("greenGrass").forEach(tile => {
           if(rand < tile.highWeight && rand >= tile.lowWeight) {
             xPos = Math.floor(Math.random() * tile.spriteGridPosX.length)
             yPos = Math.floor(Math.random() * tile.spriteGridPosY.length)
@@ -258,23 +256,22 @@ export class DrawService {
 
     // OBSTACLES
     const sides = [1, 3]
-    const location: string[] = ["rightEndTileName", 'leftEndTileName']
+    const location: ("rightEndTileName" | 'leftEndTileName')[] = ["rightEndTileName", "leftEndTileName"]
 
     if (!cell.imageTile) { return }
 
 
     sides.forEach((side, index) => {
       if (cell.visible && cell.imageTile) {
-
         if (cell.neighbors[side]) {
           const obstacle = cell.neighbors[side].obstacle
           const visible = cell.neighbors[side].visible
           const affectedSide = location[index]
 
-          if (!obstacle && !visible && (cell.imageTile as any)[affectedSide]) {
-            console.log(cell.id)
-            cell.imageTile = this.editorService.getAsset((cell.imageTile as any)[affectedSide]) as SpriteTile
-
+          if (!obstacle && !visible && cell.imageTile[affectedSide]) {
+            const spriteTile  = this.editorService.findObjectAsset("cliffs", cell.imageTile.id)
+            cell.imageTile = this.editorService.findObjectAsset("cliffs", spriteTile[affectedSide])
+            // console.log(cell.imageTile.id)
           }
 
           const rightNeighbor = cell.neighbors[1]
@@ -284,8 +281,9 @@ export class DrawService {
 
           if (rightNeighbor && leftNeighbor && rightNeighborImage && leftNeighborImage && cell.imageTile.centerTileName) {
             console.log(cell.imageTile.centerTileName)
-            cell.imageTile = this.editorService.getAsset(cell.imageTile.centerTileName) as SpriteTile
-            console.log(cell.imageTile)
+            const spriteTile  = this.editorService.findObjectAsset("cliffs", cell.imageTile.id)
+            cell.imageTile = this.editorService.findObjectAsset("cliffs", spriteTile.centerTileName)
+            // console.log(cell.imageTile.id)
           }
         }
       }
@@ -298,7 +296,9 @@ export class DrawService {
       (cell.neighbors[2] && cell.neighbors[2].imageTile === cell.imageTile &&
         cell.neighbors[0] && cell.neighbors[0].imageTile !== cell.imageTile))
     ) {
-      const spriteTile = this.editorService.getAsset(cell.imageTile.topEndTileName.name) as SpriteTile
+      const tile  = this.editorService.findObjectAsset("cliffs", cell.imageTile.id)
+      const spriteTile = this.editorService.findObjectAsset("cliffs", tile.topEndTileName.name)
+     
       this.canvasService.foregroundCTX.drawImage(
         spriteTile.spriteSheet,
         spriteTile.spriteGridPosX * spriteTile.multiplier,
@@ -328,7 +328,7 @@ export class DrawService {
 
     if (cell.imageTile.attachments) {
       cell.imageTile.attachments.forEach(attachment => {
-        const spriteTile = this.editorService.getAsset(attachment.tileName) as SpriteTile
+        const spriteTile = this.editorService.findObjectAsset("cliffs", attachment.tileName)
         this.canvasService.foregroundCTX.drawImage(
           spriteTile.spriteSheet,
           spriteTile.spriteGridPosX * spriteTile.multiplier,

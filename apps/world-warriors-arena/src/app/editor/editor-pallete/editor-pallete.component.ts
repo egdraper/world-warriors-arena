@@ -1,5 +1,4 @@
 import { Component, OnInit } from '@angular/core';
-import { TileAssets } from '../../game-assets/tile-assets.db';
 import { SpriteTile } from '../../models/cell.model';
 import { EditorService } from './editor.service';
 
@@ -19,17 +18,8 @@ export class EditorPalleteComponent implements OnInit {
 
   ngOnInit(): void {
 
-    Object.keys(TileAssets).forEach(tileName => {
-      const tile  = this.editorService.getAsset(tileName)
-      if(Array.isArray(tile)) {
-        tile.forEach(_tile => {
-          this.imageArray.push(_tile)
-        })
-        return
-      }
-      this.imageArray.push(tile)
-
-    })
+    this.imageArray = this.editorService.findObjectCollection("cliffs")
+   
   }
 
   public tileClick(tile: SpriteTile): void {

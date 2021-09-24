@@ -1,14 +1,16 @@
+import { ThisReceiver } from "@angular/compiler";
 import { Injectable } from "@angular/core";
 import { CanvasService } from "../canvas/canvas.service";
+import { EditorService } from "../editor/editor-pallete/editor.service";
 import { DrawService } from "../engine/draw.service";
 import { Engine } from "../engine/engine";
 import { ShortestPath } from "../engine/shortest-path";
 import { GridService } from "../grid/grid.service";
 import { MotionAsset } from "../models/assets.model";
-import { Cell, SpriteTile, TileAttachment } from "../models/cell.model";
+import { Cell, SpriteBackgroundTile, SpriteTile, TileAttachment } from "../models/cell.model";
 import { Character } from "./character";
 import { ClickAnimation } from "./click-animation";
-import { TileAssets } from "./tile-assets.db";
+import { getBackgroundCollection } from "./tiles.db.ts/tile-assets.db";
 
 @Injectable()
 export class AssetsService {
@@ -22,7 +24,11 @@ export class AssetsService {
     private canvas: CanvasService,
     private shortestPath: ShortestPath,
     private gridService: GridService,
-    private engine: Engine) { }
+    private engine: Engine,
+    private editorService: EditorService,
+    ) { 
+
+    }
 
   public addObstacleImage(cell: Cell): void {
     // move obstacles to assets service
@@ -34,13 +40,17 @@ export class AssetsService {
     this.gridService.gridDisplay.forEach(row => {
       row.forEach(cell => {
         if(cell.x === 0 || cell.y === 0 || cell.x === this.gridService.width-1 || cell.y === this.gridService.height-1) {
-          cell.imageTile =  TileAssets.centerTreeClump as SpriteTile
+          cell.imageTile =  this.findMapAsset("crates", "crate1")
           cell.visible = true
           this.addObstacleImage(cell)
         }
       })
     })
   }
+
+  public findMapAsset(category: string, tileId: string): SpriteTile {
+    return this.editorService.findObjectAsset(category, tileId)
+  } 
 
   public addCharacter(imgUrl?: string): void {
     // const rndInt = Math.floor(Math.random() * 5) + 1
