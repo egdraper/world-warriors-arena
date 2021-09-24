@@ -112,19 +112,16 @@ export class CanvasComponent {
       if (!cellStart) { return }
         const selectedAsset = this.editorService.selectedAsset
         cellStart.imageTile = selectedAsset
+/////////////////////////////////////////
 
-      // cellStart.imgIndexX = selectedAsset.spriteGridPosX * selectedAsset.multiplier
-      // cellStart.imgIndexY = selectedAsset.spriteGridPosY * selectedAsset.multiplier
-      // cellStart.imgWidth = selectedAsset.tileWidth * selectedAsset.multiplier
-      // cellStart.imgHeight = selectedAsset.tileHeight * selectedAsset.multiplier
-      // cellStart.imgOffsetX = selectedAsset.tileOffsetX 
-      // cellStart.imgOffsetY = selectedAsset.tileOffsetY
-      // cellStart.imageId = selectedAsset
+
+//////////////////////////////////////
+
      
       for(let i = 0; i < selectedAsset.obstacleObstructionX; i++) {
         for(let l = 0 ; l < selectedAsset.obstacleObstructionY; l++) {
-         this.gridService.grid[`x${cellStart.x + i}:y${cellStart.y + l}`].obstacle = true
-         this.gridService.grid[`x${cellStart.x + i}:y${cellStart.y + l}`].visible = true
+         this.gridService.grid[`x${cellStart.x + i}:y${cellStart.y - l}`].obstacle = selectedAsset.obstacle
+         this.gridService.grid[`x${cellStart.x + i}:y${cellStart.y - l}`].visible = true
         }
       }
 

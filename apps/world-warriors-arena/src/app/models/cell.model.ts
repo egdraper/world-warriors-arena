@@ -47,8 +47,10 @@ export class SpriteTile {
   tileOffsetY: number
   multiplier: number
   visionBlocking: boolean
+  obstacle: boolean
   obstacleObstructionX: number
   obstacleObstructionY: number
+  obstacleSide?: "right" | "left" | "top" | "bottom"
   allowForPassThrough?: boolean
   leftEndTileName?: string
   rightEndTileName?: string

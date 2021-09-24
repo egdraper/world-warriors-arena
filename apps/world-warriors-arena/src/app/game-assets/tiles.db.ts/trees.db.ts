@@ -13,6 +13,7 @@ export const trees: SpriteTile[] = [
     tileOffsetY: -160,
     multiplier: 32,
     visionBlocking: true,
+    obstacle: true,
     obstacleObstructionX: 1,
     obstacleObstructionY: 1,
   }, {
@@ -25,6 +26,7 @@ export const trees: SpriteTile[] = [
     tileOffsetX: -48,
     tileOffsetY: -96,
     multiplier: 32,
+    obstacle: true,
     visionBlocking: true,
     obstacleObstructionX: 1,
     obstacleObstructionY: 1,
@@ -39,6 +41,7 @@ export const trees: SpriteTile[] = [
     tileOffsetY: -28,
     multiplier: 32,
     visionBlocking: false,
+    obstacle: true,
     obstacleObstructionX: 1,
     obstacleObstructionY: 1,
     allowForPassThrough: true
@@ -53,6 +56,7 @@ export const trees: SpriteTile[] = [
     tileOffsetY: -64,
     multiplier: 32,
     visionBlocking: false,
+    obstacle: true,
     obstacleObstructionX: 1,
     obstacleObstructionY: 1,
     centerTileName: "centerTreeClump",
@@ -77,6 +81,7 @@ export const trees: SpriteTile[] = [
     tileOffsetY: -32,
     multiplier: 32,
     visionBlocking: false,
+    obstacle: true,
     obstacleObstructionX: 1,
     obstacleObstructionY: 1,
     leftEndTileName: "leftTreeClump",
@@ -109,6 +114,7 @@ export const trees: SpriteTile[] = [
     tileOffsetY: -64,
     multiplier: 32,
     visionBlocking: false,
+    obstacle: true,
     obstacleObstructionX: 1,
     obstacleObstructionY: 1,
     centerTileName: "centerTreeClump",
@@ -134,6 +140,7 @@ export const trees: SpriteTile[] = [
     tileOffsetY: 0,
     multiplier: 32,
     visionBlocking: false,
+    obstacle: true,
     obstacleObstructionX: 1,
     obstacleObstructionY: 1,
   }, {
@@ -147,6 +154,7 @@ export const trees: SpriteTile[] = [
     tileOffsetY: 0,
     multiplier: 32,
     visionBlocking: false,
+    obstacle: true,
     obstacleObstructionX: 1,
     obstacleObstructionY: 1,
   }, {
@@ -160,6 +168,7 @@ export const trees: SpriteTile[] = [
     tileOffsetY: 0,
     multiplier: 32,
     visionBlocking: false,
+    obstacle: true,
     obstacleObstructionX: 1,
     obstacleObstructionY: 1,
   }, {
@@ -173,6 +182,7 @@ export const trees: SpriteTile[] = [
     tileOffsetY: -16,
     multiplier: 32,
     visionBlocking: false,
+    obstacle: true,
     obstacleObstructionX: 3,
     obstacleObstructionY: 1,
   }, {
@@ -186,6 +196,7 @@ export const trees: SpriteTile[] = [
     tileOffsetY: -0,
     multiplier: 32,
     visionBlocking: false,
+    obstacle: true,
     obstacleObstructionX: 0,
     obstacleObstructionY: 0,
   }, {
@@ -199,6 +210,7 @@ export const trees: SpriteTile[] = [
     tileOffsetY: -32,
     multiplier: 32,
     visionBlocking: false,
+    obstacle: true,
     obstacleObstructionX: 0,
     obstacleObstructionY: 0,
   }, {
@@ -212,6 +224,7 @@ export const trees: SpriteTile[] = [
     tileOffsetY: -0,
     multiplier: 32,
     visionBlocking: false,
+    obstacle: true,
     obstacleObstructionX: 0,
     obstacleObstructionY: 0,
   }, {
@@ -225,6 +238,7 @@ export const trees: SpriteTile[] = [
     tileOffsetY: -32,
     multiplier: 32,
     visionBlocking: false,
+    obstacle: true,
     obstacleObstructionX: 0,
     obstacleObstructionY: 0,
   }, {
@@ -238,6 +252,7 @@ export const trees: SpriteTile[] = [
     tileOffsetY: -0,
     multiplier: 32,
     visionBlocking: false,
+    obstacle: true,
     obstacleObstructionX: 0,
     obstacleObstructionY: 0,
   }, {
@@ -251,6 +266,7 @@ export const trees: SpriteTile[] = [
     tileOffsetY: -0,
     multiplier: 32,
     visionBlocking: false,
+    obstacle: true,
     obstacleObstructionX: 0,
     obstacleObstructionY: 0,
   }

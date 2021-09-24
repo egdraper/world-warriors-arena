@@ -255,64 +255,65 @@ export class DrawService {
   private drawObstacles(cell: Cell): void {
 
     // OBSTACLES
-    const sides = [1, 3]
-    const location: ("rightEndTileName" | 'leftEndTileName')[] = ["rightEndTileName", "leftEndTileName"]
+    // const sides = [1, 3]
+    // const location: ("rightEndTileName" | 'leftEndTileName')[] = ["rightEndTileName", "leftEndTileName"]
 
-    if (!cell.imageTile) { return }
-
-
-    sides.forEach((side, index) => {
-      if (cell.visible && cell.imageTile) {
-        if (cell.neighbors[side]) {
-          const obstacle = cell.neighbors[side].obstacle
-          const visible = cell.neighbors[side].visible
-          const affectedSide = location[index]
-
-          if (!obstacle && !visible && cell.imageTile[affectedSide]) {
-            const spriteTile  = this.editorService.findObjectAsset("cliffs", cell.imageTile.id)
-            cell.imageTile = this.editorService.findObjectAsset("cliffs", spriteTile[affectedSide])
-            // console.log(cell.imageTile.id)
-          }
-
-          const rightNeighbor = cell.neighbors[1]
-          const leftNeighbor = cell.neighbors[3]
-          const rightNeighborImage = rightNeighbor ? rightNeighbor.imageTile : null
-          const leftNeighborImage = leftNeighbor ? leftNeighbor.imageTile : null
-
-          if (rightNeighbor && leftNeighbor && rightNeighborImage && leftNeighborImage && cell.imageTile.centerTileName) {
-            console.log(cell.imageTile.centerTileName)
-            const spriteTile  = this.editorService.findObjectAsset("cliffs", cell.imageTile.id)
-            cell.imageTile = this.editorService.findObjectAsset("cliffs", spriteTile.centerTileName)
-            // console.log(cell.imageTile.id)
-          }
-        }
-      }
-    })
+    // if (!cell.imageTile) { return }
 
 
-    if (cell.imageTile.topEndTileName && (
-      (cell.neighbors[2] && cell.neighbors[2].imageTile !== cell.imageTile &&
-        cell.neighbors[0] && cell.neighbors[0].imageTile !== cell.imageTile) ||
-      (cell.neighbors[2] && cell.neighbors[2].imageTile === cell.imageTile &&
-        cell.neighbors[0] && cell.neighbors[0].imageTile !== cell.imageTile))
-    ) {
-      const tile  = this.editorService.findObjectAsset("cliffs", cell.imageTile.id)
-      const spriteTile = this.editorService.findObjectAsset("cliffs", tile.topEndTileName.name)
+    // sides.forEach((side, index) => {
+    //   if (cell.visible && cell.imageTile) {
+    //     if (cell.neighbors[side]) {
+    //       const obstacle = cell.neighbors[side].obstacle
+    //       const visible = cell.neighbors[side].visible
+    //       const affectedSide = location[index]
+
+    //       if (!obstacle && !visible && cell.imageTile[affectedSide]) {
+    //         const spriteTile  = this.editorService.findObjectAsset("cliffs", cell.imageTile.id)
+    //         cell.imageTile = this.editorService.findObjectAsset("cliffs", spriteTile[affectedSide])
+    //         // console.log(cell.imageTile.id)
+    //       }
+
+    //       const rightNeighbor = cell.neighbors[1]
+    //       const leftNeighbor = cell.neighbors[3]
+    //       const rightNeighborImage = rightNeighbor ? rightNeighbor.imageTile : null
+    //       const leftNeighborImage = leftNeighbor ? leftNeighbor.imageTile : null
+
+    //       if (rightNeighbor && leftNeighbor && rightNeighborImage && leftNeighborImage && cell.imageTile.centerTileName) {
+    //         console.log(cell.imageTile.centerTileName)
+    //         const spriteTile  = this.editorService.findObjectAsset("cliffs", cell.imageTile.id)
+    //         cell.imageTile = this.editorService.findObjectAsset("cliffs", spriteTile.centerTileName)
+    //         // console.log(cell.imageTile.id)
+    //       }
+    //     }
+    //   }
+    // })
+
+
+    // if (cell.imageTile.topEndTileName && (
+    //   (cell.neighbors[2] && cell.neighbors[2].imageTile !== cell.imageTile &&
+    //     cell.neighbors[0] && cell.neighbors[0].imageTile !== cell.imageTile) ||
+    //   (cell.neighbors[2] && cell.neighbors[2].imageTile === cell.imageTile &&
+    //     cell.neighbors[0] && cell.neighbors[0].imageTile !== cell.imageTile))
+    // ) {
+    //   const tile  = this.editorService.findObjectAsset("cliffs", cell.imageTile.id)
+    //   const spriteTile = this.editorService.findObjectAsset("cliffs", tile.topEndTileName.name)
      
-      this.canvasService.foregroundCTX.drawImage(
-        spriteTile.spriteSheet,
-        spriteTile.spriteGridPosX * spriteTile.multiplier,
-        spriteTile.spriteGridPosY * spriteTile.multiplier,
-        spriteTile.tileWidth * spriteTile.multiplier,
-        spriteTile.tileHeight * spriteTile.multiplier,
-        cell.posX,
-        cell.posY + cell.imageTile.topEndTileName.offset,
-        spriteTile.tileWidth * spriteTile.multiplier,
-        spriteTile.tileHeight * spriteTile.multiplier
-      )
+    //   this.canvasService.foregroundCTX.drawImage(
+    //     spriteTile.spriteSheet,
+    //     spriteTile.spriteGridPosX * spriteTile.multiplier,
+    //     spriteTile.spriteGridPosY * spriteTile.multiplier,
+    //     spriteTile.tileWidth * spriteTile.multiplier,
+    //     spriteTile.tileHeight * spriteTile.multiplier,
+    //     cell.posX,
+    //     cell.posY + cell.imageTile.topEndTileName.offset,
+    //     spriteTile.tileWidth * spriteTile.multiplier,
+    //     spriteTile.tileHeight * spriteTile.multiplier
+    //   )
 
-    }
+    // }
 
+    if(cell.visible && cell.imageTile) {
     this.canvasService.foregroundCTX.drawImage(
       cell.imageTile.spriteSheet,
       cell.imageTile.spriteGridPosX * cell.imageTile.multiplier,
@@ -324,24 +325,25 @@ export class DrawService {
       cell.imageTile.tileWidth * cell.imageTile.multiplier,
       cell.imageTile.tileHeight * cell.imageTile.multiplier
     )
-
-
-    if (cell.imageTile.attachments) {
-      cell.imageTile.attachments.forEach(attachment => {
-        const spriteTile = this.editorService.findObjectAsset("cliffs", attachment.tileName)
-        this.canvasService.foregroundCTX.drawImage(
-          spriteTile.spriteSheet,
-          spriteTile.spriteGridPosX * spriteTile.multiplier,
-          spriteTile.spriteGridPosY * spriteTile.multiplier,
-          spriteTile.tileWidth * spriteTile.multiplier,
-          spriteTile.tileHeight * spriteTile.multiplier,
-          cell.posX + attachment.xOffset,
-          cell.posY + attachment.yOffset,
-          spriteTile.tileWidth * spriteTile.multiplier,
-          spriteTile.tileHeight * spriteTile.multiplier
-        )
-      })
     }
+
+
+    // if (cell.imageTile.attachments) {
+    //   cell.imageTile.attachments.forEach(attachment => {
+    //     const spriteTile = this.editorService.findObjectAsset("cliffs", attachment.tileName)
+    //     this.canvasService.foregroundCTX.drawImage(
+    //       spriteTile.spriteSheet,
+    //       spriteTile.spriteGridPosX * spriteTile.multiplier,
+    //       spriteTile.spriteGridPosY * spriteTile.multiplier,
+    //       spriteTile.tileWidth * spriteTile.multiplier,
+    //       spriteTile.tileHeight * spriteTile.multiplier,
+    //       cell.posX + attachment.xOffset,
+    //       cell.posY + attachment.yOffset,
+    //       spriteTile.tileWidth * spriteTile.multiplier,
+    //       spriteTile.tileHeight * spriteTile.multiplier
+    //     )
+    //   })
+    // }
 
   }
 }
