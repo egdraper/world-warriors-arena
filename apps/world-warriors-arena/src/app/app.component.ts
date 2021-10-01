@@ -33,32 +33,21 @@ export class AppComponent {
   public ngAfterViewInit(): void {
     this.drawService.drawGrid()
     this.assetService.addDefaultBoarder()
-    this.drawService.drawFog()
   }
-
+  
   public onAddCharacterClick(): void {
-    this.visibilityService.preloadVisibility(this.assetService.obstacles)
-    this.visibilityService.fogEnabled = true
-    this.drawService.drawBlackoutFog()
+    this.visibilityService.fogEnabled = false
+    if(this.visibilityService.fogEnabled) {
+      this.drawService.drawFog()
+      this.visibilityService.preloadVisibility(this.assetService.obstacles)
+      this.drawService.drawBlackoutFog()
+    }
     this.assetService.addCharacter()
   }
 
   public onGridClick(event: { clickX: number, clickY: number }): void {
-    // this.selectedCell = this.grid.getGridCellByCoordinate(event.clickX, event.clickY)
-    
-    // const ctx = this.canvasService.backgroundCTX
-    // ctx.clearRect(0, 0, this.grid.width * 50, this.grid.height * 50);
-    // this.canvasService.drawGrid()
-
-    // const testCell = this.grid.getGridCellByCoordinate(250, 250)
-    // this.traceCell(testCell, this.selectedCell)
-
-
-    
-
-
     this.selectedCell = this.grid.getGridCellByCoordinate(event.clickX, event.clickY)
-
+    console.log(this.selectedCell)
     if (this.selectedCell.occupiedBy) {
       const character = this.selectedCell.occupiedBy
       this.assetService.gameComponents.forEach(asset => asset.selectionIndicator = undefined)

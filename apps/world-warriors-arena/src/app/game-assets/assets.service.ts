@@ -33,7 +33,7 @@ export class AssetsService {
   public addObstacleImage(cell: Cell): void {
     // move obstacles to assets service
     this.obstacles.push(cell.id)
-    this.obstacleAttachments[cell.id] = cell.imageTile.attachments
+    // this.obstacleAttachments[cell.id] = cell.imageTile.attachments
   }   
 
   public addDefaultBoarder(): void {

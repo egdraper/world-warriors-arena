@@ -18,7 +18,7 @@ export class EditorPalleteComponent implements OnInit {
 
   ngOnInit(): void {
 
-    this.imageArray = this.editorService.findObjectCollection("cliffs")
+    this.imageArray = this.editorService.findObjectCollection("trees")
    
   }
 

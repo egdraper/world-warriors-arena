@@ -12,6 +12,7 @@ export interface Cell {
   destination?: boolean;
   occupiedBy?: MotionAsset
   imageTile?: SpriteTile;
+  growableTile?: any
 }
 
 export class TileAttachment {
@@ -36,6 +37,22 @@ export class SpriteBackgroundTile {
   rarity?: number // express on a random placement how often it should be seen 1 being once in 20 on average
 }
 
+export enum GrowablePanelPosition {
+  topLeftPanel = "topLeftPanel",
+  topCenterPanel = "topCenterPanel",
+  topRightPanel = "topRightPanel",
+  growableLeftPanel = "growableLeftPanel",
+  growableCenterPanel = "growableCenterPanel",
+  growableRightPanel = "growableRightPanel",
+  bottomLeftPanel = "bottomLeftPanel",
+  bottomCenterPanel = "bottomCenterPanel",
+  bottomRightPanel = "bottomRightPanel",
+  bottomLeftPanelAngle = "bottomLeftPanelAngle",
+  bottomRightPanelAngle = "bottomRightPanelAngle",
+  bottomLeftPanelFillerAngle = "bottomLeftPanelFillerAngle",
+  bottomRightPanelFillerAngle = "bottomRightPanelFillerAngle",
+}
+
 export class SpriteTile {
   id: string
   spriteSheet: HTMLImageElement
@@ -50,6 +67,8 @@ export class SpriteTile {
   obstacle: boolean
   obstacleObstructionX: number
   obstacleObstructionY: number
+  position?: GrowablePanelPosition
+  default?: boolean
   obstacleSide?: "right" | "left" | "top" | "bottom"
   allowForPassThrough?: boolean
   leftEndTileName?: string
@@ -57,6 +76,16 @@ export class SpriteTile {
   centerTileName?: string
   topEndTileName?: EndTile
   attachments?: TileAttachment[]
+  drawWhen?: {
+    topNeighbor: boolean,
+    topRightNeighbor: boolean,
+    rightNeighbor: boolean,
+    bottomRightNeighbor: boolean
+    bottomNeighbor:boolean,
+    bottomLeftNeighbor: boolean,
+    leftNeighbor: boolean,
+    topLeftNeighbor: boolean,
+  }
 }
 
 export interface RelativePositionCell extends Cell {

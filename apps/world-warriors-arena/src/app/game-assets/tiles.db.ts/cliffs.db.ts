@@ -1,88 +1,16 @@
-import { SpriteTile } from "../../models/cell.model";
+import { GridService } from "../../grid/grid.service";
+import { GrowablePanelPosition, SpriteTile } from "../../models/cell.model";
 import { tileA5_outside } from "./images";
+
+
+
+
+
 
 export const cliffs: SpriteTile[] = [
   {
-    id: "leftTreeClump",
-    spriteSheet: tileA5_outside,
-    spriteGridPosX: 0,
-    spriteGridPosY: 12,
-    tileHeight: 2,
-    tileWidth: 1,
-    tileOffsetX: 0,
-    tileOffsetY: -32,
-    multiplier: 32,
-    visionBlocking: false,
-    obstacle: true,
-    obstacleObstructionX: 1,
-    obstacleObstructionY: 3,
-    centerTileName: "centerTreeClump",
-    topEndTileName: {
-      name: "leafTopLeft",
-      offset: -96
-    },
-    attachments: [{
-      tileName: "leafLeft1",
-      neighborPosition: 0,
-      xOffset: 0,
-      yOffset: -64
-    }]
-  },
-  {
-    id: "centerTreeClump",
-    spriteSheet: tileA5_outside,
-    spriteGridPosX: 1,
-    spriteGridPosY: 12,
-    tileHeight: 2,
-    tileWidth: 1,
-    tileOffsetX: 0,
-    tileOffsetY: -32,
-    multiplier: 32,
-    visionBlocking: false,
-    obstacle: true,
-    obstacleObstructionX: 1,
-    obstacleObstructionY: 3,
-    leftEndTileName: "leftTreeClump",
-    rightEndTileName: "rightTreeClump",
-    topEndTileName: {
-      name: "leafTopCenter",
-      offset: -96
-    },
-    attachments: [{
-      tileName: "leafCenter1",
-      neighborPosition: 0,
-      xOffset: 0,
-      yOffset: -64
-    }]
-  },
-  {
-    id: "rightTreeClump",
-    spriteSheet: tileA5_outside,
-    spriteGridPosX: 2,
-    spriteGridPosY: 12,
-    tileHeight: 2,
-    tileWidth: 1,
-    tileOffsetX: 0,
-    tileOffsetY: -32,
-    multiplier: 32,
-    visionBlocking: false,
-    obstacle: true,
-    obstacleObstructionX: 1,
-    obstacleObstructionY: 3,
-    centerTileName: "centerTreeClump",
-    topEndTileName: {
-      name: "leafTopRight",
-      offset: -96
-    },
-    attachments: [{
-      tileName: "leafRightCenter",
-      neighborPosition: 0,
-      xOffset: 0,
-      yOffset: -64
-    }]
-
-  }, {
-    id: "leafTopLeft",
+    id: "cliffTopLeft",
+    position: GrowablePanelPosition.topLeftPanel,
     spriteSheet: tileA5_outside,
     spriteGridPosX: 0,
     spriteGridPosY: 11,
@@ -93,11 +21,12 @@ export const cliffs: SpriteTile[] = [
     multiplier: 32,
     visionBlocking: false,
     obstacle: true,
-    obstacleSide: "left",
-    obstacleObstructionX: 0,
-    obstacleObstructionY: 0,
-  }, {
-    id: "leafTopCenter",
+    obstacleObstructionX: 1,
+    obstacleObstructionY: 1,
+  },
+  {
+    id: "cliffTopCenter",
+    position: GrowablePanelPosition.topCenterPanel,
     spriteSheet: tileA5_outside,
     spriteGridPosX: 1,
     spriteGridPosY: 11,
@@ -108,11 +37,12 @@ export const cliffs: SpriteTile[] = [
     multiplier: 32,
     visionBlocking: false,
     obstacle: true,
-    obstacleSide: "bottom",
-    obstacleObstructionX: 0,
-    obstacleObstructionY: 0,
-  }, {
-    id: "leafTopRight",
+    obstacleObstructionX: 1,
+    obstacleObstructionY: 1,
+  },
+  {
+    id: "cliffTopRight",
+    position: GrowablePanelPosition.topRightPanel,
     spriteSheet: tileA5_outside,
     spriteGridPosX: 2,
     spriteGridPosY: 11,
@@ -123,11 +53,12 @@ export const cliffs: SpriteTile[] = [
     multiplier: 32,
     visionBlocking: false,
     obstacle: true,
-    obstacleSide: "right",
     obstacleObstructionX: 1,
     obstacleObstructionY: 1,
-  }, {
-    id: "leafLeft1",
+  },
+  {
+    id: "cliffGrowableLeft",
+    position: GrowablePanelPosition.growableLeftPanel,
     spriteSheet: tileA5_outside,
     spriteGridPosX: 0,
     spriteGridPosY: 12,
@@ -140,8 +71,10 @@ export const cliffs: SpriteTile[] = [
     obstacle: true,
     obstacleObstructionX: 1,
     obstacleObstructionY: 1,
-  }, {
-    id: "leafCenter1",
+  },
+  {
+    id: "cliffGrowableCenter",
+    position: GrowablePanelPosition.growableCenterPanel,
     spriteSheet: tileA5_outside,
     spriteGridPosX: 1,
     spriteGridPosY: 12,
@@ -154,8 +87,10 @@ export const cliffs: SpriteTile[] = [
     obstacle: true,
     obstacleObstructionX: 1,
     obstacleObstructionY: 1,
-  }, {
-    id: "leafRightCenter",
+  },
+  {
+    id: "cliffGrowableRight",
+    position: GrowablePanelPosition.growableRightPanel,
     spriteSheet: tileA5_outside,
     spriteGridPosX: 2,
     spriteGridPosY: 12,
@@ -170,37 +105,8 @@ export const cliffs: SpriteTile[] = [
     obstacleObstructionY: 1,
   },
   {
-    id: "leftCliffEdge",
-    spriteSheet: tileA5_outside,
-    spriteGridPosX: 0,
-    spriteGridPosY: 10,
-    tileHeight: 1,
-    tileWidth: 1,
-    tileOffsetX: 0,
-    tileOffsetY: 0,
-    multiplier: 32,
-    visionBlocking: false,
-    obstacle: false,
-    obstacleObstructionX: 1,
-    obstacleObstructionY: 1,
-  },
-  {
-    id: "rightCliffEdge",
-    spriteSheet: tileA5_outside,
-    spriteGridPosX: 0,
-    spriteGridPosY: 9,
-    tileHeight: 1,
-    tileWidth: 1,
-    tileOffsetX: 0,
-    tileOffsetY: 0,
-    multiplier: 32,
-    visionBlocking: false,
-    obstacle: false,
-    obstacleObstructionX: 1,
-    obstacleObstructionY: 1,
-  },
-  {
-    id: "leftCliffBottomEdge",
+    id: "cliffBottomLeft",
+    position: GrowablePanelPosition.bottomLeftPanel,
     spriteSheet: tileA5_outside,
     spriteGridPosX: 0,
     spriteGridPosY: 13,
@@ -215,7 +121,8 @@ export const cliffs: SpriteTile[] = [
     obstacleObstructionY: 1,
   },
   {
-    id: "CenterCliffBottomEdge",
+    id: "cliffBottomCenter",
+    position: GrowablePanelPosition.bottomCenterPanel,
     spriteSheet: tileA5_outside,
     spriteGridPosX: 1,
     spriteGridPosY: 13,
@@ -230,7 +137,8 @@ export const cliffs: SpriteTile[] = [
     obstacleObstructionY: 1,
   },
   {
-    id: "rightCliffBottomEdge",
+    id: "cliffBottomRight",
+    position: GrowablePanelPosition.bottomRightPanel,
     spriteSheet: tileA5_outside,
     spriteGridPosX: 2,
     spriteGridPosY: 13,
@@ -244,184 +152,268 @@ export const cliffs: SpriteTile[] = [
     obstacleObstructionX: 1,
     obstacleObstructionY: 1,
   },
-
 ]
-//   id: "rightTreeClump",
-//   spriteSheet: tileB_outside,
-//   spriteGridPosX: 4,
-//   spriteGridPosY: 13,
-//   tileHeight: 3,
-//   tileWidth: 1,
-//   tileOffsetX: 0,
-//   tileOffsetY: -64,
-//   multiplier: 32,
-//   visionBlocking: false,
-//   obstacleObstructionX: 1,
-//   obstacleObstructionY: 1,
-//   centerTileName: "centerTreeClump",
-//   topEndTileName: {
-//     name: "leafRightTop",
-//     offset: -124
-//   },
-//   attachments: [{
-//     tileName: "leafRightCenter",
-//     neighborPosition: 0,
-//     xOffset: 0,
-//     yOffset: -96
-//   }
-//   ]
 
-  // {
-  //   id: "leftCliffBottomGrass",
-  //   spriteSheet: tileA5_outside,
-  //   spriteGridPosX: 0,
-  //   spriteGridPosY: 12,
-  //   tileHeight: 2,
-  //   tileWidth: 1,
-  //   tileOffsetX: 0,
-  //   tileOffsetY: -64,
-  //   multiplier: 32,
-  //   visionBlocking: false,
-  //   obstacleObstructionX: 1,
-  //   obstacleObstructionY: 1,
-  //   centerTileName: "centerCliffClump",
-  //   topEndTileName: {
-  //     name: "topLeftCliffGrass",
-  //     offset: -64
-  //   },
-  //   attachments: [{
-  //     tileName: "cliffGrower",
-  //     neighborPosition: 0,
-  //     xOffset: 0,
-  //     yOffset: -96
-  //   }]
-  // },
-  // {
-  //   id: "topLeftCliffGrass",
-  //   spriteSheet: tileA5_outside,
-  //   spriteGridPosX: 0,
-  //   spriteGridPosY: 11,
-  //   tileHeight: 1,
-  //   tileWidth: 1,
-  //   tileOffsetX: 0,
-  //   tileOffsetY: -64,
-  //   multiplier: 32,
-  //   visionBlocking: false,
-  //   obstacleObstructionX: 1,
-  //   obstacleObstructionY: 1,
-  //   centerTileName: "centerCliffClump",
-  // },
-  // {
-  //   id: "cliffGrower",
-  //   spriteSheet: tileA5_outside,
-  //   spriteGridPosX: 0,
-  //   spriteGridPosY: 12,
-  //   tileHeight: 1,
-  //   tileWidth: 1,
-  //   tileOffsetX: 0,
-  //   tileOffsetY: -64,
-  //   multiplier: 32,
-  //   visionBlocking: false,
-  //   obstacleObstructionX: 1,
-  //   obstacleObstructionY: 1,
-  //   centerTileName: "centerCliffClump",
-  // },
-  // {
-  //   id: "centerCliffClump",
-  //   spriteSheet: tileA5_outside,
-  //   spriteGridPosX: 1,
-  //   spriteGridPosY: 12,
-  //   tileHeight: 1,
-  //   tileWidth: 1,
-  //   tileOffsetX: 0,
-  //   tileOffsetY: -64,
-  //   multiplier: 32,
-  //   visionBlocking: false,
-  //   obstacleObstructionX: 1,
-  //   obstacleObstructionY: 1,
-  //   centerTileName: "centerCliffClump",
-  // }
-// ]
+export const GrowableCliffs = {
+  id: "DrawableDirtCliff",
+  topLeftPanel: cliffs.find(panel => panel.position === GrowablePanelPosition.topLeftPanel),
+  topCenterPanel: cliffs.find(panel => panel.position === GrowablePanelPosition.topCenterPanel),
+  topRightPanel: cliffs.find(panel => panel.position === GrowablePanelPosition.topRightPanel),
+  bottomLeftPanel: cliffs.find(panel => panel.position === GrowablePanelPosition.bottomLeftPanel),
+  bottomCenterPanel: cliffs.find(panel => panel.position === GrowablePanelPosition.bottomCenterPanel),
+  bottomRightPanel: cliffs.find(panel => panel.position === GrowablePanelPosition.bottomRightPanel),
+  growableLeftPanel: cliffs.find(panel => panel.position === GrowablePanelPosition.growableLeftPanel),
+  growableCenterPanel: cliffs.find(panel => panel.position === GrowablePanelPosition.growableCenterPanel),
+  growableRightPanel: cliffs.find(panel => panel.position === GrowablePanelPosition.growableRightPanel),
+}
 
-// {
-//   id: "leftTreeClump",
-//   spriteSheet: tileB_outside,
-//   spriteGridPosX: 2,
-//   spriteGridPosY: 13,
-//   tileHeight: 3,
-//   tileWidth: 1,
-//   tileOffsetX: 0,
-//   tileOffsetY: -64,
-//   multiplier: 32,
-//   visionBlocking: false,
-//   obstacleObstructionX: 1,
-//   obstacleObstructionY: 1,
-//   centerTileName: "centerTreeClump",
-//   topEndTileName: {
-//     name: "leafTopLeft",
-//     offset: -124
+
+
+
+
+
+// export const cliffs: SpriteTile[] = [
+//   {
+//     id: "leftCliffSide",
+//     spriteSheet: tileA5_outside,
+//     spriteGridPosX: 0,
+//     spriteGridPosY: 12,
+//     tileHeight: 2,
+//     tileWidth: 1,
+//     tileOffsetX: 0,
+//     tileOffsetY: -32,
+//     multiplier: 32,
+//     visionBlocking: false,
+//     obstacle: true,
+//     obstacleObstructionX: 1,
+//     obstacleObstructionY: 3,
+//     centerTileName: "centerCliffFace",
+//     topEndTileName: {
+//       name: "cliffTopLeft",
+//       offset: -96
+//     },
+//     attachments: [{
+//       tileName: "cliffLeftEdge",
+//       neighborPosition: 0,
+//       xOffset: 0,
+//       yOffset: -64
+//     }]
 //   },
-//   attachments: [{
-//     tileName: "leafLeft1",
-//     neighborPosition: 0,
-//     xOffset: 0,
-//     yOffset: -96
-//   }]
-// }, {
-//   id: "centerTreeClump",
-//   spriteSheet: tileB_outside,
-//   spriteGridPosX: 3,
-//   spriteGridPosY: 14,
-//   tileHeight: 2,
-//   tileWidth: 1,
-//   tileOffsetX: 0,
-//   tileOffsetY: -32,
-//   multiplier: 32,
-//   visionBlocking: false,
-//   obstacleObstructionX: 1,
-//   obstacleObstructionY: 1,
-//   leftEndTileName: "leftTreeClump",
-//   rightEndTileName: "rightTreeClump",
-//   topEndTileName: {
-//     name: "leafTopCenter",
-//     offset: -124
+//   {
+//     id: "centerCliffFace",
+//     spriteSheet: tileA5_outside,
+//     spriteGridPosX: 1,
+//     spriteGridPosY: 12,
+//     tileHeight: 2,
+//     tileWidth: 1,
+//     tileOffsetX: 0,
+//     tileOffsetY: -32,
+//     multiplier: 32,
+//     visionBlocking: false,
+//     obstacle: true,
+//     obstacleObstructionX: 1,
+//     obstacleObstructionY: 3,
+//     leftEndTileName: "leftCliffSide",
+//     rightEndTileName: "rightTreeClump",
+//     topEndTileName: {
+//       name: "cliffTopCenter",
+//       offset: -96
+//     },
+//     attachments: [{
+//       tileName: "cliffCenter",
+//       neighborPosition: 0,
+//       xOffset: 0,
+//       yOffset: -64
+//     }]
 //   },
-//   attachments: [{
-//     tileName: "leafBottom1",
-//     neighborPosition: 0,
-//     xOffset: 0,
-//     yOffset: -64
+//   {
+//     id: "rightTreeClump",
+//     spriteSheet: tileA5_outside,
+//     spriteGridPosX: 2,
+//     spriteGridPosY: 12,
+//     tileHeight: 2,
+//     tileWidth: 1,
+//     tileOffsetX: 0,
+//     tileOffsetY: -32,
+//     multiplier: 32,
+//     visionBlocking: false,
+//     obstacle: true,
+//     obstacleObstructionX: 1,
+//     obstacleObstructionY: 3,
+//     centerTileName: "centerCliffFace",
+//     topEndTileName: {
+//       name: "cliffTopRight",
+//       offset: -96
+//     },
+//     attachments: [{
+//       tileName: "cliffRightCenter",
+//       neighborPosition: 0,
+//       xOffset: 0,
+//       yOffset: -64
+//     }]
 
 //   }, {
-//     tileName: "leafCenter1",
-//     neighborPosition: 0,
-//     xOffset: 0,
-//     yOffset: -96
-//   }
-//   ]
-// }, {
-//   id: "rightTreeClump",
-//   spriteSheet: tileB_outside,
-//   spriteGridPosX: 4,
-//   spriteGridPosY: 13,
-//   tileHeight: 3,
-//   tileWidth: 1,
-//   tileOffsetX: 0,
-//   tileOffsetY: -64,
-//   multiplier: 32,
-//   visionBlocking: false,
-//   obstacleObstructionX: 1,
-//   obstacleObstructionY: 1,
-//   centerTileName: "centerTreeClump",
-//   topEndTileName: {
-//     name: "leafRightTop",
-//     offset: -124
+//     id: "cliffTopLeft",
+//     spriteSheet: tileA5_outside,
+//     spriteGridPosX: 0,
+//     spriteGridPosY: 11,
+//     tileHeight: 1,
+//     tileWidth: 1,
+//     tileOffsetX: 0,
+//     tileOffsetY: 0,
+//     multiplier: 32,
+//     visionBlocking: false,
+//     obstacle: true,
+//     obstacleSide: "left",
+//     obstacleObstructionX: 1,
+//     obstacleObstructionY: 1,
+//   }, {
+//     id: "cliffTopCenter",
+//     spriteSheet: tileA5_outside,
+//     spriteGridPosX: 1,
+//     spriteGridPosY: 11,
+//     tileHeight: 1,
+//     tileWidth: 1,
+//     tileOffsetX: 0,
+//     tileOffsetY: 0,
+//     multiplier: 32,
+//     visionBlocking: false,
+//     obstacle: true,
+//     obstacleSide: "bottom",
+//     obstacleObstructionX: 1,
+//     obstacleObstructionY: 1,
+//   }, {
+//     id: "cliffTopRight",
+//     spriteSheet: tileA5_outside,
+//     spriteGridPosX: 2,
+//     spriteGridPosY: 11,
+//     tileHeight: 1,
+//     tileWidth: 1,
+//     tileOffsetX: 0,
+//     tileOffsetY: 0,
+//     multiplier: 32,
+//     visionBlocking: false,
+//     obstacle: true,
+//     obstacleSide: "right",
+//     obstacleObstructionX: 1,
+//     obstacleObstructionY: 1,
+//   }, {
+//     id: "cliffLeftEdge",
+//     spriteSheet: tileA5_outside,
+//     spriteGridPosX: 0,
+//     spriteGridPosY: 12,
+//     tileHeight: 1,
+//     tileWidth: 1,
+//     tileOffsetX: 0,
+//     tileOffsetY: 0,
+//     multiplier: 32,
+//     visionBlocking: false,
+//     obstacle: true,
+//     obstacleObstructionX: 1,
+//     obstacleObstructionY: 1,
+//   }, {
+//     id: "cliffCenter",
+//     spriteSheet: tileA5_outside,
+//     spriteGridPosX: 1,
+//     spriteGridPosY: 12,
+//     tileHeight: 1,
+//     tileWidth: 1,
+//     tileOffsetX: 0,
+//     tileOffsetY: 0,
+//     multiplier: 32,
+//     visionBlocking: false,
+//     obstacle: true,
+//     obstacleObstructionX: 1,
+//     obstacleObstructionY: 1,
+//   }, {
+//     id: "cliffRightCenter",
+//     spriteSheet: tileA5_outside,
+//     spriteGridPosX: 2,
+//     spriteGridPosY: 12,
+//     tileHeight: 1,
+//     tileWidth: 1,
+//     tileOffsetX: 0,
+//     tileOffsetY: 0,
+//     multiplier: 32,
+//     visionBlocking: false,
+//     obstacle: true,
+//     obstacleObstructionX: 1,
+//     obstacleObstructionY: 1,
 //   },
-//   attachments: [{
-//     tileName: "leafRightCenter",
-//     neighborPosition: 0,
-//     xOffset: 0,
-//     yOffset: -96
-//   }
-//   ]
-// },
+//   {
+//     id: "leftCliffEdge",
+//     spriteSheet: tileA5_outside,
+//     spriteGridPosX: 0,
+//     spriteGridPosY: 10,
+//     tileHeight: 1,
+//     tileWidth: 1,
+//     tileOffsetX: 0,
+//     tileOffsetY: 0,
+//     multiplier: 32,
+//     visionBlocking: false,
+//     obstacle: false,
+//     obstacleObstructionX: 1,
+//     obstacleObstructionY: 1,
+//   },
+//   {
+//     id: "rightCliffEdge",
+//     spriteSheet: tileA5_outside,
+//     spriteGridPosX: 0,
+//     spriteGridPosY: 9,
+//     tileHeight: 1,
+//     tileWidth: 1,
+//     tileOffsetX: 0,
+//     tileOffsetY: 0,
+//     multiplier: 32,
+//     visionBlocking: false,
+//     obstacle: false,
+//     obstacleObstructionX: 1,
+//     obstacleObstructionY: 1,
+//   },
+//   {
+//     id: "leftCliffBottomEdge",
+//     spriteSheet: tileA5_outside,
+//     spriteGridPosX: 0,
+//     spriteGridPosY: 13,
+//     tileHeight: 1,
+//     tileWidth: 1,
+//     tileOffsetX: 0,
+//     tileOffsetY: 0,
+//     multiplier: 32,
+//     visionBlocking: false,
+//     obstacle: true,
+//     obstacleObstructionX: 1,
+//     obstacleObstructionY: 1,
+//   },
+//   {
+//     id: "CenterCliffBottomEdge",
+//     spriteSheet: tileA5_outside,
+//     spriteGridPosX: 1,
+//     spriteGridPosY: 13,
+//     tileHeight: 1,
+//     tileWidth: 1,
+//     tileOffsetX: 0,
+//     tileOffsetY: 0,
+//     multiplier: 32,
+//     visionBlocking: false,
+//     obstacle: true,
+//     obstacleObstructionX: 1,
+//     obstacleObstructionY: 1,
+//   },
+//   {
+//     id: "rightCliffBottomEdge",
+//     spriteSheet: tileA5_outside,
+//     spriteGridPosX: 2,
+//     spriteGridPosY: 13,
+//     tileHeight: 1,
+//     tileWidth: 1,
+//     tileOffsetX: 0,
+//     tileOffsetY: 0,
+//     multiplier: 32,
+//     visionBlocking: false,
+//     obstacle: true,
+//     obstacleObstructionX: 1,
+//     obstacleObstructionY: 1,
+//   },
+
+// ]
