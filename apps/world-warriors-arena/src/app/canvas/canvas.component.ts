@@ -154,6 +154,25 @@ export class CanvasComponent {
 
     const growableCliff = GrowableTrees
 
+    if(selectedCell.neighbors[0]) {
+      selectedCell.neighbors[0].growableTile = growableCliff
+      selectedCell.neighbors[0].obstacle = true
+      selectedCell.neighbors[0].visible = true
+    }
+    if(selectedCell.neighbors[1]) {
+      selectedCell.neighbors[1].growableTile = growableCliff
+      selectedCell.neighbors[1].obstacle = true
+      selectedCell.neighbors[1].visible = true
+    }
+    if(selectedCell.neighbors[4]) {
+      selectedCell.neighbors[4].growableTile = growableCliff
+      selectedCell.neighbors[4].obstacle = true
+      selectedCell.neighbors[4].visible = true
+    }
+
+
+
+
     selectedCell.growableTile = growableCliff
     selectedCell.obstacle = true
     selectedCell.visible = true
