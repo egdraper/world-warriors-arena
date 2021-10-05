@@ -58,6 +58,7 @@ export class Engine {
     }
   
     this.drawService.drawAnimatedAssets()
+    this.drawService.drawBackground()
 
     requestAnimationFrame(this.startEngine.bind(this)); 
 

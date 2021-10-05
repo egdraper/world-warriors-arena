@@ -35,5 +35,5 @@ export const greenGrass = [
     spriteGridPosX: [0, 1, 2, 3, 4, 5],
     spriteGridPosY: [2, 3, 4, 5],
     rarity: 2
-  },
+  }
 ]

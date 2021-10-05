@@ -1,10 +1,10 @@
 import { Component, ElementRef, EventEmitter, HostListener, Output, ViewChild } from '@angular/core';
 import { EditorService } from '../editor/editor-pallete/editor.service';
 import { AssetsService } from '../game-assets/assets.service';
-import { cliffs, GrowableCliffs } from '../game-assets/tiles.db.ts/cliffs.db';
-import { GrowableTrees } from '../game-assets/tiles.db.ts/trees.db';
+import { growableItems, TerrainType } from '../game-assets/tiles.db.ts/tile-assets.db';
+
 import { GridService } from '../grid/grid.service';
-import { Cell, GrowablePanelPosition } from '../models/cell.model';
+import { Cell } from '../models/cell.model';
 
 import { CanvasService } from './canvas.service';
 
@@ -109,16 +109,16 @@ export class CanvasComponent {
   public onMouseMove(event: any): void {
     if (event.offsetX < 0 || event.offsetY < 0) { return }
 
-    if (this.mouseIsDown && this.controlPressed ) { // && this.editorService.selectedAsset) {
+    if (this.mouseIsDown && this.controlPressed) { // && this.editorService.selectedAsset) {
       const cellStart = this.gridService.getGridCellByCoordinate(event.offsetX, event.offsetY)
-     
-      if (!cellStart) { return }
-         const selectedAsset = this.editorService.selectedAsset
-         cellStart.imageTile = selectedAsset
-         cellStart.obstacle = true
-         cellStart.visible = true
 
-     
+      if (!cellStart) { return }
+      const selectedAsset = this.editorService.selectedAsset
+      cellStart.imageTile = selectedAsset
+      //  cellStart.obstacle = true
+      cellStart.visible = true
+
+
       // for(let i = 0; i < selectedAsset.obstacleObstructionX; i++) {
       //   for(let l = 0 ; l < selectedAsset.obstacleObstructionY; l++) {
       //    this.gridService.grid[`x${cellStart.x + i}:y${cellStart.y - l}`].obstacle = selectedAsset.obstacle
@@ -126,10 +126,11 @@ export class CanvasComponent {
       //   }
       // }
 
-      if(!selectedAsset) {
+      if (!selectedAsset) {
         this.drawGrowableItems(cellStart)
       }
-      this.assetService.addObstacleImage(cellStart)      
+
+      this.assetService.addObstacleImage(cellStart)
     }
   }
 
@@ -137,45 +138,40 @@ export class CanvasComponent {
     this.mouseIsDown = false
   }
 
-
   private drawGrowableItems(selectedCell: Cell): void {
-    // export const GrowableCliffs = {
-    //   id: "DrawableDirtCliff",
-    //   topLeftPanel: cliffs.find(panel => panel.position === GrowablePanelPosition.topLeftPanel),
-    //   topCenterPanel: cliffs.find(panel => panel.position === GrowablePanelPosition.topCenterPanel),
-    //   topRightPanel: cliffs.find(panel => panel.position === GrowablePanelPosition.topRightPanel),
-    //   bottomLeftPanel: cliffs.find(panel => panel.position === GrowablePanelPosition.bottomLeftPanel),
-    //   bottomCenterPanel: cliffs.find(panel => panel.position === GrowablePanelPosition.bottomCenterPanel),
-    //   bottomRightPanel: cliffs.find(panel => panel.position === GrowablePanelPosition.bottomRightPanel),
-    //   growableLeftPanel: cliffs.find(panel => panel.position === GrowablePanelPosition.growableLeftPanel),
-    //   growableCenterPanel: cliffs.find(panel => panel.position === GrowablePanelPosition.growableCenterPanel),
-    //   growableRightPanel: cliffs.find(panel => panel.position === GrowablePanelPosition.growableRightPanel),
-    // }
+    const growableItem = growableItems.find(item => item.id === this.editorService.selectedGrowableAsset)
 
-    const growableCliff = GrowableTrees
+    if (growableItem.terrainType === TerrainType.Background) {
+      selectedCell.backgroundGrowableTileId = growableItem.id + this.editorService.layerID
+      
+      if (selectedCell.neighbors[0]) {
+        selectedCell.neighbors[0].backgroundGrowableTileId = growableItem.id + this.editorService.layerID
+      }
+      if (selectedCell.neighbors[1]) {
+        selectedCell.neighbors[1].backgroundGrowableTileId = growableItem.id + this.editorService.layerID
+      }
+      if (selectedCell.neighbors[4]) {
+        selectedCell.neighbors[4].backgroundGrowableTileId = growableItem.id + this.editorService.layerID
+      }
+      this.editorService.backgroundDirty = true
+    } else if (growableItem.terrainType === TerrainType.Block) {
 
-    if(selectedCell.neighbors[0]) {
-      selectedCell.neighbors[0].growableTile = growableCliff
-      selectedCell.neighbors[0].obstacle = true
-      selectedCell.neighbors[0].visible = true
+      if (selectedCell.neighbors[0]) {
+        selectedCell.neighbors[0].growableTileId = growableItem.id + this.editorService.layerID
+        selectedCell.neighbors[0].visible = true
+      }
+      if (selectedCell.neighbors[1]) {
+        selectedCell.neighbors[1].growableTileId = growableItem.id + this.editorService.layerID
+        selectedCell.neighbors[1].visible = true
+      }
+      if (selectedCell.neighbors[4]) {
+        selectedCell.neighbors[4].growableTileId = growableItem.id + this.editorService.layerID
+        selectedCell.neighbors[4].visible = true
+      }
+
+      selectedCell.growableTileId = growableItem.id + this.editorService.layerID
+      selectedCell.visible = true
     }
-    if(selectedCell.neighbors[1]) {
-      selectedCell.neighbors[1].growableTile = growableCliff
-      selectedCell.neighbors[1].obstacle = true
-      selectedCell.neighbors[1].visible = true
-    }
-    if(selectedCell.neighbors[4]) {
-      selectedCell.neighbors[4].growableTile = growableCliff
-      selectedCell.neighbors[4].obstacle = true
-      selectedCell.neighbors[4].visible = true
-    }
 
-
-
-
-    selectedCell.growableTile = growableCliff
-    selectedCell.obstacle = true
-    selectedCell.visible = true
-  
   }
 }

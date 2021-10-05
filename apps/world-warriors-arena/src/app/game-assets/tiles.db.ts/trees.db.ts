@@ -4,7 +4,6 @@ import { tileB_outside } from "./images";
 export const trees: SpriteTile[] = [
   {
     id: "treeClumpTopLeft",
-    position: GrowablePanelPosition.topLeftPanel,
     spriteSheet: tileB_outside,
     spriteGridPosX: 0,
     spriteGridPosY: 10,
@@ -30,7 +29,6 @@ export const trees: SpriteTile[] = [
   },
   {
     id: "treeClumpTopCenter",
-    position: GrowablePanelPosition.topCenterPanel,
     spriteSheet: tileB_outside,
     spriteGridPosX: 1,
     spriteGridPosY: 10,
@@ -55,7 +53,6 @@ export const trees: SpriteTile[] = [
     }
   }, {
     id: "treeClumpTopRight",
-    position: GrowablePanelPosition.topRightPanel,
     spriteSheet: tileB_outside,
     spriteGridPosX: 2,
     spriteGridPosY: 10,
@@ -81,7 +78,6 @@ export const trees: SpriteTile[] = [
   },
   {
     id: "treeClumpGrowableLeft",
-    position: GrowablePanelPosition.growableLeftPanel,
     spriteSheet: tileB_outside,
     spriteGridPosX: 0,
     spriteGridPosY: 11,
@@ -106,7 +102,6 @@ export const trees: SpriteTile[] = [
     }
   }, {
     id: "treeClumpGrowableCenter",
-    position: GrowablePanelPosition.growableCenterPanel,
     spriteSheet: tileB_outside,
     spriteGridPosX: 1,
     spriteGridPosY: 11,
@@ -132,7 +127,6 @@ export const trees: SpriteTile[] = [
 
   }, {
     id: "treeClumpGrowableRight",
-    position: GrowablePanelPosition.growableRightPanel,
     spriteSheet: tileB_outside,
     spriteGridPosX: 2,
     spriteGridPosY: 11,
@@ -147,7 +141,7 @@ export const trees: SpriteTile[] = [
     obstacleObstructionY: 1,
     drawWhen: {
       topNeighbor: true,
-      topRightNeighbor: false, /// This one
+      topRightNeighbor: false,
       rightNeighbor: false,
       bottomRightNeighbor: null,
       bottomNeighbor: true,
@@ -157,7 +151,6 @@ export const trees: SpriteTile[] = [
     }
   }, {
     id: "treeClumpTrunkLeft",
-    position: GrowablePanelPosition.bottomLeftPanel,
     spriteSheet: tileB_outside,
     spriteGridPosX: 2,
     spriteGridPosY: 13,
@@ -183,7 +176,6 @@ export const trees: SpriteTile[] = [
   },
   {
     id: "treeClumpTrunkCenter",
-    position: GrowablePanelPosition.bottomCenterPanel,
     default: true,
     spriteSheet: tileB_outside,
     spriteGridPosX: 3,
@@ -210,7 +202,6 @@ export const trees: SpriteTile[] = [
   },
   {
     id: "treeClumpTrunkRight",
-    position: GrowablePanelPosition.bottomRightPanel,
     spriteSheet: tileB_outside,
     spriteGridPosX: 4,
     spriteGridPosY: 13,
@@ -236,7 +227,6 @@ export const trees: SpriteTile[] = [
   },
   {
     id: "treeClumpTrunkLeftAngle",
-    position: GrowablePanelPosition.bottomLeftPanelAngle,
     spriteSheet: tileB_outside,
     spriteGridPosX: 1,
     spriteGridPosY: 13,
@@ -262,7 +252,6 @@ export const trees: SpriteTile[] = [
   },
   {
     id: "treeClumpTrunkRightAngle",
-    position: GrowablePanelPosition.bottomRightPanelAngle,
     spriteSheet: tileB_outside,
     spriteGridPosX: 5,
     spriteGridPosY: 13,
@@ -288,7 +277,6 @@ export const trees: SpriteTile[] = [
   },
   {
     id: "treeClumpLeftFillerAngle",
-    position: GrowablePanelPosition.bottomLeftPanelFillerAngle,
     spriteSheet: tileB_outside,
     spriteGridPosX: 6,
     spriteGridPosY: 10,
@@ -315,7 +303,6 @@ export const trees: SpriteTile[] = [
   },
   {
     id: "treeClumpRightFillerAngle",
-    position: GrowablePanelPosition.bottomRightPanelFillerAngle,
     spriteSheet: tileB_outside,
     spriteGridPosX: 7,
     spriteGridPosY: 10,
@@ -342,7 +329,6 @@ export const trees: SpriteTile[] = [
   },
   {
     id: "treeClumpLeftFillerAngleUP",
-    position: GrowablePanelPosition.bottomRightPanelFillerAngle,
     spriteSheet: tileB_outside,
     spriteGridPosX: 6,
     spriteGridPosY: 11,
@@ -369,7 +355,6 @@ export const trees: SpriteTile[] = [
   },
   {
     id: "treeClumpRightFillerAngleUp",
-    position: GrowablePanelPosition.bottomRightPanelFillerAngle,
     spriteSheet: tileB_outside,
     spriteGridPosX: 7,
     spriteGridPosY: 11,
@@ -396,7 +381,6 @@ export const trees: SpriteTile[] = [
   },
   {
     id: "treeClumpRightAngleGapFiller",
-    position: GrowablePanelPosition.bottomRightPanelFillerAngle,
     spriteSheet: tileB_outside,
     spriteGridPosX: 6,
     spriteGridPosY: 14,
@@ -422,7 +406,6 @@ export const trees: SpriteTile[] = [
   },
   {
     id: "treeClumpLeftAngleGapFiller",
-    position: GrowablePanelPosition.bottomRightPanelFillerAngle,
     spriteSheet: tileB_outside,
     spriteGridPosX: 7,
     spriteGridPosY: 14,
@@ -448,7 +431,6 @@ export const trees: SpriteTile[] = [
   },
   {
     id: "treeClumpLeftFillerAngleSingle",
-    position: GrowablePanelPosition.bottomRightPanelFillerAngle,
     spriteSheet: tileB_outside,
     spriteGridPosX: 7,
     spriteGridPosY: 14,
@@ -474,7 +456,6 @@ export const trees: SpriteTile[] = [
   },
   {
     id: "treeClumpRightFillerAngleSingle",
-    position: GrowablePanelPosition.bottomRightPanelFillerAngle,
     spriteSheet: tileB_outside,
     spriteGridPosX: 6,
     spriteGridPosY: 14,
@@ -499,19 +480,6 @@ export const trees: SpriteTile[] = [
     } 
   },
 ]
-
-export const GrowableTrees = {
-  id: "DrawableDirtCliff",
-  topLeftPanel: trees.find(panel => panel.position === GrowablePanelPosition.topLeftPanel),
-  topCenterPanel: trees.find(panel => panel.position === GrowablePanelPosition.topCenterPanel),
-  topRightPanel: trees.find(panel => panel.position === GrowablePanelPosition.topRightPanel),
-  bottomLeftPanel: trees.find(panel => panel.position === GrowablePanelPosition.bottomLeftPanel),
-  bottomCenterPanel: trees.find(panel => panel.position === GrowablePanelPosition.bottomCenterPanel),
-  bottomRightPanel: trees.find(panel => panel.position === GrowablePanelPosition.bottomRightPanel),
-  growableLeftPanel: trees.find(panel => panel.position === GrowablePanelPosition.growableLeftPanel),
-  growableCenterPanel: trees.find(panel => panel.position === GrowablePanelPosition.growableCenterPanel),
-  growableRightPanel: trees.find(panel => panel.position === GrowablePanelPosition.growableRightPanel),
-}
 
 export const trees2: SpriteTile[] = [
   {

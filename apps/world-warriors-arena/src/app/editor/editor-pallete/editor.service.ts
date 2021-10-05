@@ -5,6 +5,9 @@ import { SpriteBackgroundTile, SpriteTile } from "../../models/cell.model";
 @Injectable()
 export class EditorService {
   public selectedAsset: SpriteTile
+  public selectedGrowableAsset: string = "DrawableDirtRoad"
+  public layerID = 1
+  public backgroundDirty = false
 
   public findBackgroundCollection(category: string): SpriteBackgroundTile[] {
     return getBackgroundCollection(category)

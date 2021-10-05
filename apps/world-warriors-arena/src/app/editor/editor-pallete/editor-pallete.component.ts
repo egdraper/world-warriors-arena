@@ -10,16 +10,18 @@ import { EditorService } from './editor.service';
 export class EditorPalleteComponent implements OnInit {
   public images: any[] = []
 
+
   public imageArray: any[] = []
   public currentImageSrc: string = ""
+
 
   constructor(
     private editorService: EditorService) { }
 
   ngOnInit(): void {
 
-    this.imageArray = this.editorService.findObjectCollection("trees")
-   
+    this.imageArray = this.editorService.findObjectCollection("cliffs")
+
   }
 
   public tileClick(tile: SpriteTile): void {
@@ -27,6 +29,7 @@ export class EditorPalleteComponent implements OnInit {
   }
 
   public baseClicked(): void {
+    this.editorService.layerID++
     // this.editorService.baseOnly = true
   }
 
@@ -44,15 +47,15 @@ export class EditorPalleteComponent implements OnInit {
 
     let x = event.offsetX
     let y = event.offsetY
-    while(x % 32 !== 0) {
+    while (x % 32 !== 0) {
       x--
     }
-    while(y % 32 !== 0) {
+    while (y % 32 !== 0) {
       y--
     }
 
-    console.log(x +" and " + y)
-    this.images.push({x,y})
+    console.log(x + " and " + y)
+    this.images.push({ x, y })
   }
 
 }

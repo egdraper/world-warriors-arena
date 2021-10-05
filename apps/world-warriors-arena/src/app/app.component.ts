@@ -31,7 +31,8 @@ export class AppComponent {
   }
 
   public ngAfterViewInit(): void {
-    this.drawService.drawGrid()
+    this.drawService.fillTerrain()
+    this.drawService.drawBackground(true)
     this.assetService.addDefaultBoarder()
   }
   

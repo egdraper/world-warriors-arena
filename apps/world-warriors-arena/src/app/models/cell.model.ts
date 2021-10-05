@@ -1,5 +1,7 @@
 import { GameComponent, MotionAsset } from "./assets.model"
 
+
+
 export interface Cell {
   id: string;
   x: number; // X Grid Coordinates
@@ -12,7 +14,9 @@ export interface Cell {
   destination?: boolean;
   occupiedBy?: MotionAsset
   imageTile?: SpriteTile;
-  growableTile?: any
+  growableTileId?: string
+  backgroundTile?: SpriteBackgroundTile;
+  backgroundGrowableTileId?: string
 }
 
 export class TileAttachment {
@@ -63,10 +67,11 @@ export class SpriteTile {
   tileOffsetX: number
   tileOffsetY: number
   multiplier: number
-  visionBlocking: boolean
+  sizeAdjustment?: number
+  visionBlocking?: boolean
   obstacle: boolean
-  obstacleObstructionX: number
-  obstacleObstructionY: number
+  obstacleObstructionX?: number
+  obstacleObstructionY?: number
   position?: GrowablePanelPosition
   default?: boolean
   obstacleSide?: "right" | "left" | "top" | "bottom"

@@ -1,14 +1,11 @@
-import { createElementCssSelector } from "@angular/compiler";
 import { Injectable } from "@angular/core";
 import { Subject } from "rxjs";
 import { CanvasService } from "../canvas/canvas.service";
 import { EditorService } from "../editor/editor-pallete/editor.service";
 import { ShortLivedAnimation } from "../game-assets/click-animation";
-import { cliffs } from "../game-assets/tiles.db.ts/cliffs.db";
-import { greenGrass } from "../game-assets/tiles.db.ts/greenGrass.db";
-import { trees } from "../game-assets/tiles.db.ts/trees.db";
+import { growableItems } from "../game-assets/tiles.db.ts/tile-assets.db";
 import { GridService } from "../grid/grid.service";
-import { Cell, GrowablePanelPosition, SpriteTile } from "../models/cell.model";
+import { Cell, SpriteBackgroundTile } from "../models/cell.model";
 import { FogOfWarService } from "./visibility.service";
 
 @Injectable()
@@ -25,49 +22,13 @@ export class DrawService {
   ) {
 
     setTimeout(() => {
-      this.drawGrid()
+      this.drawBackground(true)
     }, 1000)
 
   }
 
-  public drawGrid(): void {
-    for (let h = 0; h < this.gridService.height; h++) {
-      for (let w = 0; w < this.gridService.width; w++) {
-
-        let weight = 0
-        this.editorService.findBackgroundCollection("greenGrass").forEach(tile => {
-          tile.lowWeight = weight
-          weight += tile.rarity
-          tile.highWeight = weight
-        })
-        const rand = Math.floor(Math.random() * weight);
-        let spriteSheet = this.editorService.findBackgroundCollection("greenGrass")[0].spriteSheet
-        let xPos = 0
-        let yPos = 0
-
-        this.editorService.findBackgroundCollection("greenGrass").forEach(tile => {
-          if (rand < tile.highWeight && rand >= tile.lowWeight) {
-            xPos = Math.floor(Math.random() * tile.spriteGridPosX.length)
-            yPos = Math.floor(Math.random() * tile.spriteGridPosY.length)
-            xPos = tile.spriteGridPosX[xPos]
-            yPos = tile.spriteGridPosY[yPos]
-          }
-        })
-
-        this.canvasService.backgroundCTX.imageSmoothingEnabled = false
-        this.canvasService.backgroundCTX.drawImage(
-          spriteSheet,
-          xPos * 32,
-          yPos * 32,
-          32,
-          32,
-          w * 32,
-          h * 32,
-          32,
-          32)
-      }
-    }
-
+  public drawLines(): void {
+    // Draw Lines
     for (let h = 0; h <= this.gridService.height; h++) {
       for (let w = 0; w <= this.gridService.width; w++) {
         this.canvasService.backgroundCTX.beginPath()
@@ -87,6 +48,77 @@ export class DrawService {
       }
     }
   }
+
+  public fillTerrain() {
+    for (let h = 0; h < this.gridService.height; h++) {
+      for (let w = 0; w < this.gridService.width; w++) {
+        let spriteSheet
+        let xPos = 0
+        let yPos = 0
+        const cell = this.gridService.grid[`x${w}:y${h}`]
+
+        //Randomly generates random texture
+        let weight = 0
+        this.editorService.findBackgroundCollection("greenGrass").forEach(tile => {
+          tile.lowWeight = weight
+          weight += tile.rarity
+          tile.highWeight = weight
+        })
+
+        const rand = Math.floor(Math.random() * weight);
+        spriteSheet = this.editorService.findBackgroundCollection("greenGrass")[0].spriteSheet
+
+        this.editorService.findBackgroundCollection("greenGrass").forEach(tile => {
+          if (rand < tile.highWeight && rand >= tile.lowWeight) {
+            xPos = Math.floor(Math.random() * tile.spriteGridPosX.length)
+            yPos = Math.floor(Math.random() * tile.spriteGridPosY.length)
+            xPos = tile.spriteGridPosX[xPos]
+            yPos = tile.spriteGridPosY[yPos]
+            spriteSheet = tile.spriteSheet
+          }
+        })
+
+        cell.backgroundTile = {
+          id: `x${xPos}:Y${yPos}greenGrass`,
+          spriteSheet: spriteSheet,
+          spriteGridPosX: [xPos],
+          spriteGridPosY: [yPos],
+          rarity: 0
+        }
+      }
+    }
+  }
+
+  public drawBackground(forceDraw: boolean = false): void {
+
+    if (this.editorService.backgroundDirty || forceDraw)
+      for (let h = 0; h < this.gridService.height; h++) {
+        for (let w = 0; w < this.gridService.width; w++) {
+          const cell = this.gridService.grid[`x${w}:y${h}`]
+
+          if(cell.backgroundGrowableTileId) {
+            this.calculateGrowableBackgroundTerrain(cell)
+          }
+
+          this.canvasService.backgroundCTX.imageSmoothingEnabled = false
+          this.canvasService.backgroundCTX.drawImage(
+            cell.backgroundTile.spriteSheet,
+            cell.backgroundTile.spriteGridPosX[0] * 32,
+            cell.backgroundTile.spriteGridPosY[0] * 32,
+            32,
+            32,
+            cell.posX,
+            cell.posY,
+            32,
+            32
+          )
+        }
+      }
+
+    this.editorService.backgroundDirty = false
+  }
+
+
 
   public drawBlackoutFog(): void {
     if (this.fogOfWarService.fogEnabled) {
@@ -209,6 +241,8 @@ export class DrawService {
   //   })
   // }
 
+
+
   public drawAnimatedAssets(): void {
     if (this.canvasService.foregroundCTX) {
       this.canvasService.foregroundCTX.clearRect(0, 0, this.gridService.width * 36, this.gridService.height * 36);
@@ -259,68 +293,9 @@ export class DrawService {
   }
 
   private drawObstacles(cell: Cell): void {
-
-    // OBSTACLES
-    // const sides = [1, 3]
-    // const location: ("rightEndTileName" | 'leftEndTileName')[] = ["rightEndTileName", "leftEndTileName"]
-
-    // if (!cell.imageTile) { return }
-
-
-    // sides.forEach((side, index) => {
-    //   if (cell.visible && cell.imageTile) {
-    //     if (cell.neighbors[side]) {
-    //       const obstacle = cell.neighbors[side].obstacle
-    //       const visible = cell.neighbors[side].visible
-    //       const affectedSide = location[index]
-
-    //       if (!obstacle && !visible && cell.imageTile[affectedSide]) {
-    //         const spriteTile = this.editorService.findObjectAsset("cliffs", cell.imageTile.id)
-    //         cell.imageTile = this.editorService.findObjectAsset("cliffs", spriteTile[affectedSide])
-    //         // console.log(cell.imageTile.id)
-    //       }
-
-    //       const rightNeighbor = cell.neighbors[1]
-    //       const leftNeighbor = cell.neighbors[3]
-    //       const rightNeighborImage = rightNeighbor ? rightNeighbor.imageTile : null
-    //       const leftNeighborImage = leftNeighbor ? leftNeighbor.imageTile : null
-
-    //       if (rightNeighbor && leftNeighbor && rightNeighborImage && leftNeighborImage && cell.imageTile.centerTileName) {
-    //         console.log(cell.imageTile.centerTileName)
-    //         const spriteTile = this.editorService.findObjectAsset("cliffs", cell.imageTile.id)
-    //         cell.imageTile = this.editorService.findObjectAsset("cliffs", spriteTile.centerTileName)
-    //         // console.log(cell.imageTile.id)
-    //       }
-    //     }
-    //   }
-    // })
-
-    if (cell.growableTile) {
-      this.drawGrowableTerrain(cell)
+    if (cell.growableTileId) {
+      this.calculateGrowableTerrain(cell)
     }
-
-    // if (cell.imageTile.topEndTileName && (
-    //   (cell.neighbors[2] && cell.neighbors[2].imageTile !== cell.imageTile &&
-    //     cell.neighbors[0] && cell.neighbors[0].imageTile !== cell.imageTile) ||
-    //   (cell.neighbors[2] && cell.neighbors[2].imageTile === cell.imageTile &&
-    //     cell.neighbors[0] && cell.neighbors[0].imageTile !== cell.imageTile))
-    // ) {
-    //   const tile  = this.editorService.findObjectAsset("cliffs", cell.imageTile.id)
-    //   const spriteTile = this.editorService.findObjectAsset("cliffs", tile.topEndTileName.name)
-
-    //   this.canvasService.foregroundCTX.drawImage(
-    //     spriteTile.spriteSheet,
-    //     spriteTile.spriteGridPosX * spriteTile.multiplier,
-    //     spriteTile.spriteGridPosY * spriteTile.multiplier,
-    //     spriteTile.tileWidth * spriteTile.multiplier,
-    //     spriteTile.tileHeight * spriteTile.multiplier,
-    //     cell.posX,
-    //     cell.posY + cell.imageTile.topEndTileName.offset,
-    //     spriteTile.tileWidth * spriteTile.multiplier,
-    //     spriteTile.tileHeight * spriteTile.multiplier
-    //   )
-
-    // }
 
     if (cell.visible && cell.imageTile) {
       this.canvasService.foregroundCTX.drawImage(
@@ -331,33 +306,14 @@ export class DrawService {
         cell.imageTile.tileHeight * cell.imageTile.multiplier,
         cell.posX + cell.imageTile.tileOffsetX,
         cell.posY + cell.imageTile.tileOffsetY,
-        cell.imageTile.tileWidth * cell.imageTile.multiplier,
-        cell.imageTile.tileHeight * cell.imageTile.multiplier
+        cell.imageTile.tileWidth * (cell.imageTile.sizeAdjustment || cell.imageTile.multiplier),
+        cell.imageTile.tileHeight * (cell.imageTile.sizeAdjustment || cell.imageTile.multiplier)
       )
     }
-
-
-    // if (cell.imageTile.attachments) {
-    //   cell.imageTile.attachments.forEach(attachment => {
-    //     const spriteTile = this.editorService.findObjectAsset("cliffs", attachment.tileName)
-    //     this.canvasService.foregroundCTX.drawImage(
-    //       spriteTile.spriteSheet,
-    //       spriteTile.spriteGridPosX * spriteTile.multiplier,
-    //       spriteTile.spriteGridPosY * spriteTile.multiplier,
-    //       spriteTile.tileWidth * spriteTile.multiplier,
-    //       spriteTile.tileHeight * spriteTile.multiplier,
-    //       cell.posX + attachment.xOffset,
-    //       cell.posY + attachment.yOffset,
-    //       spriteTile.tileWidth * spriteTile.multiplier,
-    //       spriteTile.tileHeight * spriteTile.multiplier
-    //     )
-    //   })
-    // }
-
   }
 
-  private drawGrowableTerrain(selectedCell: Cell): void {
-    const theCliffs = trees
+  private calculateGrowableTerrain(selectedCell: Cell): void {
+    const growableItem = growableItems.find(item => item.id === this.editorService.selectedGrowableAsset)
     const topNeighbor = selectedCell.neighbors[0]
     const topRightNeighbor = selectedCell.neighbors[4]
     const rightNeighbor = selectedCell.neighbors[1]
@@ -368,25 +324,25 @@ export class DrawService {
     const topLeftNeighbor = selectedCell.neighbors[7]
 
     const neighbors = {
-      topLeftMatch: topLeftNeighbor.growableTile === selectedCell.growableTile,
-      topCenterMatch: topNeighbor.growableTile === selectedCell.growableTile,
-      topRightMatch: topRightNeighbor.growableTile === selectedCell.growableTile,
-      centerLeftMatch: leftNeighbor.growableTile === selectedCell.growableTile,
-      centerRightMatch: rightNeighbor.growableTile === selectedCell.growableTile,
-      bottomLeftMatch: bottomLeftNeighbor.growableTile === selectedCell.growableTile,
-      bottomCenterMatch: bottomNeighbor.growableTile === selectedCell.growableTile,
-      bottomRightMatch: bottomRightNeighbor.growableTile === selectedCell.growableTile
+      topLeftMatch: topLeftNeighbor.growableTileId === selectedCell.growableTileId,
+      topCenterMatch: topNeighbor.growableTileId === selectedCell.growableTileId,
+      topRightMatch: topRightNeighbor.growableTileId === selectedCell.growableTileId,
+      centerLeftMatch: leftNeighbor.growableTileId === selectedCell.growableTileId,
+      centerRightMatch: rightNeighbor.growableTileId === selectedCell.growableTileId,
+      bottomLeftMatch: bottomLeftNeighbor.growableTileId === selectedCell.growableTileId,
+      bottomCenterMatch: bottomNeighbor.growableTileId === selectedCell.growableTileId,
+      bottomRightMatch: bottomRightNeighbor.growableTileId === selectedCell.growableTileId
     }
 
-    let cliff = theCliffs.find(a => {
-      const topMatch = neighbors.topCenterMatch === a.drawWhen.topNeighbor || a.drawWhen.topNeighbor === null
-      const topRightMatch = neighbors.topRightMatch === a.drawWhen.topRightNeighbor || a.drawWhen.topRightNeighbor === null
-      const rightMatch = neighbors.centerRightMatch === a.drawWhen.rightNeighbor || a.drawWhen.rightNeighbor === null
-      const bottomRightMatch = neighbors.bottomRightMatch === a.drawWhen.bottomRightNeighbor || a.drawWhen.bottomRightNeighbor === null
-      const bottomMatch = neighbors.bottomCenterMatch === a.drawWhen.bottomNeighbor || a.drawWhen.bottomNeighbor === null
-      const bottomLeftNeighborMatch = neighbors.bottomLeftMatch === a.drawWhen.bottomLeftNeighbor || a.drawWhen.bottomLeftNeighbor === null
-      const leftNeighborMatch = neighbors.centerLeftMatch === a.drawWhen.leftNeighbor || a.drawWhen.leftNeighbor === null
-      const topLeftNeighborMatch = neighbors.topLeftMatch === a.drawWhen.topLeftNeighbor || a.drawWhen.topLeftNeighbor === null
+    let tile = growableItem.spritesTiles.find(spriteTile => {
+      const topMatch = neighbors.topCenterMatch === spriteTile.drawWhen.topNeighbor || spriteTile.drawWhen.topNeighbor === null
+      const topRightMatch = neighbors.topRightMatch === spriteTile.drawWhen.topRightNeighbor || spriteTile.drawWhen.topRightNeighbor === null
+      const rightMatch = neighbors.centerRightMatch === spriteTile.drawWhen.rightNeighbor || spriteTile.drawWhen.rightNeighbor === null
+      const bottomRightMatch = neighbors.bottomRightMatch === spriteTile.drawWhen.bottomRightNeighbor || spriteTile.drawWhen.bottomRightNeighbor === null
+      const bottomMatch = neighbors.bottomCenterMatch === spriteTile.drawWhen.bottomNeighbor || spriteTile.drawWhen.bottomNeighbor === null
+      const bottomLeftNeighborMatch = neighbors.bottomLeftMatch === spriteTile.drawWhen.bottomLeftNeighbor || spriteTile.drawWhen.bottomLeftNeighbor === null
+      const leftNeighborMatch = neighbors.centerLeftMatch === spriteTile.drawWhen.leftNeighbor || spriteTile.drawWhen.leftNeighbor === null
+      const topLeftNeighborMatch = neighbors.topLeftMatch === spriteTile.drawWhen.topLeftNeighbor || spriteTile.drawWhen.topLeftNeighbor === null
 
       return topMatch &&
         topRightMatch &&
@@ -399,254 +355,68 @@ export class DrawService {
         topLeftNeighborMatch
     })
 
-    if (!cliff) {
-      cliff = theCliffs.find(cliff => cliff.default)
+    if (!tile) {
+      tile = growableItem.spritesTiles.find(cliff => cliff.default)
     }
 
-    selectedCell.imageTile = cliff
+    selectedCell.imageTile = tile
     selectedCell.visible = true
-    selectedCell.obstacle = true
   }
 
+  private calculateGrowableBackgroundTerrain(selectedCell: Cell): void {
+    if (!this.editorService.backgroundDirty) { return }
 
-  //   if (
-  //     // Center
-  //     topLeftNeighbor.growableTile === selectedCell.growableTile &&
-  //     topNeighbor.growableTile === selectedCell.growableTile &&
-  //     topRightNeighbor.growableTile === selectedCell.growableTile &&
-  //     rightNeighbor.growableTile === selectedCell.growableTile &&
-  //     bottomRightNeighbor.growableTile === selectedCell.growableTile &&
-  //     bottomNeighbor.growableTile === selectedCell.growableTile &&
-  //     bottomLeftNeighbor.growableTile === selectedCell.growableTile &&
-  //     leftNeighbor.growableTile === selectedCell.growableTile
-  //   ) {
-  //     selectedCell.imageTile = theCliffs.find(panel => panel.position === GrowablePanelPosition.growableCenterPanel)
-  //   } 
+    const growableItem = growableItems.find(item => item.id === this.editorService.selectedGrowableAsset)
+    const topNeighbor = selectedCell.neighbors[0]
+    const topRightNeighbor = selectedCell.neighbors[4]
+    const rightNeighbor = selectedCell.neighbors[1]
+    const bottomRightNeighbor = selectedCell.neighbors[5]
+    const bottomNeighbor = selectedCell.neighbors[2]
+    const bottomLeftNeighbor = selectedCell.neighbors[6]
+    const leftNeighbor = selectedCell.neighbors[3]
+    const topLeftNeighbor = selectedCell.neighbors[7]
 
+    const neighbors = {
+      topLeftMatch: topLeftNeighbor.backgroundGrowableTileId === selectedCell.backgroundGrowableTileId,
+      topCenterMatch: topNeighbor.backgroundGrowableTileId === selectedCell.backgroundGrowableTileId,
+      topRightMatch: topRightNeighbor.backgroundGrowableTileId === selectedCell.backgroundGrowableTileId,
+      centerLeftMatch: leftNeighbor.backgroundGrowableTileId === selectedCell.backgroundGrowableTileId,
+      centerRightMatch: rightNeighbor.backgroundGrowableTileId === selectedCell.backgroundGrowableTileId,
+      bottomLeftMatch: bottomLeftNeighbor.backgroundGrowableTileId === selectedCell.backgroundGrowableTileId,
+      bottomCenterMatch: bottomNeighbor.backgroundGrowableTileId === selectedCell.backgroundGrowableTileId,
+      bottomRightMatch: bottomRightNeighbor.backgroundGrowableTileId === selectedCell.backgroundGrowableTileId
+    }
 
-  //   else if (
-  //     // TopLeft
-  //     topLeftNeighbor.growableTile !== selectedCell.growableTile &&
-  //     topNeighbor.growableTile !== selectedCell.growableTile &&
-  //     topRightNeighbor.growableTile !== selectedCell.growableTile &&
-  //     rightNeighbor.growableTile === selectedCell.growableTile &&
-  //     bottomNeighbor.growableTile === selectedCell.growableTile &&
-  //     leftNeighbor.growableTile !== selectedCell.growableTile
-  //   ) {
-  //     selectedCell.imageTile = theCliffs.find(panel => panel.position === GrowablePanelPosition.topLeftPanel)
-  //   } else if (
-  //     // top Center
-  //     topLeftNeighbor.growableTile !== selectedCell.growableTile &&
-  //     topNeighbor.growableTile !== selectedCell.growableTile &&
-  //     topRightNeighbor.growableTile !== selectedCell.growableTile &&
-  //     rightNeighbor.growableTile === selectedCell.growableTile &&
-  //     bottomNeighbor.growableTile === selectedCell.growableTile &&
-  //     leftNeighbor.growableTile === selectedCell.growableTile
-  //   ) {
-  //     selectedCell.imageTile = theCliffs.find(panel => panel.position === GrowablePanelPosition.topCenterPanel)
-  //   } else if (
-  //     // Top Right
-  //     topNeighbor.growableTile !== selectedCell.growableTile &&
-  //     topRightNeighbor.growableTile !== selectedCell.growableTile &&
-  //     rightNeighbor.growableTile !== selectedCell.growableTile &&
-  //     bottomNeighbor.growableTile === selectedCell.growableTile &&
-  //     leftNeighbor.growableTile === selectedCell.growableTile
-  //   ) {
-  //     selectedCell.imageTile = theCliffs.find(panel => panel.position === GrowablePanelPosition.topRightPanel)
-  //   } 
+    let tile = growableItem.spritesTiles.find(spriteTile => {
+      const topMatch = neighbors.topCenterMatch === spriteTile.drawWhen.topNeighbor || spriteTile.drawWhen.topNeighbor === null
+      const topRightMatch = neighbors.topRightMatch === spriteTile.drawWhen.topRightNeighbor || spriteTile.drawWhen.topRightNeighbor === null
+      const rightMatch = neighbors.centerRightMatch === spriteTile.drawWhen.rightNeighbor || spriteTile.drawWhen.rightNeighbor === null
+      const bottomRightMatch = neighbors.bottomRightMatch === spriteTile.drawWhen.bottomRightNeighbor || spriteTile.drawWhen.bottomRightNeighbor === null
+      const bottomMatch = neighbors.bottomCenterMatch === spriteTile.drawWhen.bottomNeighbor || spriteTile.drawWhen.bottomNeighbor === null
+      const bottomLeftNeighborMatch = neighbors.bottomLeftMatch === spriteTile.drawWhen.bottomLeftNeighbor || spriteTile.drawWhen.bottomLeftNeighbor === null
+      const leftNeighborMatch = neighbors.centerLeftMatch === spriteTile.drawWhen.leftNeighbor || spriteTile.drawWhen.leftNeighbor === null
+      const topLeftNeighborMatch = neighbors.topLeftMatch === spriteTile.drawWhen.topLeftNeighbor || spriteTile.drawWhen.topLeftNeighbor === null
 
-  //   else if (
-  //     // Left Center
-  //     topNeighbor.growableTile === selectedCell.growableTile &&
-  //     rightNeighbor.growableTile === selectedCell.growableTile &&
-  //     bottomNeighbor.growableTile === selectedCell.growableTile &&
-  //     leftNeighbor.growableTile !== selectedCell.growableTile
-  //   ) {
-  //     selectedCell.imageTile = theCliffs.find(panel => panel.position === GrowablePanelPosition.growableLeftPanel)
-  //   } else
+      return topMatch &&
+        topRightMatch &&
+        rightMatch &&
+        bottomRightMatch &&
+        bottomMatch &&
+        bottomLeftNeighborMatch &&
+        leftNeighborMatch &&
+        topLeftNeighbor &&
+        topLeftNeighborMatch
+    })
 
-  //   if (
-  //     // right Center
-  //     topNeighbor.growableTile === selectedCell.growableTile &&
-  //     rightNeighbor.growableTile !== selectedCell.growableTile &&
-  //     bottomNeighbor.growableTile === selectedCell.growableTile &&
-  //     leftNeighbor.growableTile === selectedCell.growableTile
-  //   ) {
-  //     selectedCell.imageTile = theCliffs.find(panel => panel.position === GrowablePanelPosition.growableRightPanel)
-  //   }  
+    if (!tile) {
+      tile = growableItem.spritesTiles.find(cliff => cliff.default)
+    }
 
-  //   else if (
-  //     // BottomUpperLeftAngle
-  //     bottomRightNeighbor.growableTile === selectedCell.growableTile &&
-  //     rightNeighbor.growableTile === selectedCell.growableTile &&
-  //     bottomNeighbor.growableTile !== selectedCell.growableTile
-  //   ) {
-  //     selectedCell.imageTile = theCliffs.find(panel => panel.position === GrowablePanelPosition.bottomLeftPanelAngle)
-
-  //     for(let i = 0; i < selectedCell.imageTile.tileHeight -1; i++) {
-  //       const cell = this.gridService.grid[`x${selectedCell.x}:y${selectedCell.y - i}`]
-  //       cell.growableTile = selectedCell.growableTile
-  //       cell.visible = true
-  //     }
-
-
-  //       topNeighbor.imageTile = theCliffs.find(panel => panel.position === GrowablePanelPosition.bottomRightPanelFillerAngle)
-  //       topNeighbor.visible = true
-
-
-  //   }
-  //   else if (
-  //     // BottomLeft
-  //     rightNeighbor.growableTile === selectedCell.growableTile &&
-  //     bottomNeighbor.growableTile !== selectedCell.growableTile &&
-  //     leftNeighbor.growableTile !== selectedCell.growableTile
-  //   ) {
-  //     selectedCell.imageTile = theCliffs.find(panel => panel.position === GrowablePanelPosition.bottomLeftPanel)
-
-  //     for(let i = 0; i < selectedCell.imageTile.tileHeight -1; i++) {
-  //       const cell = this.gridService.grid[`x${selectedCell.x}:y${selectedCell.y - i}`]
-  //       cell.growableTile = selectedCell.growableTile
-  //       cell.visible = true
-  //     }
-
-  //     if(topNeighbor.growableTile !== selectedCell.growableTile && !topNeighbor.obstacle) {
-  //       topNeighbor.imageTile = theCliffs.find(panel => panel.position === GrowablePanelPosition.topLeftPanel)
-  //       topNeighbor.visible = true
-  //     }
-  //   }    
-
-  //    else if (
-  //     // BottomUpperRightAngle
-  //     topRightNeighbor.growableTile === selectedCell.growableTile &&
-  //     rightNeighbor.growableTile !== selectedCell.growableTile &&
-  //     leftNeighbor.growableTile === selectedCell.growableTile
-  //   ) {
-  //     selectedCell.imageTile = theCliffs.find(panel => panel.position === GrowablePanelPosition.bottomRightPanelAngle)
-
-  //     for(let i = 0; i < selectedCell.imageTile.tileHeight -1; i++) {
-  //       const cell = this.gridService.grid[`x${selectedCell.x}:y${selectedCell.y - i}`]
-  //       cell.growableTile = selectedCell.growableTile
-  //       cell.visible = true
-  //     }
-
-
-  //       topNeighbor.imageTile = theCliffs.find(panel => panel.position === GrowablePanelPosition.bottomLeftPanelFillerAngle)
-  //       topNeighbor.visible = true
-
-
-  //   }
-
-
-  //   else if (
-  //     // BottomRight
-  //     rightNeighbor.growableTile !== selectedCell.growableTile &&
-  //     bottomNeighbor.growableTile !== selectedCell.growableTile &&
-  //     leftNeighbor.growableTile === selectedCell.growableTile
-  //   ) {
-  //     selectedCell.imageTile = theCliffs.find(panel => panel.position === GrowablePanelPosition.bottomRightPanel)
-
-  //     for(let i = 0; i < selectedCell.imageTile.tileHeight -1; i++) {
-  //       const cell = this.gridService.grid[`x${selectedCell.x}:y${selectedCell.y - i}`]
-  //       cell.growableTile = selectedCell.growableTile
-  //       cell.visible = true
-  //     }
-
-  //     if(topNeighbor.growableTile !== selectedCell.growableTile && !topNeighbor.obstacle) {
-  //       topNeighbor.imageTile = theCliffs.find(panel => panel.position === GrowablePanelPosition.topRightPanel)
-  //       topNeighbor.visible = true
-  //     }
-  //   } else
-
-
-  //   if (
-  //     // BottomCenter
-  //     rightNeighbor.growableTile === selectedCell.growableTile &&
-  //     bottomNeighbor.growableTile !== selectedCell.growableTile &&
-  //     leftNeighbor.growableTile === selectedCell.growableTile
-  //   ) {
-  //     selectedCell.imageTile = theCliffs.find(panel => panel.position === GrowablePanelPosition.bottomCenterPanel)
-
-  //     for(let i = 0; i < selectedCell.imageTile.tileHeight -1; i++) {
-  //       const cell = this.gridService.grid[`x${selectedCell.x}:y${selectedCell.y - i}`]
-  //       cell.growableTile = selectedCell.growableTile
-  //       cell.visible = true
-  //     }
-
-  //     if(topNeighbor.growableTile !== selectedCell.growableTile && !topNeighbor.obstacle) {
-  //       topNeighbor.imageTile = theCliffs.find(panel => panel.position === GrowablePanelPosition.topCenterPanel)
-  //       topNeighbor.visible = true
-  //     }
-  //   }
-  //   else if (
-  //     rightNeighbor.growableTile !== selectedCell.growableTile &&
-  //     leftNeighbor.growableTile !== selectedCell.growableTile && 
-  //     bottomLeftNeighbor.growableTile !== selectedCell.growableTile &&
-  //     bottomNeighbor.growableTile !== selectedCell.growableTile 
-  //   ) {
-
-  //     selectedCell.imageTile = theCliffs.find(panel => panel.position === GrowablePanelPosition.topCenterPanel)
-  //     selectedCell.visible = true
-
-  //     rightNeighbor.imageTile = theCliffs.find(panel => panel.position === GrowablePanelPosition.bottomRightPanel)
-  //     rightNeighbor.visible = true
-  //     rightNeighbor.obstacle = true
-  //     rightNeighbor.growableTile = selectedCell.growableTile
-
-  //     topNeighbor.imageTile = theCliffs.find(panel => panel.position === GrowablePanelPosition.topRightPanel)
-  //     topNeighbor.visible = true
-  //     topNeighbor.obstacle = true
-  //     topNeighbor.growableTile = selectedCell.growableTile
-
-  //     topRightNeighbor.imageTile = theCliffs.find(panel => panel.position === GrowablePanelPosition.topLeftPanel)
-  //     topRightNeighbor.visible = true
-  //     topRightNeighbor.obstacle = true
-  //     topRightNeighbor.growableTile = selectedCell.growableTile
-
-  //   }
-  //   else if (
-  //     rightNeighbor.growableTile !== selectedCell.growableTile &&
-  //     leftNeighbor.growableTile !== selectedCell.growableTile && 
-  //     bottomLeftNeighbor.growableTile !== selectedCell.growableTile &&
-  //     bottomNeighbor.growableTile === selectedCell.growableTile 
-  //   ) {
-
-  //     selectedCell.imageTile = theCliffs.find(panel => panel.position === GrowablePanelPosition.topCenterPanel)
-  //     selectedCell.visible = true
-
-  //     rightNeighbor.imageTile = theCliffs.find(panel => panel.position === GrowablePanelPosition.bottomRightPanel)
-  //     rightNeighbor.visible = true
-  //     rightNeighbor.obstacle = true
-  //     rightNeighbor.growableTile = selectedCell.growableTile
-
-  //   }
-
-
-  // }
-
-  // public center(neighbor: any): boolean {
-  //   return neighbor.topLeftMatch 
-  //     && neighbor.topCenterMatch 
-  //     && neighbor.topRightMatch 
-  //     && neighbor.centerLeftMatch 
-  //     && neighbor.centerRightMatch 
-  //     && neighbor.bottomLeftMatch
-  //     && neighbor.bottomCenterMatch
-  //     && neighbor.bottomRightMatch 
-  // }
-
-  // public topLeft(neighbor: any): boolean {
-  //   return !neighbor.topLeftMatch
-  //     && neighbor.topCenterMatch
-  //     && neighbor.topRightMatch
-  //     && neighbor.centerLeftMatch
-  //     && neighbor.centerRightMatch
-  //     && neighbor.bottomLeftMatch
-  //     && neighbor.bottomCenterMatch
-  //     && neighbor.bottomRightMatch; 
-  // }
-
-  // public topLeft(): boolean {
-
-  // }
-
+    selectedCell.backgroundTile = {
+      spriteSheet: tile.spriteSheet,
+      spriteGridPosX: [tile.spriteGridPosX],
+      spriteGridPosY: [tile.spriteGridPosY],
+      id: tile.id + tile.spriteGridPosX + tile.spriteGridPosY
+    }
+  }
 }
