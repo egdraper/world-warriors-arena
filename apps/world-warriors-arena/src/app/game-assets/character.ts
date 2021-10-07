@@ -27,7 +27,7 @@ export class Character extends MotionAsset {
     this.positionY = cell.posY
 
     // temp: Randomly chooses character sprites
-    const rndInt = Math.floor(Math.random() * 32) + 1
+    const rndInt = Math.floor(Math.random() * 40) + 1
     if(rndInt < 10) {
     this.image.src = `../../../assets/images/character_00${rndInt}.png`
     } else {

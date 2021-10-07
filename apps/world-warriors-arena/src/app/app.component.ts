@@ -23,7 +23,7 @@ export class AppComponent {
     public drawService: DrawService,
     public visibilityService: FogOfWarService
   ) {
-    this.grid.createGrid(20, 20)
+    this.grid.createGrid(40, 40)
   }
 
   public ngOnInit(): void {
@@ -31,7 +31,7 @@ export class AppComponent {
   }
 
   public ngAfterViewInit(): void {
-    this.drawService.fillTerrain()
+    this.drawService.autoFillTerrain()
     this.drawService.drawBackground(true)
     this.assetService.addDefaultBoarder()
   }

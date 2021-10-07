@@ -5,7 +5,7 @@ import { EditorService } from "../editor/editor-pallete/editor.service";
 import { ShortLivedAnimation } from "../game-assets/click-animation";
 import { growableItems } from "../game-assets/tiles.db.ts/tile-assets.db";
 import { GridService } from "../grid/grid.service";
-import { Cell, SpriteBackgroundTile } from "../models/cell.model";
+import { Cell } from "../models/cell.model";
 import { FogOfWarService } from "./visibility.service";
 
 @Injectable()
@@ -49,7 +49,7 @@ export class DrawService {
     }
   }
 
-  public fillTerrain() {
+  public autoFillTerrain() {
     for (let h = 0; h < this.gridService.height; h++) {
       for (let w = 0; w < this.gridService.width; w++) {
         let spriteSheet
@@ -90,7 +90,6 @@ export class DrawService {
   }
 
   public drawBackground(forceDraw: boolean = false): void {
-
     if (this.editorService.backgroundDirty || forceDraw)
       for (let h = 0; h < this.gridService.height; h++) {
         for (let w = 0; w < this.gridService.width; w++) {
@@ -116,8 +115,44 @@ export class DrawService {
       }
 
     this.editorService.backgroundDirty = false
+    this.blackOutEdges()
   }
 
+
+  public blackOutEdges(): void {
+    if(this.canvasService.blackoutCTX) {
+      this.canvasService.blackoutCTX.fillStyle = 'black';
+      this.canvasService.blackoutCTX.fillRect(
+        0,
+        0,
+        32,
+        this.gridService.width * 32,
+      )
+
+    }
+
+    if(this.canvasService.blackoutCTX) {
+      this.canvasService.blackoutCTX.fillStyle = 'black';
+      this.canvasService.blackoutCTX.fillRect(
+        0,
+        this.gridService.height * 32 - 64,
+        this.gridService.width * 32,
+        64,
+      )
+
+    }
+
+    if(this.canvasService.blackoutCTX) {
+      this.canvasService.blackoutCTX.fillStyle = 'black';
+      this.canvasService.blackoutCTX.fillRect(
+        this.gridService.width * 32 - 32,
+        0,
+        64,
+        this.gridService.height * 32,
+      )
+
+    }
+  }
 
 
   public drawBlackoutFog(): void {
@@ -313,7 +348,9 @@ export class DrawService {
   }
 
   private calculateGrowableTerrain(selectedCell: Cell): void {
-    const growableItem = growableItems.find(item => item.id === this.editorService.selectedGrowableAsset)
+    const growableItem = growableItems.find(item => {
+      return selectedCell.growableTileId.includes(item.id)
+    })
     const topNeighbor = selectedCell.neighbors[0]
     const topRightNeighbor = selectedCell.neighbors[4]
     const rightNeighbor = selectedCell.neighbors[1]
@@ -324,14 +361,14 @@ export class DrawService {
     const topLeftNeighbor = selectedCell.neighbors[7]
 
     const neighbors = {
-      topLeftMatch: topLeftNeighbor.growableTileId === selectedCell.growableTileId,
-      topCenterMatch: topNeighbor.growableTileId === selectedCell.growableTileId,
-      topRightMatch: topRightNeighbor.growableTileId === selectedCell.growableTileId,
-      centerLeftMatch: leftNeighbor.growableTileId === selectedCell.growableTileId,
-      centerRightMatch: rightNeighbor.growableTileId === selectedCell.growableTileId,
-      bottomLeftMatch: bottomLeftNeighbor.growableTileId === selectedCell.growableTileId,
-      bottomCenterMatch: bottomNeighbor.growableTileId === selectedCell.growableTileId,
-      bottomRightMatch: bottomRightNeighbor.growableTileId === selectedCell.growableTileId
+      topLeftMatch: topLeftNeighbor?.growableTileId === selectedCell.growableTileId,
+      topCenterMatch: topNeighbor?.growableTileId === selectedCell.growableTileId,
+      topRightMatch: topRightNeighbor?.growableTileId === selectedCell.growableTileId,
+      centerLeftMatch: leftNeighbor?.growableTileId === selectedCell.growableTileId,
+      centerRightMatch: rightNeighbor?.growableTileId === selectedCell.growableTileId,
+      bottomLeftMatch: bottomLeftNeighbor?.growableTileId === selectedCell.growableTileId,
+      bottomCenterMatch: bottomNeighbor?.growableTileId === selectedCell.growableTileId,
+      bottomRightMatch: bottomRightNeighbor?.growableTileId === selectedCell.growableTileId
     }
 
     let tile = growableItem.spritesTiles.find(spriteTile => {
@@ -366,7 +403,9 @@ export class DrawService {
   private calculateGrowableBackgroundTerrain(selectedCell: Cell): void {
     if (!this.editorService.backgroundDirty) { return }
 
-    const growableItem = growableItems.find(item => item.id === this.editorService.selectedGrowableAsset)
+    const growableItem = growableItems.find(item =>  {
+      return selectedCell.backgroundGrowableTileId.includes(item.id)
+    })
     const topNeighbor = selectedCell.neighbors[0]
     const topRightNeighbor = selectedCell.neighbors[4]
     const rightNeighbor = selectedCell.neighbors[1]
@@ -377,14 +416,14 @@ export class DrawService {
     const topLeftNeighbor = selectedCell.neighbors[7]
 
     const neighbors = {
-      topLeftMatch: topLeftNeighbor.backgroundGrowableTileId === selectedCell.backgroundGrowableTileId,
-      topCenterMatch: topNeighbor.backgroundGrowableTileId === selectedCell.backgroundGrowableTileId,
-      topRightMatch: topRightNeighbor.backgroundGrowableTileId === selectedCell.backgroundGrowableTileId,
-      centerLeftMatch: leftNeighbor.backgroundGrowableTileId === selectedCell.backgroundGrowableTileId,
-      centerRightMatch: rightNeighbor.backgroundGrowableTileId === selectedCell.backgroundGrowableTileId,
-      bottomLeftMatch: bottomLeftNeighbor.backgroundGrowableTileId === selectedCell.backgroundGrowableTileId,
-      bottomCenterMatch: bottomNeighbor.backgroundGrowableTileId === selectedCell.backgroundGrowableTileId,
-      bottomRightMatch: bottomRightNeighbor.backgroundGrowableTileId === selectedCell.backgroundGrowableTileId
+      topLeftMatch: topLeftNeighbor?.backgroundGrowableTileId === selectedCell.backgroundGrowableTileId,
+      topCenterMatch: topNeighbor?.backgroundGrowableTileId === selectedCell.backgroundGrowableTileId,
+      topRightMatch: topRightNeighbor?.backgroundGrowableTileId === selectedCell.backgroundGrowableTileId,
+      centerLeftMatch: leftNeighbor?.backgroundGrowableTileId === selectedCell.backgroundGrowableTileId,
+      centerRightMatch: rightNeighbor?.backgroundGrowableTileId === selectedCell.backgroundGrowableTileId,
+      bottomLeftMatch: bottomLeftNeighbor?.backgroundGrowableTileId === selectedCell.backgroundGrowableTileId,
+      bottomCenterMatch: bottomNeighbor?.backgroundGrowableTileId === selectedCell.backgroundGrowableTileId,
+      bottomRightMatch: bottomRightNeighbor?.backgroundGrowableTileId === selectedCell.backgroundGrowableTileId
     }
 
     let tile = growableItem.spritesTiles.find(spriteTile => {

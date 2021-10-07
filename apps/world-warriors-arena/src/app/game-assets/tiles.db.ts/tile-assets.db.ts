@@ -13,13 +13,13 @@ export const enum TerrainType {
 }
 
 export const growableItems = [{
-  id: "DrawableTree1",
+  id: "DrawableTree",
   name: "Drawable Tree Cluster",
   terrainType: TerrainType.Block,
   spritesTiles: trees
 },
 {
-  id: "DrawableDirtCliffs1",
+  id: "DrawableDirtCliffs",
   terrainType: TerrainType.Block,
   name: "Drawable Dirt Cliffs",
   spritesTiles: grassToGrassCliffs

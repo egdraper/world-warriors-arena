@@ -2,6 +2,12 @@
 <button (click)="paintClicked()">Paint</button>
 <button (click)="editModeClicked()">EditMode</button>
 
+<select (change)="onSelectionChange($event.target)">
+  <option>Drawable Tree Cluster</option>
+  <option>Drawable Dirt Cliffs</option>
+  <option>Drawable Dirt Road</option>
+</select>
+
 <!-- <img
 src="assets/images/tileA5_world.png"
 (click)="imageClick($event)"

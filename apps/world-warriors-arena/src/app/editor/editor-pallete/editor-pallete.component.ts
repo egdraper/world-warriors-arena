@@ -1,5 +1,9 @@
 import { Component, OnInit } from '@angular/core';
+import { ShortestPath } from '../../engine/shortest-path';
+import { growableItems, TerrainType } from '../../game-assets/tiles.db.ts/tile-assets.db';
+import { GridService } from '../../grid/grid.service';
 import { SpriteTile } from '../../models/cell.model';
+import { MapGenerator } from '../map-generator/generator';
 import { EditorService } from './editor.service';
 
 @Component({
@@ -16,12 +20,19 @@ export class EditorPalleteComponent implements OnInit {
 
 
   constructor(
-    private editorService: EditorService) { }
+    private editorService: EditorService,
+    private shortestPath: ShortestPath,
+    private grid: GridService
+    ) { }
 
   ngOnInit(): void {
 
     this.imageArray = this.editorService.findObjectCollection("cliffs")
 
+  }
+
+  public onSelectionChange(change: any): void {
+    this.editorService.selectedGrowableAsset = growableItems.find(item => item.name === change.value).id
   }
 
   public tileClick(tile: SpriteTile): void {
@@ -34,6 +45,8 @@ export class EditorPalleteComponent implements OnInit {
   }
 
   public paintClicked(): void {
+    const mapGenerator = new MapGenerator(this.editorService, this.shortestPath, this.grid)
+    mapGenerator.generateMap(40, 40, TerrainType.Block)
     // this.editorService.baseOnly = false
   }
 
