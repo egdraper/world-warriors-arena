@@ -23,7 +23,7 @@ export class AppComponent {
     public drawService: DrawService,
     public visibilityService: FogOfWarService
   ) {
-    this.grid.createGrid(40, 40)
+    this.grid.createGrid(40, 40, "DrawableDungeon1")
   }
 
   public ngOnInit(): void {
@@ -33,7 +33,7 @@ export class AppComponent {
   public ngAfterViewInit(): void {
     this.drawService.autoFillTerrain()
     this.drawService.drawBackground(true)
-    this.assetService.addDefaultBoarder()
+    this.drawService.drawLines()
   }
   
   public onAddCharacterClick(): void {

@@ -13,6 +13,7 @@ export class Character extends MotionAsset {
   public image = new Image()
 
   constructor(
+    public imageUrl: string,
     public canvasService: CanvasService,
     public drawService: DrawService,
     public cell: Cell,
@@ -27,12 +28,7 @@ export class Character extends MotionAsset {
     this.positionY = cell.posY
 
     // temp: Randomly chooses character sprites
-    const rndInt = Math.floor(Math.random() * 40) + 1
-    if(rndInt < 10) {
-    this.image.src = `../../../assets/images/character_00${rndInt}.png`
-    } else {
-      this.image.src = `../../../assets/images/character_0${rndInt}.png`
-    }
+    this.image.src = imageUrl
 
     this.image.onload = () => {
       this.canvasService.foregroundCTX.imageSmoothingEnabled = false

@@ -104,10 +104,24 @@ export class CanvasComponent {
     const clickX = event.offsetX
     const clickY = event.offsetY
     this.gridClick.emit({ clickX, clickY })
+
+    this.onMouseMove(event)
+  }
+
+  public onMouseDown(event: any): void {
+
   }
 
   public onMouseMove(event: any): void {
     if (event.offsetX < 0 || event.offsetY < 0) { return }
+
+    if(this.gridService.inverted && this.mouseIsDown && this.controlPressed) {
+      const cellStart = this.gridService.getGridCellByCoordinate(event.offsetX, event.offsetY)
+      cellStart.growableTileId = undefined
+      cellStart.obstacle = false
+      cellStart.imageTile = undefined
+    }
+
 
     if (this.mouseIsDown && this.controlPressed) { // && this.editorService.selectedAsset) {
       const cellStart = this.gridService.getGridCellByCoordinate(event.offsetX, event.offsetY)
@@ -115,7 +129,7 @@ export class CanvasComponent {
       if (!cellStart) { return }
       const selectedAsset = this.editorService.selectedAsset
       cellStart.imageTile = selectedAsset
-      //  cellStart.obstacle = true
+      cellStart.obstacle = true
       cellStart.visible = true
 
 

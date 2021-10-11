@@ -12,9 +12,10 @@ import { ShortestPath } from './engine/shortest-path';
 import { FogOfWarService } from './engine/visibility.service';
 import { EditorPalleteComponent } from './editor/editor-pallete/editor-pallete.component';
 import { EditorService } from './editor/editor-pallete/editor.service';
+import { CharacterEditorPalleteComponent } from './editor/character-edtor-pallete/character-editor-pallete/character-editor-pallete.component';
 
 @NgModule({
-  declarations: [AppComponent, CanvasComponent, EditorPalleteComponent],
+  declarations: [AppComponent, CanvasComponent, EditorPalleteComponent, CharacterEditorPalleteComponent],
   imports: [BrowserModule],
   providers: [
     AssetsService,

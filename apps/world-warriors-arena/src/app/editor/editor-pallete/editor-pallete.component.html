@@ -1,11 +1,23 @@
 <button (click)="baseClicked()">Layer</button>
 <button (click)="paintClicked()">Paint</button>
-<button (click)="editModeClicked()">EditMode</button>
+<button (click)="invertedClicked()">Invert</button>
 
 <select (change)="onSelectionChange($event.target)">
   <option>Drawable Tree Cluster</option>
   <option>Drawable Dirt Cliffs</option>
   <option>Drawable Dirt Road</option>
+  <option>Drawable Dungeon</option>
+</select>
+
+<select (change)="onTilesChange($event.target)">
+  <option> cliffs </option>
+  <option> trees </option>
+  <option> trees2 </option>
+  <option> crates </option>  
+  <option> dirtRoad </option>
+  <option> camping </option>
+  <option> dungeon </option>
+  
 </select>
 
 <!-- <img

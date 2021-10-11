@@ -1,7 +1,15 @@
-<world-warriors-arena-editor-pallete></world-warriors-arena-editor-pallete>
+<div class="game-area">
+  <world-warriors-arena-character-editor-pallete></world-warriors-arena-character-editor-pallete>
+  <div>
+    <world-warriors-arena-editor-pallete></world-warriors-arena-editor-pallete>
+    <h1 [style.color]="'white'"> Selected Cell (x:{{selectedCell?.x}} - y:{{selectedCell?.y}}) </h1>
+    <button (click)="onAddCharacterClick()">Add Character</button>
+    <div>
+      <world-warriors-arena-canvas
+        (gridClick)="onGridClick($event)"
+      ></world-warriors-arena-canvas>
+    </div>
 
-<h1 [style.color]="'white'"> Selected Cell (x:{{selectedCell?.x}} - y:{{selectedCell?.y}}) </h1>
-<button (click)="onAddCharacterClick()">Add Character</button>
-<world-warriors-arena-canvas
-  (gridClick)="onGridClick($event)"
-></world-warriors-arena-canvas>
+  </div>
+  
+</div>

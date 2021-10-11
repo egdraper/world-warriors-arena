@@ -27,12 +27,16 @@ export class EditorPalleteComponent implements OnInit {
 
   ngOnInit(): void {
 
-    this.imageArray = this.editorService.findObjectCollection("cliffs")
+    this.imageArray = this.editorService.findObjectCollection("dungeon")
 
   }
 
   public onSelectionChange(change: any): void {
     this.editorService.selectedGrowableAsset = growableItems.find(item => item.name === change.value).id
+  }
+
+  public onTilesChange(change: any): void {
+    this.imageArray = this.editorService.findObjectCollection(change.value)
   }
 
   public tileClick(tile: SpriteTile): void {
@@ -44,14 +48,17 @@ export class EditorPalleteComponent implements OnInit {
     // this.editorService.baseOnly = true
   }
 
+
+
   public paintClicked(): void {
     const mapGenerator = new MapGenerator(this.editorService, this.shortestPath, this.grid)
     mapGenerator.generateMap(40, 40, TerrainType.Block)
     // this.editorService.baseOnly = false
   }
 
-  public editModeClicked(): void {
+  public invertedClicked(): void {
     // this.editorService.editMode = false
+    this.grid.inverted = !this.grid.inverted
   }
 
   public imageClick(event: any): void {

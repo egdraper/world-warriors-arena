@@ -22,7 +22,10 @@ export class DrawService {
   ) {
 
     setTimeout(() => {
-      this.drawBackground(true)
+      if(!this.gridService.inverted) {
+        this.drawBackground(true)
+      }
+      this.drawLines()
     }, 1000)
 
   }

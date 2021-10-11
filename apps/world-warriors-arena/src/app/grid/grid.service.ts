@@ -8,12 +8,14 @@ export class GridService {
   public grid: {[cell: string]: Cell } = { }
   public gridDisplayLite: GridDetails
   public gridDisplay: Cell[][] = [];
+
+  public inverted = true
  
 
-  public createGrid(width: number, height: number) {
+  public createGrid(width: number, height: number, invertedDrawableTerrainId?: string) {
     this.height = height
     this.width = width
-    this.generateGrid(width, height)
+    this.generateGrid(width, height, invertedDrawableTerrainId)
   }
 
   public getGridCellByCoordinate(x: number, y: number): Cell {
@@ -31,23 +33,27 @@ export class GridService {
     return foundCell
   }
 
-  private generateGrid(width: number, height: number, name: string = "No Name") {
+  public getCell(x: number, y: number): Cell {
+    return this.grid[`x${x}:y${y}`]
+  }
+
+  private generateGrid(width: number, height: number, invertedDrawableTerrainId?: string,  name: string = "No Name") {
     this.gridDisplayLite = {
       height,
       width,
       name
     }
-    this.createDisplayArray(width, height,)
+    this.createDisplayArray(width, height, invertedDrawableTerrainId)
     this.addNeighbors(width, height)
   }
 
-  private createDisplayArray(width: number, height: number, grid?: {[key: string]: Cell}) {
+  private createDisplayArray(width: number, height: number, invertedDrawableTerrainId?: string, grid?: {[key: string]: Cell}) {
     let imgIndexX = 1
     let imgIndexY = 1
     
     for (let i = 0; i < height; i++) {
       this.gridDisplay[i] = [];
-
+      
       for (let l = 0; l < width; l++ ) {
         this.grid[`x${l}:y${i}`] = grid && grid[`x${l}:y${i}`] 
           ? grid[`x${l}:y${i}`] 
@@ -58,6 +64,7 @@ export class GridService {
             posY: i * 32,
             obstacle: false,
             id: `x${l}:y${i}`,
+            growableTileId: this.inverted ? invertedDrawableTerrainId : undefined
           };
 
         imgIndexX ++

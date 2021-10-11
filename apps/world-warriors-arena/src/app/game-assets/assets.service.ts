@@ -36,18 +36,6 @@ export class AssetsService {
     // this.obstacleAttachments[cell.id] = cell.imageTile.attachments
   }   
 
-  public addDefaultBoarder(): void {
-    this.gridService.gridDisplay.forEach(row => {
-      row.forEach(cell => {
-        if(cell.x === 0 || cell.y === 0 || cell.x === this.gridService.width-1 || cell.y === this.gridService.height-1) {
-          cell.imageTile =  this.findMapAsset("crates", "crate1")
-          cell.visible = true
-          this.addObstacleImage(cell)
-        }
-      })
-    })
-  }
-
   public findMapAsset(category: string, tileId: string): SpriteTile {
     return this.editorService.findObjectAsset(category, tileId)
   } 
@@ -69,7 +57,7 @@ export class AssetsService {
 
     const gridCell1 = this.gridService.grid[`x2:y2`]
 
-    const player = new Character(this.canvas, this.drawService, gridCell1, this.gridService, this.shortestPath, this.engine)
+    const player = new Character(imgUrl, this.canvas, this.drawService, gridCell1, this.gridService, this.shortestPath, this.engine)
 
 
     gridCell1.occupiedBy = player  // <--- adding the character into the occupiedBy Spot

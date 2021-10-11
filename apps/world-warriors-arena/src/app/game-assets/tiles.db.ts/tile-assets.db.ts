@@ -1,9 +1,12 @@
+import { camping } from "./camping.db"
 import { grassToGrassCliffs } from "./cliffs.db"
 import { crates } from "./crates.db"
 import { dirtRoad } from "./dirt-road.db"
 import { dirt } from "./dirt.db"
+import { dungeon1 } from "./dungeon.db"
 import { greenGrass } from "./greenGrass.db"
-import { trees } from "./trees.db"
+import { greenGrassEdges } from "./images"
+import { trees, trees2 } from "./trees.db"
 
 
 export const enum TerrainType {
@@ -30,6 +33,13 @@ export const growableItems = [{
   name: "Drawable Dirt Road",
   spritesTiles: dirtRoad
  },
+ {
+  id: "DrawableDungeon",
+  terrainType: TerrainType.Block,
+  name: "Drawable Dungeon",
+  spritesTiles: dungeon1,
+  inverted: true
+ },
 ]
 
  
@@ -48,8 +58,16 @@ export function getObjectCollection(name: string): any {
     return grassToGrassCliffs
   case "trees": 
     return trees
+  case "trees2": 
+    return trees2
   case "crates": 
-    return crates
+    return crates  
+  case "dirtRoad": 
+    return dirtRoad
+  case "camping": 
+    return camping
+  case "dungeon": 
+    return dungeon1
   }
 }
 
