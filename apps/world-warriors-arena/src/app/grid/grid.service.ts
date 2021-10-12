@@ -62,7 +62,7 @@ export class GridService {
             y: i,
             posX: l * 32,
             posY: i * 32,
-            obstacle: false,
+            obstacle: this.inverted ? true : false,
             id: `x${l}:y${i}`,
             growableTileId: this.inverted ? invertedDrawableTerrainId : undefined
           };

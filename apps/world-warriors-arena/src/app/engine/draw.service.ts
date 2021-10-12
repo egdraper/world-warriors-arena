@@ -62,16 +62,16 @@ export class DrawService {
 
         //Randomly generates random texture
         let weight = 0
-        this.editorService.findBackgroundCollection("greenGrass").forEach(tile => {
+        this.editorService.findBackgroundCollection("caveDirt").forEach(tile => {
           tile.lowWeight = weight
           weight += tile.rarity
           tile.highWeight = weight
         })
 
         const rand = Math.floor(Math.random() * weight);
-        spriteSheet = this.editorService.findBackgroundCollection("greenGrass")[0].spriteSheet
+        spriteSheet = this.editorService.findBackgroundCollection("caveDirt")[0].spriteSheet
 
-        this.editorService.findBackgroundCollection("greenGrass").forEach(tile => {
+        this.editorService.findBackgroundCollection("caveDirt").forEach(tile => {
           if (rand < tile.highWeight && rand >= tile.lowWeight) {
             xPos = Math.floor(Math.random() * tile.spriteGridPosX.length)
             yPos = Math.floor(Math.random() * tile.spriteGridPosY.length)
@@ -82,7 +82,7 @@ export class DrawService {
         })
 
         cell.backgroundTile = {
-          id: `x${xPos}:Y${yPos}greenGrass`,
+          id: `x${xPos}:Y${yPos}caveDirt`,
           spriteSheet: spriteSheet,
           spriteGridPosX: [xPos],
           spriteGridPosY: [yPos],

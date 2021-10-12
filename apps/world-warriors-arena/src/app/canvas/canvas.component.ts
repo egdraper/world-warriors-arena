@@ -120,9 +120,25 @@ export class CanvasComponent {
       cellStart.growableTileId = undefined
       cellStart.obstacle = false
       cellStart.imageTile = undefined
-    }
 
+      for(let i = 0; i < 8; i++) {
+        if (cellStart.neighbors[i]) {
+          cellStart.neighbors[i].growableTileId = undefined
+          cellStart.neighbors[i].imageTile = undefined
+          cellStart.neighbors[i].obstacle = false      
+        }
+      } 
+      const selectedAsset = this.editorService.selectedAsset
 
+      if (!selectedAsset) {
+        this.drawGrowableItems(cellStart)
+      }
+
+      
+      this.assetService.addObstacleImage(cellStart)
+      this.editorService.backgroundDirty = true
+    } else
+    
     if (this.mouseIsDown && this.controlPressed) { // && this.editorService.selectedAsset) {
       const cellStart = this.gridService.getGridCellByCoordinate(event.offsetX, event.offsetY)
 
