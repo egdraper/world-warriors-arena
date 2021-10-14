@@ -1,12 +1,10 @@
 import { Component } from '@angular/core';
-import { CanvasService } from './canvas/canvas.service';
-import { Engine } from './engine/engine';
+import { Engine } from './game-engine/engine';
 import { AssetsService } from './game-assets/assets.service';
 import { Cell } from './models/cell.model';
-import { GridService } from './grid/grid.service';
-import { Asset } from './models/assets.model';
-import { DrawService } from './engine/draw.service';
-import { FogOfWarService } from './engine/visibility.service';
+import { GridService } from './game-engine/grid.service';
+import { DrawService } from './game-engine/draw-tools/draw.service';
+import { FogOfWarService } from './game-engine/visibility.service';
 
 @Component({
   selector: 'world-warriors-arena-root',
@@ -18,7 +16,6 @@ export class AppComponent {
   constructor(
     private engine: Engine,
     private assetService: AssetsService,
-    private canvasService: CanvasService,
     public grid: GridService,
     public drawService: DrawService,
     public visibilityService: FogOfWarService
@@ -58,9 +55,6 @@ export class AppComponent {
       if(this.assetService.selectedGameComponent) {
         this.assetService.selectedGameComponent.startMovement(this.assetService.selectedGameComponent.cell, this.selectedCell, this.assetService.gameComponents)
       }
-    //   this.assetService.addClickAnimation(this.selectedCell, `../../../assets/images/DestinationX.png`)
     }
   }
-
- 
 }

@@ -2,10 +2,7 @@ import { Component, ElementRef, EventEmitter, HostListener, Output, ViewChild } 
 import { EditorService } from '../editor/editor-pallete/editor.service';
 import { AssetsService } from '../game-assets/assets.service';
 import { growableItems, TerrainType } from '../game-assets/tiles.db.ts/tile-assets.db';
-
-import { GridService } from '../grid/grid.service';
-import { Cell } from '../models/cell.model';
-
+import { GridService } from '../game-engine/grid.service';
 import { CanvasService } from './canvas.service';
 
 @Component({
@@ -78,7 +75,6 @@ export class CanvasComponent {
     this.canvasService.blackoutCTX = this.blackoutContext
     this.canvasService.blackoutCanvas = this.blackoutCanvas
     this.canvasService.blackoutCTX.scale(1, 1)
-
   }
 
   @HostListener("document:keydown", ["$event"])
@@ -108,59 +104,24 @@ export class CanvasComponent {
     this.onMouseMove(event)
   }
 
-  public onMouseDown(event: any): void {
-
-  }
-
   public onMouseMove(event: any): void {
-    if (event.offsetX < 0 || event.offsetY < 0) { return }
-
-    if(this.gridService.inverted && this.mouseIsDown && this.controlPressed) {
-      const cellStart = this.gridService.getGridCellByCoordinate(event.offsetX, event.offsetY)
-      cellStart.growableTileId = undefined
-      cellStart.obstacle = false
-      cellStart.imageTile = undefined
-
-      for(let i = 0; i < 8; i++) {
-        if (cellStart.neighbors[i]) {
-          cellStart.neighbors[i].growableTileId = undefined
-          cellStart.neighbors[i].imageTile = undefined
-          cellStart.neighbors[i].obstacle = false      
-        }
-      } 
-      const selectedAsset = this.editorService.selectedAsset
-
-      if (!selectedAsset) {
-        this.drawGrowableItems(cellStart)
-      }
-
-      
-      this.assetService.addObstacleImage(cellStart)
-      this.editorService.backgroundDirty = true
-    } else
+    const selectedCell = this.gridService.getGridCellByCoordinate(event.offsetX, event.offsetY)
+    this.editorService.hoveringCell = selectedCell
     
-    if (this.mouseIsDown && this.controlPressed) { // && this.editorService.selectedAsset) {
-      const cellStart = this.gridService.getGridCellByCoordinate(event.offsetX, event.offsetY)
+    if (event.offsetX < 0 || event.offsetY < 0) { return }
+    if (!this.mouseIsDown || !this.controlPressed) { return }
 
-      if (!cellStart) { return }
+    
+    if(this.gridService.inverted ) {
+      this.assetService.addInvertedMapAsset(selectedCell)
+      this.editorService.backgroundDirty = true
+    } else if (this.mouseIsDown && this.controlPressed) {
+      this.editorService
       const selectedAsset = this.editorService.selectedAsset
-      cellStart.imageTile = selectedAsset
-      cellStart.obstacle = true
-      cellStart.visible = true
+      const drawableItem = growableItems.find(item => item.id === this.editorService.selectedGrowableAsset)
 
-
-      // for(let i = 0; i < selectedAsset.obstacleObstructionX; i++) {
-      //   for(let l = 0 ; l < selectedAsset.obstacleObstructionY; l++) {
-      //    this.gridService.grid[`x${cellStart.x + i}:y${cellStart.y - l}`].obstacle = selectedAsset.obstacle
-      //    this.gridService.grid[`x${cellStart.x + i}:y${cellStart.y - l}`].visible = true
-      //   }
-      // }
-
-      if (!selectedAsset) {
-        this.drawGrowableItems(cellStart)
-      }
-
-      this.assetService.addObstacleImage(cellStart)
+      this.assetService.addMapAsset(selectedCell, selectedAsset, drawableItem)
+      if(drawableItem.terrainType === TerrainType.Background) { this.editorService.backgroundDirty = true}
     }
   }
 
@@ -168,40 +129,5 @@ export class CanvasComponent {
     this.mouseIsDown = false
   }
 
-  private drawGrowableItems(selectedCell: Cell): void {
-    const growableItem = growableItems.find(item => item.id === this.editorService.selectedGrowableAsset)
-
-    if (growableItem.terrainType === TerrainType.Background) {
-      selectedCell.backgroundGrowableTileId = growableItem.id + this.editorService.layerID
-      
-      if (selectedCell.neighbors[0]) {
-        selectedCell.neighbors[0].backgroundGrowableTileId = growableItem.id + this.editorService.layerID
-      }
-      if (selectedCell.neighbors[1]) {
-        selectedCell.neighbors[1].backgroundGrowableTileId = growableItem.id + this.editorService.layerID
-      }
-      if (selectedCell.neighbors[4]) {
-        selectedCell.neighbors[4].backgroundGrowableTileId = growableItem.id + this.editorService.layerID
-      }
-      this.editorService.backgroundDirty = true
-    } else if (growableItem.terrainType === TerrainType.Block) {
-
-      if (selectedCell.neighbors[0]) {
-        selectedCell.neighbors[0].growableTileId = growableItem.id + this.editorService.layerID
-        selectedCell.neighbors[0].visible = true
-      }
-      if (selectedCell.neighbors[1]) {
-        selectedCell.neighbors[1].growableTileId = growableItem.id + this.editorService.layerID
-        selectedCell.neighbors[1].visible = true
-      }
-      if (selectedCell.neighbors[4]) {
-        selectedCell.neighbors[4].growableTileId = growableItem.id + this.editorService.layerID
-        selectedCell.neighbors[4].visible = true
-      }
-
-      selectedCell.growableTileId = growableItem.id + this.editorService.layerID
-      selectedCell.visible = true
-    }
-
-  }
+  
 }

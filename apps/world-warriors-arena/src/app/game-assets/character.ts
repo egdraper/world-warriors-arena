@@ -1,9 +1,9 @@
 import { Injectable } from "@angular/core";
 import { CanvasService } from "../canvas/canvas.service";
-import { DrawService } from "../engine/draw.service";
-import { Engine } from "../engine/engine";
-import { ShortestPath } from "../engine/shortest-path";
-import { GridService } from "../grid/grid.service";
+import { DrawService } from "../game-engine/draw-tools/draw.service";
+import { Engine } from "../game-engine/engine";
+import { ShortestPath } from "../game-engine/shortest-path";
+import { GridService } from "../game-engine/grid.service";
 import { MotionAsset } from "../models/assets.model";
 import { Cell } from "../models/cell.model";
 

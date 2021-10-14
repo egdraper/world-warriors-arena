@@ -1,6 +1,6 @@
-import { ShortestPath } from "../../engine/shortest-path";
+import { ShortestPath } from "../../game-engine/shortest-path";
 import { TerrainType } from "../../game-assets/tiles.db.ts/tile-assets.db";
-import { GridService } from "../../grid/grid.service";
+import { GridService } from "../../game-engine/grid.service";
 import { Cell } from "../../models/cell.model";
 import { EditorService } from "../editor-pallete/editor.service";
 

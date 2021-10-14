@@ -1,14 +1,12 @@
 import { v4 as uuidv4 } from 'uuid';
 import { CanvasService } from '../canvas/canvas.service';
-import { DrawService } from '../engine/draw.service';
-import { Engine } from '../engine/engine';
-import { ShortestPath } from '../engine/shortest-path';
+import { DrawService } from '../game-engine/draw-tools/draw.service';
+import { Engine } from '../game-engine/engine';
+import { ShortestPath } from '../game-engine/shortest-path';
 import { ClickAnimation } from '../game-assets/click-animation';
 import { SelectionIndicator } from '../game-assets/selection-indicator';
-import { GridService } from '../grid/grid.service';
+import { GridService } from '../game-engine/grid.service';
 import { Cell } from './cell.model';
-
-
 
 export class GameComponent {
   public id: string

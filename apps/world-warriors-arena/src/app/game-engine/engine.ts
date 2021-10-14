@@ -3,7 +3,7 @@ import { Injectable } from "@angular/core";
 import { removeFromArray } from "../common/functions";
 import { ShortLivedAnimation } from "../game-assets/click-animation";
 import { AnimationComponent } from "../models/assets.model";
-import { DrawService } from "./draw.service";
+import { DrawService } from "./draw-tools/draw.service";
 
 @Injectable()
 export class Engine {
@@ -59,6 +59,7 @@ export class Engine {
   
     this.drawService.drawAnimatedAssets()
     this.drawService.drawBackground()
+    this.drawService.drawEditableObject()
 
     requestAnimationFrame(this.startEngine.bind(this)); 
 

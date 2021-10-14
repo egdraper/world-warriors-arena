@@ -1,3 +1,4 @@
+import { DrawableTiles } from "../../models/cell.model"
 import { camping } from "./camping.db"
 import { grassToGrassCliffs } from "./cliffs.db"
 import { crates } from "./crates.db"
@@ -9,13 +10,14 @@ import { greenGrassEdges } from "./images"
 import { trees, trees2 } from "./trees.db"
 
 
+
 export const enum TerrainType {
   Block = "Block",
   Background = "Background",
   Difficult = "Difficult",
 }
 
-export const growableItems = [{
+export const growableItems: DrawableTiles[] = [{
   id: "DrawableTree",
   name: "Drawable Tree Cluster",
   terrainType: TerrainType.Block,

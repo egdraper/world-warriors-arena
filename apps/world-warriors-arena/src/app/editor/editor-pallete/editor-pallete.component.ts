@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
-import { ShortestPath } from '../../engine/shortest-path';
+import { ShortestPath } from '../../game-engine/shortest-path';
 import { growableItems, TerrainType } from '../../game-assets/tiles.db.ts/tile-assets.db';
-import { GridService } from '../../grid/grid.service';
+import { GridService } from '../../game-engine/grid.service';
 import { SpriteTile } from '../../models/cell.model';
 import { MapGenerator } from '../map-generator/generator';
 import { EditorService } from './editor.service';
@@ -26,9 +26,7 @@ export class EditorPalleteComponent implements OnInit {
     ) { }
 
   ngOnInit(): void {
-
     this.imageArray = this.editorService.findObjectCollection("dungeon")
-
   }
 
   public onSelectionChange(change: any): void {

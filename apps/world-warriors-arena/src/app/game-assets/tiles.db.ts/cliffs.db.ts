@@ -1,4 +1,4 @@
-import { GridService } from "../../grid/grid.service";
+import { GridService } from "../../game-engine/grid.service";
 import { GrowablePanelPosition, SpriteTile } from "../../models/cell.model";
 import { tileA5_outside } from "./images";
 

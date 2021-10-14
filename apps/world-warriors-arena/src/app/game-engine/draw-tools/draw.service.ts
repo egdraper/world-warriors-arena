@@ -1,19 +1,15 @@
 import { Injectable } from "@angular/core";
 import { Subject } from "rxjs";
-import { CanvasService } from "../canvas/canvas.service";
-import { EditorService } from "../editor/editor-pallete/editor.service";
-import { ShortLivedAnimation } from "../game-assets/click-animation";
-import { growableItems } from "../game-assets/tiles.db.ts/tile-assets.db";
-import { GridService } from "../grid/grid.service";
-import { Cell } from "../models/cell.model";
-import { FogOfWarService } from "./visibility.service";
+import { CanvasService } from "../../canvas/canvas.service";
+import { EditorService } from "../../editor/editor-pallete/editor.service";
+import { ShortLivedAnimation } from "../../game-assets/click-animation";
+import { growableItems } from "../../game-assets/tiles.db.ts/tile-assets.db";
+import { GridService } from "../grid.service";
+import { Cell, SpriteTile } from "../../models/cell.model";
+import { FogOfWarService } from "../visibility.service";
 
 @Injectable()
 export class DrawService {
-  public drawForeground$ = new Subject()
-  public drawBackground$ = new Subject()
-  public foregroundImages: File[] = []
-
   constructor(
     public gridService: GridService,
     public canvasService: CanvasService,
@@ -22,7 +18,7 @@ export class DrawService {
   ) {
 
     setTimeout(() => {
-      if(!this.gridService.inverted) {
+      if (!this.gridService.inverted) {
         this.drawBackground(true)
       }
       this.drawLines()
@@ -98,7 +94,7 @@ export class DrawService {
         for (let w = 0; w < this.gridService.width; w++) {
           const cell = this.gridService.grid[`x${w}:y${h}`]
 
-          if(cell.backgroundGrowableTileId) {
+          if (cell.backgroundGrowableTileId) {
             this.calculateGrowableBackgroundTerrain(cell)
           }
 
@@ -123,7 +119,7 @@ export class DrawService {
 
 
   public blackOutEdges(): void {
-    if(this.canvasService.blackoutCTX) {
+    if (this.canvasService.blackoutCTX) {
       this.canvasService.blackoutCTX.fillStyle = 'black';
       this.canvasService.blackoutCTX.fillRect(
         0,
@@ -134,7 +130,7 @@ export class DrawService {
 
     }
 
-    if(this.canvasService.blackoutCTX) {
+    if (this.canvasService.blackoutCTX) {
       this.canvasService.blackoutCTX.fillStyle = 'black';
       this.canvasService.blackoutCTX.fillRect(
         0,
@@ -145,7 +141,7 @@ export class DrawService {
 
     }
 
-    if(this.canvasService.blackoutCTX) {
+    if (this.canvasService.blackoutCTX) {
       this.canvasService.blackoutCTX.fillStyle = 'black';
       this.canvasService.blackoutCTX.fillRect(
         this.gridService.width * 32 - 32,
@@ -330,6 +326,22 @@ export class DrawService {
     }
   }
 
+  public drawEditableObject(): void {
+    if(!this.editorService.selectedAsset || !this.editorService.hoveringCell) { return }
+
+    this.canvasService.foregroundCTX.drawImage(
+      this.editorService.selectedAsset.spriteSheet,
+      this.editorService.selectedAsset.spriteGridPosX * this.editorService.selectedAsset.multiplier,
+      this.editorService.selectedAsset.spriteGridPosY * this.editorService.selectedAsset.multiplier,
+      this.editorService.selectedAsset.tileWidth * this.editorService.selectedAsset.multiplier,
+      this.editorService.selectedAsset.tileHeight * this.editorService.selectedAsset.multiplier,
+      this.editorService.hoveringCell.posX + this.editorService.selectedAsset.tileOffsetX,
+      this.editorService.hoveringCell.posY + this.editorService.selectedAsset.tileOffsetY,
+      this.editorService.selectedAsset.tileWidth * (this.editorService.selectedAsset.sizeAdjustment || this.editorService.selectedAsset.multiplier),
+      this.editorService.selectedAsset.tileHeight * (this.editorService.selectedAsset.sizeAdjustment || this.editorService.selectedAsset.multiplier)
+    )
+  }
+
   private drawObstacles(cell: Cell): void {
     if (cell.growableTileId) {
       this.calculateGrowableTerrain(cell)
@@ -351,7 +363,7 @@ export class DrawService {
   }
 
   private calculateGrowableTerrain(selectedCell: Cell): void {
-    const growableItem = growableItems.find(item => {
+    const drawableItem = growableItems.find(item => {
       return selectedCell.growableTileId.includes(item.id)
     })
     const topNeighbor = selectedCell.neighbors[0]
@@ -374,7 +386,7 @@ export class DrawService {
       bottomRightMatch: bottomRightNeighbor?.growableTileId === selectedCell.growableTileId
     }
 
-    let tile = growableItem.spritesTiles.find(spriteTile => {
+    let tile = drawableItem.spritesTiles.find(spriteTile => {
       const topMatch = neighbors.topCenterMatch === spriteTile.drawWhen.topNeighbor || spriteTile.drawWhen.topNeighbor === null
       const topRightMatch = neighbors.topRightMatch === spriteTile.drawWhen.topRightNeighbor || spriteTile.drawWhen.topRightNeighbor === null
       const rightMatch = neighbors.centerRightMatch === spriteTile.drawWhen.rightNeighbor || spriteTile.drawWhen.rightNeighbor === null
@@ -396,7 +408,7 @@ export class DrawService {
     })
 
     if (!tile) {
-      tile = growableItem.spritesTiles.find(cliff => cliff.default)
+      tile = drawableItem.spritesTiles.find(cliff => cliff.default)
     }
 
     selectedCell.imageTile = tile
@@ -406,7 +418,7 @@ export class DrawService {
   private calculateGrowableBackgroundTerrain(selectedCell: Cell): void {
     if (!this.editorService.backgroundDirty) { return }
 
-    const growableItem = growableItems.find(item =>  {
+    const growableItem = growableItems.find(item => {
       return selectedCell.backgroundGrowableTileId.includes(item.id)
     })
     const topNeighbor = selectedCell.neighbors[0]

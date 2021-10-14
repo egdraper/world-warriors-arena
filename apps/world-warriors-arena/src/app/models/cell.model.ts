@@ -1,3 +1,4 @@
+import { TerrainType } from "../game-assets/tiles.db.ts/tile-assets.db"
 import { GameComponent, MotionAsset } from "./assets.model"
 
 
@@ -15,6 +16,7 @@ export interface Cell {
   occupiedBy?: MotionAsset
   imageTile?: SpriteTile;
   growableTileId?: string
+  growableTileOverride?: boolean
   backgroundTile?: SpriteBackgroundTile;
   backgroundGrowableTileId?: string
 }
@@ -116,4 +118,14 @@ export class GridDetails {
   public width: number = 0
   public height: number = 0
   public grid?: {[cell: string]: Cell }
+}
+
+
+export class DrawableTiles {
+  public id: string
+  public terrainType: TerrainType
+  public name: string
+  public spritesTiles: SpriteTile[]
+  public inverted?: boolean
+  public layers?: number
 }
