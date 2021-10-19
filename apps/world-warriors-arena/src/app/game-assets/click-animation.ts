@@ -1,4 +1,4 @@
-import { Engine } from "../engine/engine";
+import { Engine } from "../game-engine/engine";
 import { v4 as uuidv4 } from 'uuid';
 import { Cell } from "../models/cell.model";
 

@@ -1,6 +1,22 @@
-<button (click)="baseClicked()">Base</button>
+<button (click)="baseClicked()">Layer</button>
 <button (click)="paintClicked()">Paint</button>
-<button (click)="editModeClicked()">EditMode</button>
+<button (click)="invertedClicked()">Invert</button>
+
+<select (change)="onSelectionChange($event.target)">
+  <option>Drawable Tree Cluster</option>
+  <option>Drawable Dirt Cliffs</option>
+  <option>Drawable Dirt Road</option>
+  <option>Drawable Dungeon</option>
+  <option>Drawable Dungeon Tiles</option>
+</select>
+
+<select (change)="onTilesChange($event.target)">
+  <option> trees2 </option>
+  <option> crates </option>  
+  <option> camping </option>
+  <option> dungeonTiles </option>
+  
+</select>
 
 <!-- <img
 src="assets/images/tileA5_world.png"

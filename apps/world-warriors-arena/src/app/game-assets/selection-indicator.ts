@@ -1,5 +1,5 @@
 
-import { Engine } from "../engine/engine";
+import { Engine } from "../game-engine/engine";
 import { ShortLivedAnimation } from "./click-animation";
 
 export class SelectionIndicator extends ShortLivedAnimation {

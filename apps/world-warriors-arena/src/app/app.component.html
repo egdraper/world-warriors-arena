@@ -1,7 +1,17 @@
-<world-warriors-arena-editor-pallete></world-warriors-arena-editor-pallete>
+<button (click)="generateRandomMap()">Generate Random Map</button>
 
-<h1 [style.color]="'white'"> Selected Cell (x:{{selectedCell?.x}} - y:{{selectedCell?.y}}) </h1>
-<button (click)="onAddCharacterClick()">Add Character</button>
-<world-warriors-arena-canvas
-  (gridClick)="onGridClick($event)"
-></world-warriors-arena-canvas>
+<div class="game-area">
+  <world-warriors-arena-character-editor-pallete></world-warriors-arena-character-editor-pallete>
+  <div>
+    <world-warriors-arena-editor-pallete></world-warriors-arena-editor-pallete>
+    <h1 [style.color]="'white'"> Selected Cell (x:{{selectedCell?.x}} - y:{{selectedCell?.y}}) </h1>
+    <div>
+      <world-warriors-arena-canvas
+        (gridClick)="onGridClick($event)"
+      ></world-warriors-arena-canvas>
+    </div>
+
+  </div>
+  
+</div>
+<world-warriors-arena-global-map></world-warriors-arena-global-map>

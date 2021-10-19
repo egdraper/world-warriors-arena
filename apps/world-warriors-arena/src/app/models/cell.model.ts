@@ -1,4 +1,7 @@
+import { TerrainType } from "../game-assets/tiles.db.ts/tile-assets.db"
 import { GameComponent, MotionAsset } from "./assets.model"
+
+export const GRID_CELL_MULTIPLIER = 32
 
 export interface Cell {
   id: string;
@@ -12,6 +15,10 @@ export interface Cell {
   destination?: boolean;
   occupiedBy?: MotionAsset
   imageTile?: SpriteTile;
+  growableTileId?: string
+  growableTileOverride?: boolean
+  backgroundTile?: SpriteBackgroundTile;
+  backgroundGrowableTileId?: string
 }
 
 export class TileAttachment {
@@ -26,6 +33,32 @@ export class EndTile {
   offset: number
 }
 
+export class SpriteBackgroundTile {
+  id: string
+  spriteSheet: HTMLImageElement
+  spriteGridPosX: number[]
+  spriteGridPosY: number[]
+  lowWeight?: number
+  highWeight?: number
+  rarity?: number // express on a random placement how often it should be seen 1 being once in 20 on average
+}
+
+export enum GrowablePanelPosition {
+  topLeftPanel = "topLeftPanel",
+  topCenterPanel = "topCenterPanel",
+  topRightPanel = "topRightPanel",
+  growableLeftPanel = "growableLeftPanel",
+  growableCenterPanel = "growableCenterPanel",
+  growableRightPanel = "growableRightPanel",
+  bottomLeftPanel = "bottomLeftPanel",
+  bottomCenterPanel = "bottomCenterPanel",
+  bottomRightPanel = "bottomRightPanel",
+  bottomLeftPanelAngle = "bottomLeftPanelAngle",
+  bottomRightPanelAngle = "bottomRightPanelAngle",
+  bottomLeftPanelFillerAngle = "bottomLeftPanelFillerAngle",
+  bottomRightPanelFillerAngle = "bottomRightPanelFillerAngle",
+}
+
 export class SpriteTile {
   id: string
   spriteSheet: HTMLImageElement
@@ -36,16 +69,30 @@ export class SpriteTile {
   tileOffsetX: number
   tileOffsetY: number
   multiplier: number
-  visionBlocking: boolean
-  obstacleObstructionX: number
-  obstacleObstructionY: number
+  sizeAdjustment?: number
+  visionBlocking?: boolean
+  obstacle: boolean
+  obstacleObstructionX?: number
+  obstacleObstructionY?: number
+  position?: GrowablePanelPosition
+  default?: boolean
+  obstacleSide?: "right" | "left" | "top" | "bottom"
   allowForPassThrough?: boolean
-  rarity?: number // express on a random placement how often it should be seen 1 being once in 20 on average
   leftEndTileName?: string
   rightEndTileName?: string
   centerTileName?: string
   topEndTileName?: EndTile
   attachments?: TileAttachment[]
+  drawWhen?: {
+    topNeighbor: boolean,
+    topRightNeighbor: boolean,
+    rightNeighbor: boolean,
+    bottomRightNeighbor: boolean
+    bottomNeighbor:boolean,
+    bottomLeftNeighbor: boolean,
+    leftNeighbor: boolean,
+    topLeftNeighbor: boolean,
+  }
 }
 
 export interface RelativePositionCell extends Cell {
@@ -71,4 +118,32 @@ export class GridDetails {
   public width: number = 0
   public height: number = 0
   public grid?: {[cell: string]: Cell }
+}
+
+
+export class DrawableTiles {
+  public id: string
+  public terrainType: TerrainType
+  public name: string
+  public spritesTiles: SpriteTile[]
+  public inverted?: boolean
+  public layers?: number
+}
+
+
+export class GridMapCell {
+  gridCanvas?: HTMLCanvasElement
+  context?: CanvasRenderingContext2D
+  x: number
+  y: number
+  relationX?: number
+  relationY?: number
+  markers?: {x: number, y: number}[]
+}
+
+export class MapDetails {
+  terrainTypeId: string
+  backgroundTypeId: string
+  pathTypeId: string
+  inverted: boolean
 }

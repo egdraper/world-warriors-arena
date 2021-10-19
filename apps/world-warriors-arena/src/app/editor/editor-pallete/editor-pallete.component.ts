@@ -1,6 +1,9 @@
 import { Component, OnInit } from '@angular/core';
-import { TileAssets } from '../../game-assets/tile-assets.db';
+import { ShortestPath } from '../../game-engine/shortest-path';
+import { growableItems, TerrainType } from '../../game-assets/tiles.db.ts/tile-assets.db';
+import { GridService } from '../../game-engine/grid.service';
 import { SpriteTile } from '../../models/cell.model';
+import { RandomMapGenerator } from '../map-generator/random-map-generator';
 import { EditorService } from './editor.service';
 
 @Component({
@@ -11,25 +14,27 @@ import { EditorService } from './editor.service';
 export class EditorPalleteComponent implements OnInit {
   public images: any[] = []
 
+
   public imageArray: any[] = []
   public currentImageSrc: string = ""
 
+
   constructor(
-    private editorService: EditorService) { }
+    private editorService: EditorService,
+    private shortestPath: ShortestPath,
+    private grid: GridService
+    ) { }
 
   ngOnInit(): void {
+    this.imageArray = this.editorService.findObjectCollection("trees")
+  }
 
-    Object.keys(TileAssets).forEach(tileName => {
-      const tile  = this.editorService.getAsset(tileName)
-      if(Array.isArray(tile)) {
-        tile.forEach(_tile => {
-          this.imageArray.push(_tile)
-        })
-        return
-      }
-      this.imageArray.push(tile)
+  public onSelectionChange(change: any): void {
+    this.editorService.selectedGrowableAsset = growableItems.find(item => item.name === change.value).id
+  }
 
-    })
+  public onTilesChange(change: any): void {
+    this.imageArray = this.editorService.findObjectCollection(change.value)
   }
 
   public tileClick(tile: SpriteTile): void {
@@ -37,15 +42,21 @@ export class EditorPalleteComponent implements OnInit {
   }
 
   public baseClicked(): void {
+    this.editorService.layerID++
     // this.editorService.baseOnly = true
   }
 
+
+
   public paintClicked(): void {
+    const mapGenerator = new RandomMapGenerator(this.editorService, this.shortestPath, this.grid)
+    mapGenerator.generateMap(this.grid.width, this.grid.height, TerrainType.Block)
     // this.editorService.baseOnly = false
   }
 
-  public editModeClicked(): void {
+  public invertedClicked(): void {
     // this.editorService.editMode = false
+    this.grid.inverted = !this.grid.inverted
   }
 
   public imageClick(event: any): void {
@@ -54,15 +65,15 @@ export class EditorPalleteComponent implements OnInit {
 
     let x = event.offsetX
     let y = event.offsetY
-    while(x % 32 !== 0) {
+    while (x % 32 !== 0) {
       x--
     }
-    while(y % 32 !== 0) {
+    while (y % 32 !== 0) {
       y--
     }
 
-    console.log(x +" and " + y)
-    this.images.push({x,y})
+    console.log(x + " and " + y)
+    this.images.push({ x, y })
   }
 
 }

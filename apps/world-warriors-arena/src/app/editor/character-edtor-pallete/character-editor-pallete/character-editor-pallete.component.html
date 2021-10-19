@@ -1,0 +1,21 @@
+<div class="character-nav">
+
+
+    <div *ngFor="let image of characterImages"
+      class="image-container"
+      [style.width.px]="50"
+      (click)="tileClick(image)">
+      <div 
+        [style.width.px]="50"
+        [style.height.px]="80"
+        [style.overflow]="'hidden'">
+        <img
+          [style.width]="'630%'"
+          src="{{ image.src }}"
+          [style.top.px]="0"
+          [style.left.px]="0"
+          [style.position]="'relative'"/>
+      </div>
+    </div>
+
+</div>

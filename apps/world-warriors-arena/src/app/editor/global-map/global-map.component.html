@@ -1,0 +1,20 @@
+<button (click)="generateMaps()">Generate Maps</button>
+
+<div>
+   <div *ngFor="let gridRow of gridOfGrids" class="grid-row">
+     <div *ngFor="let gridCell of gridRow" 
+       class="grid-cell"
+
+       >  
+      <canvas  #blogo 
+        id="backgroundCanvas"
+        (click)="onGridCellClick(gridCell, $event, blogo)"
+        (mousemove)="onMouseMove(gridCell, $event)"
+        (mousedown)="onMouseDown(gridCell, $event)"
+        (mouseup)="onMouseUp(gridCell, $event)"
+        >
+      </canvas>
+    </div>  
+   </div>
+
+</div>

@@ -1,12 +1,11 @@
 import { Component } from '@angular/core';
-import { CanvasService } from './canvas/canvas.service';
-import { Engine } from './engine/engine';
+import { Engine } from './game-engine/engine';
 import { AssetsService } from './game-assets/assets.service';
 import { Cell } from './models/cell.model';
-import { GridService } from './grid/grid.service';
-import { Asset } from './models/assets.model';
-import { DrawService } from './engine/draw.service';
-import { FogOfWarService } from './engine/visibility.service';
+import { GridService } from './game-engine/grid.service';
+import { DrawService } from './game-engine/draw-tools/draw.service';
+import { FogOfWarService } from './game-engine/visibility.service';
+import { CanvasService } from './canvas/canvas.service';
 
 @Component({
   selector: 'world-warriors-arena-root',
@@ -18,12 +17,12 @@ export class AppComponent {
   constructor(
     private engine: Engine,
     private assetService: AssetsService,
-    private canvasService: CanvasService,
     public grid: GridService,
     public drawService: DrawService,
-    public visibilityService: FogOfWarService
+    public visibilityService: FogOfWarService,
+    public canvasService: CanvasService
   ) {
-    this.grid.createGrid(20, 20)
+
   }
 
   public ngOnInit(): void {
@@ -31,34 +30,22 @@ export class AppComponent {
   }
 
   public ngAfterViewInit(): void {
-    this.drawService.drawGrid()
-    this.assetService.addDefaultBoarder()
-    this.drawService.drawFog()
-  }
 
+  }
+  
   public onAddCharacterClick(): void {
-    this.visibilityService.preloadVisibility(this.assetService.obstacles)
-    this.visibilityService.fogEnabled = true
-    this.drawService.drawBlackoutFog()
+    this.visibilityService.fogEnabled = false
+    if(this.visibilityService.fogEnabled) {
+      this.drawService.drawFog()
+      this.visibilityService.preloadVisibility(this.assetService.obstacles)
+      this.drawService.drawBlackoutFog()
+    }
     this.assetService.addCharacter()
   }
 
   public onGridClick(event: { clickX: number, clickY: number }): void {
-    // this.selectedCell = this.grid.getGridCellByCoordinate(event.clickX, event.clickY)
-    
-    // const ctx = this.canvasService.backgroundCTX
-    // ctx.clearRect(0, 0, this.grid.width * 50, this.grid.height * 50);
-    // this.canvasService.drawGrid()
-
-    // const testCell = this.grid.getGridCellByCoordinate(250, 250)
-    // this.traceCell(testCell, this.selectedCell)
-
-
-    
-
-
     this.selectedCell = this.grid.getGridCellByCoordinate(event.clickX, event.clickY)
-
+    console.log(this.selectedCell)
     if (this.selectedCell.occupiedBy) {
       const character = this.selectedCell.occupiedBy
       this.assetService.gameComponents.forEach(asset => asset.selectionIndicator = undefined)
@@ -68,9 +55,16 @@ export class AppComponent {
       if(this.assetService.selectedGameComponent) {
         this.assetService.selectedGameComponent.startMovement(this.assetService.selectedGameComponent.cell, this.selectedCell, this.assetService.gameComponents)
       }
-    //   this.assetService.addClickAnimation(this.selectedCell, `../../../assets/images/DestinationX.png`)
     }
   }
 
- 
+  public generateRandomMap(): void {
+    const inverted = true
+    this.grid.createGrid(40, 40, "DrawableDungeon", true)
+    this.canvasService.setupCanvases(this.grid.width, this.grid.height)
+
+    this.drawService.autoFillTerrain("caveDirt")
+    this.drawService.drawBackground(true)
+    this.drawService.drawLines()
+  }
 }

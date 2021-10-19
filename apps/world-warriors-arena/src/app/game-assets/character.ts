@@ -1,9 +1,9 @@
 import { Injectable } from "@angular/core";
 import { CanvasService } from "../canvas/canvas.service";
-import { DrawService } from "../engine/draw.service";
-import { Engine } from "../engine/engine";
-import { ShortestPath } from "../engine/shortest-path";
-import { GridService } from "../grid/grid.service";
+import { DrawService } from "../game-engine/draw-tools/draw.service";
+import { Engine } from "../game-engine/engine";
+import { ShortestPath } from "../game-engine/shortest-path";
+import { GridService } from "../game-engine/grid.service";
 import { MotionAsset } from "../models/assets.model";
 import { Cell } from "../models/cell.model";
 
@@ -13,6 +13,7 @@ export class Character extends MotionAsset {
   public image = new Image()
 
   constructor(
+    public imageUrl: string,
     public canvasService: CanvasService,
     public drawService: DrawService,
     public cell: Cell,
@@ -27,12 +28,7 @@ export class Character extends MotionAsset {
     this.positionY = cell.posY
 
     // temp: Randomly chooses character sprites
-    const rndInt = Math.floor(Math.random() * 32) + 1
-    if(rndInt < 10) {
-    this.image.src = `../../../assets/images/character_00${rndInt}.png`
-    } else {
-      this.image.src = `../../../assets/images/character_0${rndInt}.png`
-    }
+    this.image.src = imageUrl
 
     this.image.onload = () => {
       this.canvasService.foregroundCTX.imageSmoothingEnabled = false
