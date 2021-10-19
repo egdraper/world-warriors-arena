@@ -13,9 +13,10 @@ import { FogOfWarService } from './game-engine/visibility.service';
 import { EditorPalleteComponent } from './editor/editor-pallete/editor-pallete.component';
 import { EditorService } from './editor/editor-pallete/editor.service';
 import { CharacterEditorPalleteComponent } from './editor/character-edtor-pallete/character-editor-pallete/character-editor-pallete.component';
+import { GlobalMapComponent } from './editor/global-map/global-map.component';
 
 @NgModule({
-  declarations: [AppComponent, CanvasComponent, EditorPalleteComponent, CharacterEditorPalleteComponent],
+  declarations: [AppComponent, CanvasComponent, EditorPalleteComponent, CharacterEditorPalleteComponent, GlobalMapComponent],
   imports: [BrowserModule],
   providers: [
     AssetsService,

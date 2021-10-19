@@ -1,16 +1,13 @@
-import { ThisReceiver } from "@angular/compiler";
 import { Injectable } from "@angular/core";
 import { CanvasService } from "../canvas/canvas.service";
-import { EditorService } from "../editor/editor-pallete/editor.service";
 import { DrawService } from "../game-engine/draw-tools/draw.service";
 import { Engine } from "../game-engine/engine";
-import { ShortestPath } from "../game-engine/shortest-path";
 import { GridService } from "../game-engine/grid.service";
+import { ShortestPath } from "../game-engine/shortest-path";
 import { MotionAsset } from "../models/assets.model";
-import { Cell, DrawableTiles, SpriteBackgroundTile, SpriteTile, TileAttachment } from "../models/cell.model";
+import { Cell, DrawableTiles, SpriteTile } from "../models/cell.model";
 import { Character } from "./character";
-import { ClickAnimation } from "./click-animation";
-import { getBackgroundCollection, growableItems, TerrainType } from "./tiles.db.ts/tile-assets.db";
+import { TerrainType } from "./tiles.db.ts/tile-assets.db";
 
 @Injectable()
 export class AssetsService {

@@ -1,7 +1,7 @@
 import { TerrainType } from "../game-assets/tiles.db.ts/tile-assets.db"
 import { GameComponent, MotionAsset } from "./assets.model"
 
-
+export const GRID_CELL_MULTIPLIER = 32
 
 export interface Cell {
   id: string;
@@ -128,4 +128,22 @@ export class DrawableTiles {
   public spritesTiles: SpriteTile[]
   public inverted?: boolean
   public layers?: number
+}
+
+
+export class GridMapCell {
+  gridCanvas?: HTMLCanvasElement
+  context?: CanvasRenderingContext2D
+  x: number
+  y: number
+  relationX?: number
+  relationY?: number
+  markers?: {x: number, y: number}[]
+}
+
+export class MapDetails {
+  terrainTypeId: string
+  backgroundTypeId: string
+  pathTypeId: string
+  inverted: boolean
 }

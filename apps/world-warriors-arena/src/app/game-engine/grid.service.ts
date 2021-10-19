@@ -12,7 +12,8 @@ export class GridService {
   public inverted = true
  
 
-  public createGrid(width: number, height: number, invertedDrawableTerrainId?: string) {
+  public createGrid(width: number, height: number, invertedDrawableTerrainId?: string, inverted: boolean = false) {
+    this.inverted = inverted
     this.height = height
     this.width = width
     this.generateGrid(width, height, invertedDrawableTerrainId)
@@ -24,9 +25,7 @@ export class GridService {
       row.forEach(cell => {
         if((cell.posX < x && cell.posX + 32 >= x ) && (cell.posY < y && cell.posY + 32 >= y)) {
           foundCell = cell
-          if(!foundCell) {
-            debugger
-          }
+          if(!foundCell) { }
         }
       })
     })

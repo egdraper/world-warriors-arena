@@ -5,6 +5,7 @@ import { Cell } from './models/cell.model';
 import { GridService } from './game-engine/grid.service';
 import { DrawService } from './game-engine/draw-tools/draw.service';
 import { FogOfWarService } from './game-engine/visibility.service';
+import { CanvasService } from './canvas/canvas.service';
 
 @Component({
   selector: 'world-warriors-arena-root',
@@ -18,9 +19,10 @@ export class AppComponent {
     private assetService: AssetsService,
     public grid: GridService,
     public drawService: DrawService,
-    public visibilityService: FogOfWarService
+    public visibilityService: FogOfWarService,
+    public canvasService: CanvasService
   ) {
-    this.grid.createGrid(40, 40, "DrawableDungeon1")
+
   }
 
   public ngOnInit(): void {
@@ -28,9 +30,7 @@ export class AppComponent {
   }
 
   public ngAfterViewInit(): void {
-    this.drawService.autoFillTerrain()
-    this.drawService.drawBackground(true)
-    this.drawService.drawLines()
+
   }
   
   public onAddCharacterClick(): void {
@@ -56,5 +56,15 @@ export class AppComponent {
         this.assetService.selectedGameComponent.startMovement(this.assetService.selectedGameComponent.cell, this.selectedCell, this.assetService.gameComponents)
       }
     }
+  }
+
+  public generateRandomMap(): void {
+    const inverted = true
+    this.grid.createGrid(40, 40, "DrawableDungeon", true)
+    this.canvasService.setupCanvases(this.grid.width, this.grid.height)
+
+    this.drawService.autoFillTerrain("caveDirt")
+    this.drawService.drawBackground(true)
+    this.drawService.drawLines()
   }
 }

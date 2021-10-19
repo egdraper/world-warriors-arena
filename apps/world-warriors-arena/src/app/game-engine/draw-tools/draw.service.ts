@@ -17,38 +17,33 @@ export class DrawService {
     public editorService: EditorService
   ) {
 
-    setTimeout(() => {
-      if (!this.gridService.inverted) {
-        this.drawBackground(true)
-      }
-      this.drawLines()
-    }, 1000)
-
   }
 
   public drawLines(): void {
-    // Draw Lines
-    for (let h = 0; h <= this.gridService.height; h++) {
-      for (let w = 0; w <= this.gridService.width; w++) {
-        this.canvasService.backgroundCTX.beginPath()
-        this.canvasService.backgroundCTX.moveTo(w * 32, h * 32)
-        this.canvasService.backgroundCTX.lineTo(w * 32, (h * 32) + 32)
-        this.canvasService.backgroundCTX.lineWidth = 1;
-        this.canvasService.backgroundCTX.strokeStyle = "rgba(255, 255 ,255,.5)"
-        this.canvasService.backgroundCTX.stroke()
+    if (this.editorService.backgroundDirty) {
+      // Draw Lines
+      for (let h = 0; h <= this.gridService.height; h++) {
+        for (let w = 0; w <= this.gridService.width; w++) {
+          this.canvasService.backgroundCTX.beginPath()
+          this.canvasService.backgroundCTX.moveTo(w * 32, h * 32)
+          this.canvasService.backgroundCTX.lineTo(w * 32, (h * 32) + 32)
+          this.canvasService.backgroundCTX.lineWidth = 1;
+          this.canvasService.backgroundCTX.strokeStyle = "rgba(255, 255 ,255,.5)"
+          this.canvasService.backgroundCTX.stroke()
 
 
-        this.canvasService.backgroundCTX.beginPath()
-        this.canvasService.backgroundCTX.moveTo(w * 32, h * 32)
-        this.canvasService.backgroundCTX.lineTo((w * 32) + 32, h * 32)
-        this.canvasService.backgroundCTX.strokeStyle = "rgba(255,255,0,.5)"
-        this.canvasService.backgroundCTX.lineWidth = 1;
-        this.canvasService.backgroundCTX.stroke()
+          this.canvasService.backgroundCTX.beginPath()
+          this.canvasService.backgroundCTX.moveTo(w * 32, h * 32)
+          this.canvasService.backgroundCTX.lineTo((w * 32) + 32, h * 32)
+          this.canvasService.backgroundCTX.strokeStyle = "rgba(255,255,0,.5)"
+          this.canvasService.backgroundCTX.lineWidth = 1;
+          this.canvasService.backgroundCTX.stroke()
+        }
       }
     }
   }
 
-  public autoFillTerrain() {
+  public autoFillTerrain(collectionId: string) {
     for (let h = 0; h < this.gridService.height; h++) {
       for (let w = 0; w < this.gridService.width; w++) {
         let spriteSheet
@@ -58,16 +53,16 @@ export class DrawService {
 
         //Randomly generates random texture
         let weight = 0
-        this.editorService.findBackgroundCollection("caveDirt").forEach(tile => {
+        this.editorService.findBackgroundCollection(collectionId).forEach(tile => {
           tile.lowWeight = weight
           weight += tile.rarity
           tile.highWeight = weight
         })
 
         const rand = Math.floor(Math.random() * weight);
-        spriteSheet = this.editorService.findBackgroundCollection("caveDirt")[0].spriteSheet
+        spriteSheet = this.editorService.findBackgroundCollection(collectionId)[0].spriteSheet
 
-        this.editorService.findBackgroundCollection("caveDirt").forEach(tile => {
+        this.editorService.findBackgroundCollection(collectionId).forEach(tile => {
           if (rand < tile.highWeight && rand >= tile.lowWeight) {
             xPos = Math.floor(Math.random() * tile.spriteGridPosX.length)
             yPos = Math.floor(Math.random() * tile.spriteGridPosY.length)
@@ -78,7 +73,7 @@ export class DrawService {
         })
 
         cell.backgroundTile = {
-          id: `x${xPos}:Y${yPos}caveDirt`,
+          id: `x${xPos}:Y${yPos}${collectionId}`,
           spriteSheet: spriteSheet,
           spriteGridPosX: [xPos],
           spriteGridPosY: [yPos],
@@ -111,7 +106,9 @@ export class DrawService {
             32
           )
         }
+
       }
+    this.drawLines()
 
     this.editorService.backgroundDirty = false
     this.blackOutEdges()
@@ -327,7 +324,7 @@ export class DrawService {
   }
 
   public drawEditableObject(): void {
-    if(!this.editorService.selectedAsset || !this.editorService.hoveringCell) { return }
+    if (!this.editorService.selectedAsset || !this.editorService.hoveringCell) { return }
 
     this.canvasService.foregroundCTX.drawImage(
       this.editorService.selectedAsset.spriteSheet,
@@ -343,7 +340,7 @@ export class DrawService {
   }
 
   private drawObstacles(cell: Cell): void {
-    if (cell.growableTileId) {
+    if (cell.growableTileId && !cell.growableTileOverride) {
       this.calculateGrowableTerrain(cell)
     }
 
@@ -366,6 +363,7 @@ export class DrawService {
     const drawableItem = growableItems.find(item => {
       return selectedCell.growableTileId.includes(item.id)
     })
+
     const topNeighbor = selectedCell.neighbors[0]
     const topRightNeighbor = selectedCell.neighbors[4]
     const rightNeighbor = selectedCell.neighbors[1]

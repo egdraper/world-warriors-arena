@@ -18,3 +18,7 @@ export const dungeon_extension = new Image()
 dungeon_extension.src = "assets/images/dungeon_extension.png"
 export const tileA5_dungeon2 = new Image()
 tileA5_dungeon2.src = "assets/images/tileA5_dungeon2.png"
+export const tileA4_dungeon = new Image()
+tileA4_dungeon.src = "assets/images/tileA4_dungeon.png"
+export const dungeon_ceiling = new Image()
+dungeon_ceiling.src = "assets/images/dungeon_ceiling.png"

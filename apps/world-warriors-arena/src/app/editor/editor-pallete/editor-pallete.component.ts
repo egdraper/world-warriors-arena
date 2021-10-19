@@ -3,7 +3,7 @@ import { ShortestPath } from '../../game-engine/shortest-path';
 import { growableItems, TerrainType } from '../../game-assets/tiles.db.ts/tile-assets.db';
 import { GridService } from '../../game-engine/grid.service';
 import { SpriteTile } from '../../models/cell.model';
-import { MapGenerator } from '../map-generator/generator';
+import { RandomMapGenerator } from '../map-generator/random-map-generator';
 import { EditorService } from './editor.service';
 
 @Component({
@@ -26,7 +26,7 @@ export class EditorPalleteComponent implements OnInit {
     ) { }
 
   ngOnInit(): void {
-    this.imageArray = this.editorService.findObjectCollection("dungeon")
+    this.imageArray = this.editorService.findObjectCollection("trees")
   }
 
   public onSelectionChange(change: any): void {
@@ -49,8 +49,8 @@ export class EditorPalleteComponent implements OnInit {
 
 
   public paintClicked(): void {
-    const mapGenerator = new MapGenerator(this.editorService, this.shortestPath, this.grid)
-    mapGenerator.generateMap(40, 40, TerrainType.Block)
+    const mapGenerator = new RandomMapGenerator(this.editorService, this.shortestPath, this.grid)
+    mapGenerator.generateMap(this.grid.width, this.grid.height, TerrainType.Block)
     // this.editorService.baseOnly = false
   }
 

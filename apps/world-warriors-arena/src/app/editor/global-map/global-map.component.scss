@@ -1,0 +1,16 @@
+
+.grid-row {
+  display: flex;
+.grid-cell {
+  width: 200px;
+  height: 200px;
+  border: gray 1px solid;
+  
+  canvas {
+    // border: 25px solid rgb(107, 70, 35, .5);
+    // position: absolute;
+  }
+}
+}
+
+

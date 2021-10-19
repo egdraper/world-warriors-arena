@@ -4,7 +4,7 @@ import { GridService } from "../../game-engine/grid.service";
 import { Cell } from "../../models/cell.model";
 import { EditorService } from "../editor-pallete/editor.service";
 
-export class MapGenerator {
+export class RandomMapGenerator {
   constructor(
     private editorService: EditorService,
     private shortestPath: ShortestPath,
