@@ -10,6 +10,7 @@ export class GridService {
   public gridDisplay: Cell[][] = [];
 
   public inverted = true
+  public gridDirty = false
  
 
   public createGrid(width: number, height: number, invertedDrawableTerrainId?: string, inverted: boolean = false) {

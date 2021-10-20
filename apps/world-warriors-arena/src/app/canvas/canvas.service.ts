@@ -21,18 +21,32 @@ export class CanvasService {
 
   public setupCanvases(gridWidth: number, gridHeight: number): void {
     this.backgroundCTX.canvas.height = gridHeight * GRID_CELL_MULTIPLIER
-    this.backgroundCTX.canvas.width = gridWidth * GRID_CELL_MULTIPLIER
+    // this.backgroundCTX.canvas.width = gridWidth * GRID_CELL_MULTIPLIER
 
-    this.foregroundCTX.canvas.height = gridHeight * GRID_CELL_MULTIPLIER
-    this.foregroundCTX.canvas.width = gridWidth * GRID_CELL_MULTIPLIER
+    // this.foregroundCTX.canvas.height = gridHeight * GRID_CELL_MULTIPLIER
+    // this.foregroundCTX.canvas.width = gridWidth * GRID_CELL_MULTIPLIER
 
-    this.overlayCTX.canvas.height = gridHeight * GRID_CELL_MULTIPLIER
-    this.overlayCTX.canvas.width = gridWidth * GRID_CELL_MULTIPLIER
+    // this.overlayCTX.canvas.height = gridHeight * GRID_CELL_MULTIPLIER
+    // this.overlayCTX.canvas.width = gridWidth * GRID_CELL_MULTIPLIER
 
-    this.fogCTX.canvas.height = gridHeight * GRID_CELL_MULTIPLIER
-    this.fogCTX.canvas.width = gridWidth * GRID_CELL_MULTIPLIER
+    // this.fogCTX.canvas.height = gridHeight * GRID_CELL_MULTIPLIER
+    // this.fogCTX.canvas.width = gridWidth * GRID_CELL_MULTIPLIER
 
-    this.blackoutCTX.canvas.height = gridHeight * GRID_CELL_MULTIPLIER
-    this.blackoutCTX.canvas.width = gridWidth * GRID_CELL_MULTIPLIER
+    // this.blackoutCTX.canvas.height = gridHeight * GRID_CELL_MULTIPLIER
+    // this.blackoutCTX.canvas.width = gridWidth * GRID_CELL_MULTIPLIER
+    this.backgroundCTX.canvas.height = 500
+    this.backgroundCTX.canvas.width = 500
+
+    this.foregroundCTX.canvas.height = 500
+    this.foregroundCTX.canvas.width = 500
+
+    this.overlayCTX.canvas.height = 500
+    this.overlayCTX.canvas.width = 500
+
+    this.fogCTX.canvas.height = 500
+    this.fogCTX.canvas.width = 500
+
+    this.blackoutCTX.canvas.height = 500
+    this.blackoutCTX.canvas.width = 500
   }
 }

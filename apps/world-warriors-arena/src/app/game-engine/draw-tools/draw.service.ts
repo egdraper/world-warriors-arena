@@ -7,6 +7,8 @@ import { growableItems } from "../../game-assets/tiles.db.ts/tile-assets.db";
 import { GridService } from "../grid.service";
 import { Cell, SpriteTile } from "../../models/cell.model";
 import { FogOfWarService } from "../visibility.service";
+import { AssetsService } from "../../game-assets/assets.service";
+import { GameComponent } from "../../models/assets.model";
 
 @Injectable()
 export class DrawService {
@@ -14,7 +16,8 @@ export class DrawService {
     public gridService: GridService,
     public canvasService: CanvasService,
     public fogOfWarService: FogOfWarService,
-    public editorService: EditorService
+    public editorService: EditorService,
+    public assetService: AssetsService
   ) {
 
   }
@@ -108,7 +111,7 @@ export class DrawService {
         }
 
       }
-    this.drawLines()
+    // this.drawLines()
 
     this.editorService.backgroundDirty = false
     this.blackOutEdges()
@@ -276,49 +279,73 @@ export class DrawService {
 
   public drawAnimatedAssets(): void {
     if (this.canvasService.foregroundCTX) {
-      this.canvasService.foregroundCTX.clearRect(0, 0, this.gridService.width * 36, this.gridService.height * 36);
-      this.gridService.gridDisplay.forEach(row => {
-        row.forEach((cell: Cell) => {
+      this.assetService.gameComponents.forEach(gameComponent => {
+        // if(this.fogOfWarService.fogEnabled ) { 
+        //   this.drawOnlyVisibleObstacle(cell.id) 
+        // }
 
-          this.drawObstacles(cell)
+        const cell = this.gridService.getGridCellByCoordinate(gameComponent.positionX+1, gameComponent.positionY+1)
+        this.canvasService.foregroundCTX.clearRect(gameComponent.positionX - 32, gameComponent.positionY - 64, 96, 96);
+        this.drawOnCell(cell)
 
-
-          // GAME COMPONENTS
-          if (cell.occupiedBy) {
-            const gameComponent = cell.occupiedBy
-            // if(this.fogOfWarService.fogEnabled ) { 
-            //   this.drawOnlyVisibleObstacle(cell.id) 
-            // }
-
+      
+            this.drawOnCell(this.gridService.getCell(cell.x, cell.y))
+            this.drawOnCell(this.gridService.getCell(cell.x, cell.y-1))
+            this.drawOnCell(this.gridService.getCell(cell.x, cell.y-2))
+            this.drawOnCell(this.gridService.getCell(cell.x-1, cell.y))
+            this.drawOnCell(this.gridService.getCell(cell.x-1, cell.y-1))
+            this.drawOnCell(this.gridService.getCell(cell.x-1, cell.y-2))
+            this.drawOnCell(this.gridService.getCell(cell.x+1, cell.y-1))
+            this.drawOnCell(this.gridService.getCell(cell.x+1, cell.y-2))
+            this.drawOnCell(this.gridService.getCell(cell.x+2, cell.y-1))
+            this.drawOnCell(this.gridService.getCell(cell.x+2, cell.y-2))
+            
+            
             this.canvasService.foregroundCTX.drawImage(
               gameComponent.image,
               gameComponent.frameXPosition[gameComponent.frameCounter],
               gameComponent.frameYPosition,
               25,
-              36,
-              gameComponent.positionX - 8,
-              gameComponent.positionY - 58,
-              50,
-              80
-            )
+          36,
+          gameComponent.positionX - 8,
+          gameComponent.positionY - 58,
+          50,
+          80
+          )
 
-            if (gameComponent.selectionIndicator) {
-              this.canvasService.overlayCTX.clearRect(gameComponent.positionX, gameComponent.positionY, 32, 32);
-              this.canvasService.overlayCTX.drawImage(
-                gameComponent.selectionIndicator.image,
-                gameComponent.selectionIndicator.frameXPosition[gameComponent.selectionIndicator.frameXCounter],
-                gameComponent.selectionIndicator.frameYPosition[gameComponent.selectionIndicator.frameYCounter],
-                25,
-                25,
-                gameComponent.positionX,
-                gameComponent.positionY,
-                32,
-                32
-              )
-            }
-          }
+          this.drawOnCell(this.gridService.getCell(cell.x-1, cell.y+1))
+          this.drawOnCell(this.gridService.getCell(cell.x-1, cell.y+2))
+          this.drawOnCell(this.gridService.getCell(cell.x-1, cell.y+3))
 
-        })
+          this.drawOnCell(this.gridService.getCell(cell.x, cell.y+1))
+          this.drawOnCell(this.gridService.getCell(cell.x, cell.y+2))
+          this.drawOnCell(this.gridService.getCell(cell.x, cell.y+3))
+
+          this.drawOnCell(this.gridService.getCell(cell.x+1, cell.y))
+          this.drawOnCell(this.gridService.getCell(cell.x+1, cell.y+1))
+          this.drawOnCell(this.gridService.getCell(cell.x+1, cell.y+2))
+          this.drawOnCell(this.gridService.getCell(cell.x+1, cell.y+3))
+          
+          this.drawOnCell(this.gridService.getCell(cell.x+2, cell.y))
+          this.drawOnCell(this.gridService.getCell(cell.x+2, cell.y+1))
+          this.drawOnCell(this.gridService.getCell(cell.x+2, cell.y+2))
+          this.drawOnCell(this.gridService.getCell(cell.x+2, cell.y+3))
+          this.drawOnCell(this.gridService.getCell(cell.x+3, cell.y))
+          
+          if (gameComponent.selectionIndicator) {
+          this.canvasService.overlayCTX.clearRect(gameComponent.positionX, gameComponent.positionY, 32, 32);
+          this.canvasService.overlayCTX.drawImage(
+            gameComponent.selectionIndicator.image,
+            gameComponent.selectionIndicator.frameXPosition[gameComponent.selectionIndicator.frameXCounter],
+            gameComponent.selectionIndicator.frameYPosition[gameComponent.selectionIndicator.frameYCounter],
+            25,
+            25,
+            gameComponent.positionX,
+            gameComponent.positionY,
+            32,
+            32
+          )
+        }
       })
     }
   }
@@ -339,11 +366,24 @@ export class DrawService {
     )
   }
 
-  private drawObstacles(cell: Cell): void {
-    if (cell.growableTileId && !cell.growableTileOverride) {
-      this.calculateGrowableTerrain(cell)
-    }
+  public drawObstacles(): void {
+    if (this.canvasService.foregroundCTX && this.assetService.obstaclesDirty) {
+      this.canvasService.foregroundCTX.clearRect(0, 0, this.gridService.width * 36, this.gridService.height * 36);
+      this.gridService.gridDisplay.forEach(row => {
+        row.forEach((cell: Cell) => {
 
+          if (cell.growableTileId && !cell.growableTileOverride) {
+            this.calculateGrowableTerrain(cell)
+          }
+
+          this.drawOnCell(cell)
+        })
+      })
+      this.assetService.obstaclesDirty = false
+    }
+  }
+
+  private drawOnCell(cell: Cell): void {
     if (cell.visible && cell.imageTile) {
       this.canvasService.foregroundCTX.drawImage(
         cell.imageTile.spriteSheet,

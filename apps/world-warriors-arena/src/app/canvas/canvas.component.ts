@@ -117,8 +117,9 @@ export class CanvasComponent {
       const drawableItem = growableItems.find(item => item.id === this.editorService.selectedGrowableAsset)
 
       this.assetService.addMapAsset(this.hoveringCell, selectedAsset, drawableItem)
-      if(drawableItem.terrainType === TerrainType.Background) { this.editorService.backgroundDirty = true}
+      if(drawableItem.terrainType === TerrainType.Background) { this.editorService.backgroundDirty = true }
     }
+    this.assetService.obstaclesDirty = true
   }
 
   public onMouseUp(event: any): void {

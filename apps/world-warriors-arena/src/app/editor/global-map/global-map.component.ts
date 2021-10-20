@@ -1,5 +1,6 @@
 import { Component, ElementRef, HostListener, OnInit, ViewChild, ViewChildren } from '@angular/core';
 import { CanvasService } from '../../canvas/canvas.service';
+import { AssetsService } from '../../game-assets/assets.service';
 import { DrawService } from '../../game-engine/draw-tools/draw.service';
 import { GridService } from '../../game-engine/grid.service';
 import { GridMapCell, GRID_CELL_MULTIPLIER, MapDetails } from '../../models/cell.model';
@@ -26,7 +27,8 @@ export class GlobalMapComponent implements OnInit {
     public gridService: GridService,
     public editorService: EditorService,
     public drawService: DrawService,
-    public canvasService: CanvasService
+    public canvasService: CanvasService,
+    public assetService: AssetsService,
   ) { }
 
   public ngOnInit(): void {
@@ -102,14 +104,13 @@ export class GlobalMapComponent implements OnInit {
   }
 
   public generateMaps(): void {
-    this.gridService.createGrid(40, 40, "DrawableDungeon")
+    this.gridService.createGrid(150, 150, "DrawableDungeon")
     this.canvasService.setupCanvases(this.gridService.width, this.gridService.height)
 
     this.drawService.autoFillTerrain("caveDirt")
     this.drawService.drawBackground(true)
     this.drawService.drawLines()
     const generator = new GridMapGenerator(this.gridService)
-
 
     const mapDetails: MapDetails = {
       backgroundTypeId: "caveDirt",
@@ -121,5 +122,6 @@ export class GlobalMapComponent implements OnInit {
     generator.generateMap(this.gridOfGrids[0][0], mapDetails)
     
     this.editorService.backgroundDirty = true
+    this.assetService.obstaclesDirty = true
   }
 }

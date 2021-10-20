@@ -1,12 +1,6 @@
 import { Injectable } from "@angular/core";
-import { CanvasService } from "../canvas/canvas.service";
-import { DrawService } from "../game-engine/draw-tools/draw.service";
-import { Engine } from "../game-engine/engine";
-import { GridService } from "../game-engine/grid.service";
-import { ShortestPath } from "../game-engine/shortest-path";
 import { MotionAsset } from "../models/assets.model";
 import { Cell, DrawableTiles, SpriteTile } from "../models/cell.model";
-import { Character } from "./character";
 import { TerrainType } from "./tiles.db.ts/tile-assets.db";
 
 @Injectable()
@@ -15,15 +9,9 @@ export class AssetsService {
   public selectedGameComponent: MotionAsset
   public obstacles: string[] = []
 
-  constructor(
-    private drawService: DrawService,
-    private canvas: CanvasService,
-    private shortestPath: ShortestPath,
-    private gridService: GridService,
-    private engine: Engine,
-  ) {
+  public obstaclesDirty: boolean = false
 
-  }
+  constructor() { }
 
   public addInvertedMapAsset(selectedCell: Cell): void {
     selectedCell.growableTileId = undefined
@@ -60,22 +48,6 @@ export class AssetsService {
     }
 
     this.obstacles.push(selectedCell.id)
-  }
-
-  public addCharacter(imgUrl?: string): void {
-    const gridCell1 = this.gridService.grid[`x2:y2`]
-    const player = new Character(imgUrl, this.canvas, this.drawService, gridCell1, this.gridService, this.shortestPath, this.engine)
-    gridCell1.occupiedBy = player  // <--- adding the character into the occupiedBy Spot
-
-    player.animationFrame = [20, 40, 60] // set to 10 for walking speed
-
-
-    this.engine.startAnimationTrigger(player)
-
-    this.gameComponents.push(player)
-
-    this.drawService.clearFogLineOfSight(gridCell1)
-    // this.drawService.drawOnlyVisibleObstacle(gridCell1.id)
   }
 
   private addRequiredNeighborTiles(selectedCell: Cell, drawableItem: DrawableTiles): void {

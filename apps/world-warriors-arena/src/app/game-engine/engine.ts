@@ -57,6 +57,7 @@ export class Engine {
       })
     }
   
+    this.drawService.drawObstacles()
     this.drawService.drawAnimatedAssets()
     this.drawService.drawBackground()
     this.drawService.drawEditableObject()

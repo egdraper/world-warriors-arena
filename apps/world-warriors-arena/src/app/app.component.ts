@@ -40,7 +40,6 @@ export class AppComponent {
       this.visibilityService.preloadVisibility(this.assetService.obstacles)
       this.drawService.drawBlackoutFog()
     }
-    this.assetService.addCharacter()
   }
 
   public onGridClick(event: { clickX: number, clickY: number }): void {
@@ -60,7 +59,8 @@ export class AppComponent {
 
   public generateRandomMap(): void {
     const inverted = true
-    this.grid.createGrid(40, 40, "DrawableDungeon", true)
+    this.assetService.obstaclesDirty = true
+    this.grid.createGrid(150, 150, "DrawableDungeon", true)
     this.canvasService.setupCanvases(this.grid.width, this.grid.height)
 
     this.drawService.autoFillTerrain("caveDirt")
