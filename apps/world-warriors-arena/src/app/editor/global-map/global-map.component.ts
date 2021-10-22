@@ -104,13 +104,13 @@ export class GlobalMapComponent implements OnInit {
   }
 
   public generateMaps(): void {
-    this.gridService.createGrid(150, 150, "DrawableDungeon")
+    this.gridService.createGrid(60, 60, "DrawableDungeon")
     this.canvasService.setupCanvases(this.gridService.width, this.gridService.height)
 
     this.drawService.autoFillTerrain("caveDirt")
     this.drawService.drawBackground(true)
     this.drawService.drawLines()
-    const generator = new GridMapGenerator(this.gridService)
+    const generator = new GridMapGenerator(this.gridService, this.canvasService)
 
     const mapDetails: MapDetails = {
       backgroundTypeId: "caveDirt",

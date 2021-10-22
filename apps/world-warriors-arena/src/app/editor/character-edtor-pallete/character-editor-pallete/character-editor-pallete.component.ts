@@ -33,7 +33,7 @@ export class CharacterEditorPalleteComponent implements OnInit {
   }
 
   public tileClick(image: HTMLImageElement): void {
-    const gridCell1 = this.gridService.grid[`x4:y4`]
+    const gridCell1 = this.gridService.grid[`x8:y8`]
     const player = new Character(image.src, this.canvas, this.drawService, gridCell1, this.gridService, this.shortestPath, this.engine)
     gridCell1.occupiedBy = player  // <--- adding the character into the occupiedBy Spot
 

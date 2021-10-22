@@ -117,6 +117,18 @@ export abstract class MotionAsset extends Asset {
     this.destinationIndicator=undefined
   }
 
+  // this.canvasService.fogCTX.save()
+  // this.canvasService.blackoutCTX.save()
+  // this.canvasService.backgroundCTX.save()
+  // this.canvasService.overlayCTX.save()
+  // this.canvasService.foregroundCTX.save()
+
+          // this.canvasService.fogCTX.restore()
+        // this.canvasService.blackoutCTX.restore()
+        // this.canvasService.backgroundCTX.restore()
+        // this.canvasService.overlayCTX.restore()
+        // this.canvasService.foregroundCTX.restore()
+
 
   public move() {
     // called automatically every 1/60 of a second from the engine
@@ -132,8 +144,10 @@ export abstract class MotionAsset extends Asset {
     this.positionX += nextXMove
     this.positionY += nextYMove
 
-    if (this.positionY % 32 === 0 && this.positionX % 32 === 0) {
-      this.cell = this.grid.grid[`x${this.positionX / 32}:y${this.positionY / 32}`]
+    this.canvasService.adustViewPort(-1 * nextXMove, -1 * nextYMove, true)
+
+    if (this.positionY % (32) === 0 && this.positionX % (32) === 0) {
+      this.cell = this.grid.grid[`x${this.positionX / (32)}:y${this.positionY / (32)}`]
 
       this.nextCell = this.currentPath.length > 0
         ? this.currentPath.pop()

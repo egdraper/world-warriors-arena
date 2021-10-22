@@ -42,33 +42,29 @@ export class CanvasComponent {
     this.backgroundContext = this.backgroundCanvas.nativeElement.getContext('2d');
     this.canvasService.backgroundCTX = this.backgroundContext
     this.canvasService.backgroundCanvas = this.backgroundCanvas
-    this.canvasService.backgroundCTX.scale(1, 1)
+  
 
     // Foreground
     this.foregroundContext = this.foregroundCanvas.nativeElement.getContext('2d');
     this.canvasService.foregroundCTX = this.foregroundContext
     this.canvasService.foregroundCanvas = this.foregroundCanvas
-    this.canvasService.foregroundCTX.scale(1, 1)
 
     // Overlay
     this.overlayContext = this.overlayCanvas.nativeElement.getContext('2d');
     this.canvasService.overlayCTX = this.overlayContext
     this.canvasService.overlayCanvas = this.overlayCanvas
-    this.canvasService.overlayCTX.scale(1, 1)
 
     // Fog
     this.fogContext = this.fogCanvas.nativeElement.getContext('2d');
     this.canvasService.fogCTX = this.fogContext
     this.canvasService.fogCanvas = this.fogCanvas
-    this.canvasService.fogCTX.scale(1, 1)
 
     // Fog
     this.blackoutContext = this.blackoutCanvas.nativeElement.getContext('2d');
-    this.blackoutContext.canvas.height = this.gridService.height * 32
-    this.blackoutContext.canvas.width = this.gridService.width * 32
     this.canvasService.blackoutCTX = this.blackoutContext
     this.canvasService.blackoutCanvas = this.blackoutCanvas
-    this.canvasService.blackoutCTX.scale(1, 1)
+
+    this.gridService.setScale(this.canvasService.scale)
   }
 
   @HostListener("document:keydown", ["$event"])
@@ -81,6 +77,19 @@ export class CanvasComponent {
       this.controlPressed = true
       this.editorService.hoveringCell = this.hoveringCell 
     }
+
+    if (event.key === "ArrowRight") {
+      this.canvasService.adustViewPort(-15, 0)
+    }
+    if (event.key === "ArrowLeft") {
+      this.canvasService.adustViewPort(15, 0)
+    }
+    if (event.key === "ArrowUp") {
+      this.canvasService.adustViewPort(0, 15)
+    }
+    if (event.key === "ArrowDown") {
+      this.canvasService.adustViewPort(0, -15)
+    }
   }
 
   @HostListener("document:keyup", ["$event"])
@@ -88,6 +97,10 @@ export class CanvasComponent {
     if (event.key === "Control") {
       this.controlPressed = false
       this.editorService.hoveringCell = undefined 
+    }
+
+    if( event.key === "Enter") {
+      this.canvasService.resetViewPortal()
     }
   }
 

@@ -52,7 +52,15 @@ export class AppComponent {
       this.assetService.selectedGameComponent.selectCharacter()
     } else {
       if(this.assetService.selectedGameComponent) {
-        this.assetService.selectedGameComponent.startMovement(this.assetService.selectedGameComponent.cell, this.selectedCell, this.assetService.gameComponents)
+        const posX = this.assetService.selectedGameComponent.positionX + 1
+        const posY = this.assetService.selectedGameComponent.positionY + 1
+        
+        const characterCell = this.grid.getGridCellByCoordinate((posX * this.canvasService.scale), (posY * this.canvasService.scale))
+
+        const xOffset = (this.selectedCell.x - 8) + characterCell.x 
+        const yOffset = (this.selectedCell.y - 8) + characterCell.y 
+        const selectedCellOffSet = this.grid.grid[`x${xOffset}:y${yOffset}`]
+        this.assetService.selectedGameComponent.startMovement(this.assetService.selectedGameComponent.cell, selectedCellOffSet, this.assetService.gameComponents)
       }
     }
   }
@@ -60,7 +68,7 @@ export class AppComponent {
   public generateRandomMap(): void {
     const inverted = true
     this.assetService.obstaclesDirty = true
-    this.grid.createGrid(150, 150, "DrawableDungeon", true)
+    this.grid.createGrid(60, 60, "DrawableDungeon", true)
     this.canvasService.setupCanvases(this.grid.width, this.grid.height)
 
     this.drawService.autoFillTerrain("caveDirt")

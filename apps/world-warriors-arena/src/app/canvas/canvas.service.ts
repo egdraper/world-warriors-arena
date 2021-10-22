@@ -3,6 +3,12 @@ import { GRID_CELL_MULTIPLIER } from "../models/cell.model";
 
 @Injectable()
 export class CanvasService {
+  public canvasSize = 1216
+  public scale = 2
+  public canvasViewPortOffsetX = 0
+  public canvasViewPortOffsetY = 0
+
+
   public overlayCanvas: ElementRef<HTMLCanvasElement>;
   public overlayCTX: CanvasRenderingContext2D;
   
@@ -18,6 +24,35 @@ export class CanvasService {
   public blackoutCanvas: ElementRef<HTMLCanvasElement>;
   public blackoutCTX: CanvasRenderingContext2D;
 
+  public adustViewPort(xPos: number, yPos: number, saveLocation: boolean = false) {
+    this.canvasViewPortOffsetX += xPos
+    this.canvasViewPortOffsetY += yPos
+
+    // console.log("offsetX:" + this.canvasViewPortOffsetX + " offsetY:" + this.canvasViewPortOffsetY)
+
+    this.fogCTX.translate(xPos, yPos)
+    this.blackoutCTX.translate(xPos, yPos)
+    this.backgroundCTX.translate(xPos, yPos)
+    this.overlayCTX.translate(xPos, yPos)
+    this.foregroundCTX.translate(xPos, yPos)
+
+    if (saveLocation) {
+      this.fogCTX.save()
+      this.blackoutCTX.save()
+      this.backgroundCTX.save()
+      this.overlayCTX.save()
+      this.foregroundCTX.save()
+    }
+
+  }
+
+  public resetViewPortal(): void {
+    this.fogCTX.restore()
+    this.blackoutCTX.restore()
+    this.backgroundCTX.restore()
+    this.overlayCTX.restore()
+    this.foregroundCTX.restore()
+  }
 
   public setupCanvases(gridWidth: number, gridHeight: number): void {
     this.backgroundCTX.canvas.height = gridHeight * GRID_CELL_MULTIPLIER
@@ -34,19 +69,26 @@ export class CanvasService {
 
     // this.blackoutCTX.canvas.height = gridHeight * GRID_CELL_MULTIPLIER
     // this.blackoutCTX.canvas.width = gridWidth * GRID_CELL_MULTIPLIER
-    this.backgroundCTX.canvas.height = 500
-    this.backgroundCTX.canvas.width = 500
+    this.backgroundCTX.canvas.height = this.canvasSize
+    this.backgroundCTX.canvas.width = this.canvasSize
+    this.backgroundCTX.scale(this.scale, this.scale)
 
-    this.foregroundCTX.canvas.height = 500
-    this.foregroundCTX.canvas.width = 500
+    this.foregroundCTX.canvas.height = this.canvasSize
+    this.foregroundCTX.canvas.width = this.canvasSize
+    this.foregroundCTX.scale(this.scale, this.scale)
 
-    this.overlayCTX.canvas.height = 500
-    this.overlayCTX.canvas.width = 500
+    this.overlayCTX.canvas.height = this.canvasSize
+    this.overlayCTX.canvas.width = this.canvasSize
+    this.overlayCTX.scale(this.scale, this.scale)
 
-    this.fogCTX.canvas.height = 500
-    this.fogCTX.canvas.width = 500
+    this.fogCTX.canvas.height = this.canvasSize
+    this.fogCTX.canvas.width = this.canvasSize
+    this.fogCTX.scale(this.scale, this.scale)
 
-    this.blackoutCTX.canvas.height = 500
-    this.blackoutCTX.canvas.width = 500
+    this.blackoutCTX.canvas.height = this.canvasSize
+    this.blackoutCTX.canvas.width = this.canvasSize
+    this.blackoutCTX.scale(this.scale, this.scale)
+
+
   }
 }

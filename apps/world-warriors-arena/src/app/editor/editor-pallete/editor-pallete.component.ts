@@ -60,8 +60,8 @@ export class EditorPalleteComponent implements OnInit {
   }
 
   public imageClick(event: any): void {
-    console.log(event.offsetX)
-    console.log(event.offsetY)
+    // console.log(event.offsetX)
+    // console.log(event.offsetY)
 
     let x = event.offsetX
     let y = event.offsetY

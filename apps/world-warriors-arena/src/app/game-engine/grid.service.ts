@@ -8,10 +8,14 @@ export class GridService {
   public grid: {[cell: string]: Cell } = { }
   public gridDisplayLite: GridDetails
   public gridDisplay: Cell[][] = [];
-
   public inverted = true
   public gridDirty = false
+
+  private scale = 1
  
+  public setScale(scale: number): void {
+    this.scale = scale
+  }
 
   public createGrid(width: number, height: number, invertedDrawableTerrainId?: string, inverted: boolean = false) {
     this.inverted = inverted
@@ -24,7 +28,7 @@ export class GridService {
     let foundCell: Cell
     this.gridDisplay.forEach(row => {
       row.forEach(cell => {
-        if((cell.posX < x && cell.posX + 32 >= x ) && (cell.posY < y && cell.posY + 32 >= y)) {
+        if(((cell.posX * this.scale) < x && (cell.posX * this.scale) + (32 * this.scale) >= x ) && (cell.posY * this.scale < y && cell.posY * this.scale + (32 * this.scale) >= y)) {
           foundCell = cell
           if(!foundCell) { }
         }
