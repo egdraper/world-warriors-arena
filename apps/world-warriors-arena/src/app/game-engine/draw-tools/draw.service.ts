@@ -281,7 +281,12 @@ export class DrawService {
         // Ensure the viewport does not kick back a negative number (cells don't work with negatives)
         const topLeftPosX = -1 * this.canvasService.canvasViewPortOffsetX + 1 < 0 ? 1 : -1 * this.canvasService.canvasViewPortOffsetX + 1
         const topLeftPosY = -1 * this.canvasService.canvasViewPortOffsetY + 1 < 0 ? 1 : -1 * this.canvasService.canvasViewPortOffsetY + 1
-        const topRightPosX = -1 * this.canvasService.canvasViewPortOffsetX * this.canvasService.scale + 1280
+        
+        const topRightPosX = 
+          -1 * this.canvasService.canvasViewPortOffsetX * this.canvasService.scale + 1280 > this.gridService.width * (32 * this.canvasService.scale)
+          ? this.gridService.width * (32 * this.canvasService.scale)
+          : -1 * this.canvasService.canvasViewPortOffsetX * this.canvasService.scale + 1280
+        
         const bottomPosY = -1 * this.canvasService.canvasViewPortOffsetY * this.canvasService.scale + 1344
 
         const cellTopLeft = this.gridService.getGridCellByCoordinate(topLeftPosX, topLeftPosY)
