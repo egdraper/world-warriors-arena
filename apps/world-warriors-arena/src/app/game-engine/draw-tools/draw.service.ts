@@ -87,15 +87,22 @@ export class DrawService {
   }
 
   public drawBackground(forceDraw: boolean = false): void {
+    if (Object.keys(this.gridService.grid).length === 0) { return }
+
     if (this.editorService.backgroundDirty || forceDraw)
+
       for (let h = 0; h < this.gridService.height; h++) {
         for (let w = 0; w < this.gridService.width; w++) {
           const cell = this.gridService.grid[`x${w}:y${h}`]
 
-          if (cell.backgroundGrowableTileId) {
-            this.calculateGrowableBackgroundTerrain(cell)
+          try {
+            if (cell.backgroundGrowableTileId) {
+              this.calculateGrowableBackgroundTerrain(cell)
+            }
+            this.drawOnBackgroundCell(cell)
+          } catch {
+            debugger
           }
-          this.drawOnBackgroundCell(cell)
         }
 
       }
@@ -266,44 +273,66 @@ export class DrawService {
 
 
   public drawAnimatedAssets(): void {
+    if (Object.keys(this.gridService.grid).length === 0) { return }
+
     if (this.canvasService.foregroundCTX) {
+      this.canvasService.foregroundCTX.clearRect(0, 0, 1800, 1800);
+      this.canvasService.backgroundCTX.clearRect(0, 0, 1800, 1800);
+      this.canvasService.blackoutCTX.clearRect(0, 0, 1800, 1800);
+
+      // Ensure the viewport does not kick back a negative number (cells don't work with negatives)
+      const topLeftPosX = -1 * this.canvasService.canvasViewPortOffsetX + 1 < 0 ? 1 : -1 * this.canvasService.canvasViewPortOffsetX + 1
+      const topLeftPosY = -1 * this.canvasService.canvasViewPortOffsetY + 1 < 0 ? 1 : -1 * this.canvasService.canvasViewPortOffsetY + 1
+
+      const topRightPosX =
+        -1 * this.canvasService.canvasViewPortOffsetX * this.canvasService.scale + 1280 > this.gridService.width * (32 * this.canvasService.scale)
+          ? this.gridService.width * (32 * this.canvasService.scale)
+          : -1 * this.canvasService.canvasViewPortOffsetX * this.canvasService.scale + 1280
+
+      const bottomPosY = -1 * this.canvasService.canvasViewPortOffsetY * this.canvasService.scale + 1344 > this.gridService.height * (32 * this.canvasService.scale)
+        ? this.gridService.height * (32 * this.canvasService.scale)
+        : -1 * this.canvasService.canvasViewPortOffsetY * this.canvasService.scale + 1344
+
+      const cellTopLeft = this.gridService.getGridCellByCoordinate(topLeftPosX, topLeftPosY)
+      const cellTopRight = this.gridService.getGridCellByCoordinate(topRightPosX, topLeftPosY)
+      const cellBottomLeft = this.gridService.getGridCellByCoordinate(topLeftPosX, bottomPosY)
+
+      try {
+        //  const cellBottomRight = this.gridService.getGridCellByCoordinate(this.canvasService.canvasViewPortOffsetX + 1200, this.canvasService.canvasViewPortOffsetY + 1200)
+        for (let y = cellTopLeft.y; y <= cellBottomLeft.y; y++) {
+          for (let x = cellTopLeft.x; x <= cellTopRight.x; x++) {
+            const drawableCell = this.gridService.getCell(x, y)
+            this.drawOnBackgroundCell(drawableCell)
+            this.drawOnCell(drawableCell)
+
+            const gameComponent = drawableCell.occupiedBy
+
+            if (gameComponent) {
+              this.canvasService.foregroundCTX.drawImage(
+                gameComponent.image,
+                gameComponent.frameXPosition[gameComponent.frameCounter],
+                gameComponent.frameYPosition,
+                25,
+                36,
+                gameComponent.positionX - 8,
+                gameComponent.positionY - 58,
+                50,
+                80
+              )
+            }
+          }
+        }
+      } catch (e) {
+        debugger
+      }
+
       this.assetService.gameComponents.forEach(gameComponent => {
         // if(this.fogOfWarService.fogEnabled ) { 
         //   this.drawOnlyVisibleObstacle(cell.id) 
         // }
 
         const cell = this.gridService.getGridCellByCoordinate(gameComponent.positionX + 1, gameComponent.positionY + 1)
-        this.canvasService.foregroundCTX.clearRect(0, 0, 1800, 1800);
-        this.canvasService.backgroundCTX.clearRect(0, 0, 1800, 1800);
-        this.canvasService.blackoutCTX.clearRect(0, 0, 1800, 1800);
         this.drawOnCell(cell)
-        
-        // Ensure the viewport does not kick back a negative number (cells don't work with negatives)
-        const topLeftPosX = -1 * this.canvasService.canvasViewPortOffsetX + 1 < 0 ? 1 : -1 * this.canvasService.canvasViewPortOffsetX + 1
-        const topLeftPosY = -1 * this.canvasService.canvasViewPortOffsetY + 1 < 0 ? 1 : -1 * this.canvasService.canvasViewPortOffsetY + 1
-        
-        const topRightPosX = 
-          -1 * this.canvasService.canvasViewPortOffsetX * this.canvasService.scale + 1280 > this.gridService.width * (32 * this.canvasService.scale)
-          ? this.gridService.width * (32 * this.canvasService.scale)
-          : -1 * this.canvasService.canvasViewPortOffsetX * this.canvasService.scale + 1280
-        
-        const bottomPosY = -1 * this.canvasService.canvasViewPortOffsetY * this.canvasService.scale + 1344
-
-        const cellTopLeft = this.gridService.getGridCellByCoordinate(topLeftPosX, topLeftPosY)
-        const cellTopRight = this.gridService.getGridCellByCoordinate(topRightPosX, topLeftPosY)
-        const cellBottomLeft = this.gridService.getGridCellByCoordinate(topLeftPosX, bottomPosY)
-        try {
-        //  const cellBottomRight = this.gridService.getGridCellByCoordinate(this.canvasService.canvasViewPortOffsetX + 1200, this.canvasService.canvasViewPortOffsetY + 1200)
-         for(let y = cellTopLeft.y; y <= cellBottomLeft.y; y++){
-           for(let x = cellTopLeft.x; x <= cellTopRight.x; x++) {
-             const drawableCell = this.gridService.getCell(x,y)
-             this.drawOnBackgroundCell(drawableCell)
-             this.drawOnCell(drawableCell)
-           }
-         }
-        }  catch(e) {
-         debugger
-        }
 
         // for (let i = 0; i < 32; i++) {
         //   for (let l = 0; l < 32; l++) {
@@ -323,17 +352,7 @@ export class DrawService {
         // this.drawOnCell(this.gridService.getCell(cell.x+2, cell.y-2))
 
 
-        this.canvasService.foregroundCTX.drawImage(
-          gameComponent.image,
-          gameComponent.frameXPosition[gameComponent.frameCounter],
-          gameComponent.frameYPosition,
-          25,
-          36,
-          gameComponent.positionX - 8,
-          gameComponent.positionY - 58,
-          50,
-          80
-        )
+
 
 
         // this.drawOnCell(this.gridService.getCell(cell.x-1, cell.y+1))

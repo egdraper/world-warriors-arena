@@ -42,29 +42,6 @@ export class AppComponent {
     }
   }
 
-  public onGridClick(event: { clickX: number, clickY: number }): void {
-    this.selectedCell = this.grid.getGridCellByCoordinate(event.clickX, event.clickY)
-    console.log(this.selectedCell)
-    if (this.selectedCell.occupiedBy) {
-      const character = this.selectedCell.occupiedBy
-      this.assetService.gameComponents.forEach(asset => asset.selectionIndicator = undefined)
-      this.assetService.selectedGameComponent = character
-      this.assetService.selectedGameComponent.selectCharacter()
-    } else {
-      if(this.assetService.selectedGameComponent) {
-        const posX = this.assetService.selectedGameComponent.positionX + 1
-        const posY = this.assetService.selectedGameComponent.positionY + 1
-        
-        const characterCell = this.grid.getGridCellByCoordinate((posX * this.canvasService.scale), (posY * this.canvasService.scale))
-
-        const xOffset = (this.selectedCell.x - 8) + characterCell.x 
-        const yOffset = (this.selectedCell.y - 8) + characterCell.y 
-        const selectedCellOffSet = this.grid.grid[`x${xOffset}:y${yOffset}`]
-        this.assetService.selectedGameComponent.startMovement(this.assetService.selectedGameComponent.cell, selectedCellOffSet, this.assetService.gameComponents)
-      }
-    }
-  }
-
   public generateRandomMap(): void {
     const inverted = true
     this.assetService.obstaclesDirty = true

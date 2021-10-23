@@ -5,6 +5,8 @@ import { GridService } from '../../game-engine/grid.service';
 import { SpriteTile } from '../../models/cell.model';
 import { RandomMapGenerator } from '../map-generator/random-map-generator';
 import { EditorService } from './editor.service';
+import { AssetsService } from '../../game-assets/assets.service';
+import { CanvasService } from '../../canvas/canvas.service';
 
 @Component({
   selector: 'world-warriors-arena-editor-pallete',
@@ -22,7 +24,9 @@ export class EditorPalleteComponent implements OnInit {
   constructor(
     private editorService: EditorService,
     private shortestPath: ShortestPath,
-    private grid: GridService
+    private grid: GridService,
+    private assetService: AssetsService,
+    private canvasService: CanvasService
     ) { }
 
   ngOnInit(): void {
@@ -46,11 +50,18 @@ export class EditorPalleteComponent implements OnInit {
     // this.editorService.baseOnly = true
   }
 
+  public changeScale(scale: any): void {
+    this.canvasService.scale = Number(scale.value)
+    this.canvasService.setupCanvases(this.grid.width, this.grid.height)
+    this.editorService.backgroundDirty  = true
+    this.assetService.obstaclesDirty = true
+  }
 
 
   public paintClicked(): void {
     const mapGenerator = new RandomMapGenerator(this.editorService, this.shortestPath, this.grid)
     mapGenerator.generateMap(this.grid.width, this.grid.height, TerrainType.Block)
+    this.assetService.obstaclesDirty = true
     // this.editorService.baseOnly = false
   }
 

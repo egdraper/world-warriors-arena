@@ -24,13 +24,13 @@ export class CanvasComponent {
   public backgroundContext: CanvasRenderingContext2D;
   public fogContext: CanvasRenderingContext2D;
   public blackoutContext: CanvasRenderingContext2D;
+  public hoveringCell: Cell
 
   private mouseIsDown = false
   private controlPressed = false
-  private hoveringCell: Cell
 
   constructor(
-    private canvasService: CanvasService,
+    public canvasService: CanvasService,
     private gridService: GridService,
     private assetService: AssetsService,
     private editorService: EditorService,
@@ -63,8 +63,6 @@ export class CanvasComponent {
     this.blackoutContext = this.blackoutCanvas.nativeElement.getContext('2d');
     this.canvasService.blackoutCTX = this.blackoutContext
     this.canvasService.blackoutCanvas = this.blackoutCanvas
-
-    this.gridService.setScale(this.canvasService.scale)
   }
 
   @HostListener("document:keydown", ["$event"])
@@ -106,20 +104,36 @@ export class CanvasComponent {
 
   public onCanvasClick(event: any): void {
     this.mouseIsDown = true
-    const clickX = event.offsetX
-    const clickY = event.offsetY
-    this.gridClick.emit({ clickX, clickY })
+    const clickX = event.offsetX + (-1 * this.canvasService.canvasViewPortOffsetX)
+    const clickY = event.offsetY + (-1 * this.canvasService.canvasViewPortOffsetY)
 
+    const selectedCell = this.gridService.getGridCellByCoordinate(clickX, clickY)
+    
+    // determine movement or selection
+    const hasAsset = this.assetService.checkForAsset(selectedCell)
+
+    if(this.assetService.selectedGameComponent && !hasAsset) {
+      // move Asset
+      this.assetService.selectedGameComponent.startMovement(this.assetService.selectedGameComponent.cell, selectedCell, this.assetService.gameComponents)
+    } else {
+      // select Asset
+      this.canvasService.resetViewport()
+      const assetXPos = -1 * this.assetService.selectedGameComponent.cell.posX + 256
+      const assetYPos = -1 * this.assetService.selectedGameComponent.cell.posY + 256
+      this.canvasService.adustViewPort(assetXPos, assetYPos)
+    }
+    
     this.onMouseMove(event)
   }
 
   public onMouseMove(event: any): void {
-    this.hoveringCell = this.gridService.getGridCellByCoordinate(event.offsetX, event.offsetY)
-
+    const clickX = event.offsetX + (-1 * this.canvasService.canvasViewPortOffsetX)
+    const clickY = event.offsetY + (-1 * this.canvasService.canvasViewPortOffsetY)
+    
+    this.hoveringCell = this.gridService.getGridCellByCoordinate(clickX, clickY)
     
     if (event.offsetX < 0 || event.offsetY < 0) { return }
     if (!this.mouseIsDown || !this.controlPressed) { return }
-
     
     if(this.gridService.inverted ) {
       this.assetService.addInvertedMapAsset(this.hoveringCell)

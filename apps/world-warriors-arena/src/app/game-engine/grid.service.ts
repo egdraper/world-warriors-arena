@@ -1,4 +1,5 @@
 import { Injectable } from '@angular/core';
+import { CanvasService } from '../canvas/canvas.service';
 import { Cell, GridDetails, RelativePositionCell } from '../models/cell.model';
 
 @Injectable()
@@ -11,11 +12,7 @@ export class GridService {
   public inverted = true
   public gridDirty = false
 
-  private scale = 1
- 
-  public setScale(scale: number): void {
-    this.scale = scale
-  }
+  constructor(private canvasService: CanvasService) {}
 
   public createGrid(width: number, height: number, invertedDrawableTerrainId?: string, inverted: boolean = false) {
     this.inverted = inverted
@@ -28,7 +25,7 @@ export class GridService {
     let foundCell: Cell
     this.gridDisplay.forEach(row => {
       row.forEach(cell => {
-        if(((cell.posX * this.scale) < x && (cell.posX * this.scale) + (32 * this.scale) >= x ) && (cell.posY * this.scale < y && cell.posY * this.scale + (32 * this.scale) >= y)) {
+        if(((cell.posX * this.canvasService.scale) < x && (cell.posX * this.canvasService.scale) + (32 * this.canvasService.scale) >= x ) && (cell.posY * this.canvasService.scale < y && cell.posY * this.canvasService.scale + (32 * this.canvasService.scale) >= y)) {
           foundCell = cell
           if(!foundCell) { }
         }

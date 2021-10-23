@@ -4,9 +4,17 @@ import { GRID_CELL_MULTIPLIER } from "../models/cell.model";
 @Injectable()
 export class CanvasService {
   public canvasSize = 1216
-  public scale = 2
   public canvasViewPortOffsetX = 0
   public canvasViewPortOffsetY = 0
+  
+  public _scale = 1
+  public get scale() {
+    return this._scale
+  }
+
+  public set scale(value: number) {
+    this._scale = value
+  }
 
 
   public overlayCanvas: ElementRef<HTMLCanvasElement>;
@@ -27,8 +35,6 @@ export class CanvasService {
   public adustViewPort(xPos: number, yPos: number, saveLocation: boolean = false) {
     this.canvasViewPortOffsetX += xPos
     this.canvasViewPortOffsetY += yPos
-
-    // console.log("offsetX:" + this.canvasViewPortOffsetX + " offsetY:" + this.canvasViewPortOffsetY)
 
     this.fogCTX.translate(xPos, yPos)
     this.blackoutCTX.translate(xPos, yPos)
@@ -52,6 +58,12 @@ export class CanvasService {
     this.backgroundCTX.restore()
     this.overlayCTX.restore()
     this.foregroundCTX.restore()
+  }
+
+  public resetViewport(): void {
+    const xPos = -1 * this.canvasViewPortOffsetX
+    const yPos = -1 * this.canvasViewPortOffsetY
+    this.adustViewPort(xPos, yPos)
   }
 
   public setupCanvases(gridWidth: number, gridHeight: number): void {
