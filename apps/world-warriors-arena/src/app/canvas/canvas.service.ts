@@ -3,7 +3,7 @@ import { GRID_CELL_MULTIPLIER } from "../models/cell.model";
 
 @Injectable()
 export class CanvasService {
-  public canvasSize = 1216
+  public canvasSize = 969
   public canvasViewPortOffsetX = 0
   public canvasViewPortOffsetY = 0
   
@@ -15,7 +15,6 @@ export class CanvasService {
   public set scale(value: number) {
     this._scale = value
   }
-
 
   public overlayCanvas: ElementRef<HTMLCanvasElement>;
   public overlayCTX: CanvasRenderingContext2D;

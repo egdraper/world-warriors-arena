@@ -21,11 +21,14 @@
   }
   
   .game-view {
+    max-height: calc(100vh);
     flex: 2;
   }
   
-  .right-toolbar{
+  .right-toolbar{    
+    max-height: calc(100vh);
     flex: 1;
     max-width: 75px;
+    overflow: auto;
   }
 }

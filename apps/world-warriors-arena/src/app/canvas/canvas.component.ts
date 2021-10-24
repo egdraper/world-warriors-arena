@@ -38,6 +38,8 @@ export class CanvasComponent {
 
   // this needs to be put in a public function so we can pass in grid information 
   public ngAfterViewInit(): void {
+    this.canvasService.canvasSize = window.innerHeight <= 1344 ? window.innerHeight : 1344 
+
     // Background
     this.backgroundContext = this.backgroundCanvas.nativeElement.getContext('2d');
     this.canvasService.backgroundCTX = this.backgroundContext
