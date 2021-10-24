@@ -4,7 +4,7 @@ import { AssetsService } from '../../game-assets/assets.service';
 import { DrawService } from '../../game-engine/draw-tools/draw.service';
 import { GridService } from '../../game-engine/grid.service';
 import { GridMapCell, GRID_CELL_MULTIPLIER, MapDetails } from '../../models/cell.model';
-import { EditorService } from '../editor-pallete/editor.service';
+import { EditorService } from '../editor-palette/editor.service';
 import { GridMapGenerator } from '../map-generator/grid-map-generator';
 
 

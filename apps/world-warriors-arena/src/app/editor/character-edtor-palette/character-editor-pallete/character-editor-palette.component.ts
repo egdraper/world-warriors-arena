@@ -8,11 +8,11 @@ import { GridService } from '../../../game-engine/grid.service';
 import { ShortestPath } from '../../../game-engine/shortest-path';
 
 @Component({
-  selector: 'world-warriors-arena-character-editor-pallete',
-  templateUrl: './character-editor-pallete.component.html',
-  styleUrls: ['./character-editor-pallete.component.scss']
+  selector: 'world-warriors-arena-character-editor-palette',
+  templateUrl: './character-editor-palette.component.html',
+  styleUrls: ['./character-editor-palette.component.scss']
 })
-export class CharacterEditorPalleteComponent implements OnInit {
+export class CharacterEditorPaletteComponent implements OnInit {
   public characterImages: HTMLImageElement[] = []
   constructor(
     private assetService: AssetsService,

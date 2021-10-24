@@ -7,26 +7,25 @@ import { RandomMapGenerator } from '../map-generator/random-map-generator';
 import { EditorService } from './editor.service';
 import { AssetsService } from '../../game-assets/assets.service';
 import { CanvasService } from '../../canvas/canvas.service';
+import { DrawService } from '../../game-engine/draw-tools/draw.service';
 
 @Component({
-  selector: 'world-warriors-arena-editor-pallete',
-  templateUrl: './editor-pallete.component.html',
-  styleUrls: ['./editor-pallete.component.scss']
+  selector: 'world-warriors-arena-editor-palette',
+  templateUrl: './editor-palette.component.html',
+  styleUrls: ['./editor-palette.component.scss']
 })
-export class EditorPalleteComponent implements OnInit {
+export class EditorpaletteComponent implements OnInit {
   public images: any[] = []
-
-
   public imageArray: any[] = []
   public currentImageSrc: string = ""
-
 
   constructor(
     private editorService: EditorService,
     private shortestPath: ShortestPath,
     private grid: GridService,
     private assetService: AssetsService,
-    private canvasService: CanvasService
+    public canvasService: CanvasService,
+    private drawService: DrawService
     ) { }
 
   ngOnInit(): void {
@@ -68,6 +67,18 @@ export class EditorPalleteComponent implements OnInit {
   public invertedClicked(): void {
     // this.editorService.editMode = false
     this.grid.inverted = !this.grid.inverted
+  }
+
+    
+  public generateRandomMap(): void {
+    const inverted = true
+    this.assetService.obstaclesDirty = true
+    this.grid.createGrid(60, 60, "DrawableTree")
+    this.canvasService.setupCanvases(this.grid.width, this.grid.height)
+
+    this.drawService.autoFillTerrain("greenGrass")
+    this.drawService.drawBackground(true)
+    this.drawService.drawLines()
   }
 
   public imageClick(event: any): void {

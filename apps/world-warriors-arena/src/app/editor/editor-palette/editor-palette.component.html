@@ -1,6 +1,8 @@
+<button (click)="generateRandomMap()">Generate Random Map</button>
 <button (click)="baseClicked()">Layer</button>
 <button (click)="paintClicked()">Paint</button>
 <button (click)="invertedClicked()">Invert</button>
+<button (click)="canvasService.resetViewport()">Reset View Port</button>
 
 <select (change)="onSelectionChange($event.target)">
   <option>Drawable Tree Cluster</option>

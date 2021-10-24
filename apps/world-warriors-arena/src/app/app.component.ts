@@ -42,14 +42,4 @@ export class AppComponent {
     }
   }
 
-  public generateRandomMap(): void {
-    const inverted = true
-    this.assetService.obstaclesDirty = true
-    this.grid.createGrid(60, 60, "DrawableTree")
-    this.canvasService.setupCanvases(this.grid.width, this.grid.height)
-
-    this.drawService.autoFillTerrain("greenGrass")
-    this.drawService.drawBackground(true)
-    this.drawService.drawLines()
-  }
 }

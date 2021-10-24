@@ -2,8 +2,14 @@ canvas {
   // border: 25px solid rgb(107, 70, 35, .5);
   position: absolute;
 }
-div {
+.character-hover {
   color: wheat;
-  height: 30px;
-  width: 1200px;
+  height: 25px;
+  width: 100%;
+  position: absolute;
+}
+
+.game-canvas {
+  height: 100%;
+  width: 100%;
 }

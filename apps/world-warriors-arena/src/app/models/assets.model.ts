@@ -19,6 +19,7 @@ export class GameComponent {
 
 export class AnimationComponent extends GameComponent {
   public animationFrame: number[] | number = 10
+  public moving: boolean
   public update(): void {}
   public move(): void {}  
 }
@@ -132,8 +133,6 @@ export abstract class MotionAsset extends Asset {
 
   public move() {
     // called automatically every 1/60 of a second from the engine
-    if (!this.moving) { return }
-
     let nextXMove = 0
     let nextYMove = 0
     let speed = 2

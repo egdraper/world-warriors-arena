@@ -1,5 +1,5 @@
 import { Component, ElementRef, EventEmitter, HostListener, Output, ViewChild } from '@angular/core';
-import { EditorService } from '../editor/editor-pallete/editor.service';
+import { EditorService } from '../editor/editor-palette/editor.service';
 import { AssetsService } from '../game-assets/assets.service';
 import { growableItems, TerrainType } from '../game-assets/tiles.db.ts/tile-assets.db';
 import { GridService } from '../game-engine/grid.service';

@@ -36,17 +36,22 @@ export class Engine {
         // handles specific frames for uneven animation. example [3, 10, 15, 16, 17]
         if (asset.animationFrame.find(_frame => _frame === this.frame)) {
           asset.update()
+          this.drawService.drawAnimatedAssets()
         }
       } else {
         // handles even frame animation. Example "5", which represents every 5 frames the update function are ran
         if(this.frame % asset.animationFrame === 0) {
           asset.update()
+          this.drawService.drawAnimatedAssets()
         }
       }
 
       // asset motion frame, for moving from cell to cell
       if(this.frame % 1 === 0) {
-        asset.move()
+       if(asset.moving) { 
+          this.drawService.drawAnimatedAssets()
+          asset.move()
+       }
       }
     })
 
@@ -58,7 +63,6 @@ export class Engine {
     }
   
     this.drawService.drawObstacles()
-    this.drawService.drawAnimatedAssets()
     this.drawService.drawBackground()
     this.drawService.drawEditableObject()
 

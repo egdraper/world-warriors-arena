@@ -26,4 +26,5 @@ export class EditorService {
   public findObjectAsset(category: string, tileId: string): SpriteTile {
     return getObjectCollection(category).find((tile: SpriteBackgroundTile) => tile.id === tileId)
   } 
+
 } 
