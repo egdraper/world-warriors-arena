@@ -57,13 +57,14 @@ export class Engine {
 
     if(this.shortLivedAnimations.length > 0) {
       this.shortLivedAnimations.forEach(animation => {
-        if (this.frame % animation.animationFrame === 0) { animation.update() }
-        this.drawService.drawShortLivedAnimation(animation)
+        if (this.frame % animation.animationFrame === 0) { 
+          animation.update() 
+          this.drawService.drawShortLivedAnimation(animation)
+        }
       })
     }
   
     this.drawService.drawObstacles()
-    this.drawService.drawBackground()
     this.drawService.drawEditableObject()
 
     requestAnimationFrame(this.startEngine.bind(this)); 

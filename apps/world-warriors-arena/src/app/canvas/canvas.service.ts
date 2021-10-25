@@ -1,4 +1,5 @@
 import { ElementRef, Injectable } from "@angular/core";
+import { Asset } from "../models/assets.model";
 import { GRID_CELL_MULTIPLIER } from "../models/cell.model";
 
 @Injectable()
@@ -6,6 +7,8 @@ export class CanvasService {
   public canvasSize = 969
   public canvasViewPortOffsetX = 0
   public canvasViewPortOffsetY = 0
+  public centerPointX = 0
+  public centerPointY = 0
   
   public _scale = 1
   public get scale() {
@@ -31,7 +34,14 @@ export class CanvasService {
   public blackoutCanvas: ElementRef<HTMLCanvasElement>;
   public blackoutCTX: CanvasRenderingContext2D;
 
-  public adustViewPort(xPos: number, yPos: number, saveLocation: boolean = false) {
+  public adustViewPort(xPos: number, yPos: number, saveLocation: boolean = false, asset?: Asset) {
+
+    if(asset) {
+      if(asset.positionX <= this.centerPointX + 32) { xPos = 0 }
+      if(asset.positionY <= this.centerPointY + 32 ) { yPos = 0 }
+      if(asset.positionX >= 1920 - this.centerPointX - 32 ) { xPos = 0 }
+      if(asset.positionY >= 1920 - this.centerPointY - 32) { yPos = 0 }
+    }
     this.canvasViewPortOffsetX += xPos
     this.canvasViewPortOffsetY += yPos
 

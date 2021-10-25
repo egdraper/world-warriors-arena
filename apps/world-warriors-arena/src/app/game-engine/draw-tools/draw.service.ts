@@ -22,6 +22,7 @@ export class DrawService {
 
   public drawLines(): void {
     if (this.editorService.backgroundDirty) {
+      console.log("OOO")
       // Draw Lines
       for (let h = 0; h <= this.gridService.height; h++) {
         for (let w = 0; w <= this.gridService.width; w++) {
@@ -45,6 +46,7 @@ export class DrawService {
   }
 
   public autoFillTerrain(collectionId: string) {
+    console.log("NNN")
     for (let h = 0; h < this.gridService.height; h++) {
       for (let w = 0; w < this.gridService.width; w++) {
         let spriteSheet
@@ -88,7 +90,7 @@ export class DrawService {
     if (Object.keys(this.gridService.grid).length === 0) { return }
 
     if (this.editorService.backgroundDirty || forceDraw)
-
+    console.log("MMM")
       for (let h = 0; h < this.gridService.height; h++) {
         for (let w = 0; w < this.gridService.width; w++) {
           const cell = this.gridService.grid[`x${w}:y${h}`]
@@ -113,6 +115,7 @@ export class DrawService {
 
   public blackOutEdges(): void {
     if (this.canvasService.blackoutCTX) {
+      console.log("LLL")
       this.canvasService.blackoutCTX.fillStyle = 'black';
       this.canvasService.blackoutCTX.fillRect(
         0,
@@ -149,6 +152,7 @@ export class DrawService {
 
   public drawBlackoutFog(): void {
     if (this.fogOfWarService.fogEnabled) {
+      console.log("KKK")
       this.canvasService.blackoutCTX.globalCompositeOperation = 'destination-over'
       this.canvasService.blackoutCTX.clearRect(0, 0, this.gridService.width * 32, this.gridService.height * 32);
       this.canvasService.blackoutCTX.fillStyle = 'black';
@@ -165,6 +169,7 @@ export class DrawService {
 
   public drawFog(): void {
     if (this.fogOfWarService.fogEnabled) {
+      console.log("JJJ")
       this.canvasService.fogCTX.globalCompositeOperation = 'destination-over'
       this.canvasService.fogCTX.clearRect(0, 0, this.gridService.width * 32, this.gridService.height * 32);
       this.canvasService.fogCTX.globalAlpha = 0.5;
@@ -181,6 +186,7 @@ export class DrawService {
 
   public clearFogLineOfSight(cell: Cell): void {
     if (this.fogOfWarService.fogEnabled) {
+      console.log("III")
       this.drawFog()
       const ctx = this.canvasService.fogCTX
       const ctxBlackout = this.canvasService.blackoutCTX
@@ -203,6 +209,7 @@ export class DrawService {
   }
   public drawLineOfSight(ctx: any, cell: Cell): void {
     if (this.fogOfWarService.fogEnabled) {
+      console.log("HHH")
       this.fogOfWarService.visibleCell[cell.id].forEach(points => {
         ctx.beginPath();
         ctx.moveTo(points.playerPointX, points.playerPointY);
@@ -234,7 +241,7 @@ export class DrawService {
 
   public drawShortLivedAnimation(animation: ShortLivedAnimation): void {
     if (!animation.cell) { return }
-
+    console.log("GGG")
     this.canvasService.foregroundCTX.imageSmoothingEnabled = false
     this.canvasService.backgroundCTX.imageSmoothingEnabled = false
     this.canvasService.overlayCTX.imageSmoothingEnabled = false
@@ -275,36 +282,35 @@ export class DrawService {
     if (Object.keys(this.gridService.grid).length === 0) { return }
 
     if (this.canvasService.foregroundCTX) {
-      this.canvasService.foregroundCTX.clearRect(0, 0, 1800, 1800);
-      this.canvasService.backgroundCTX.clearRect(0, 0, 1800, 1800);
-      this.canvasService.blackoutCTX.clearRect(0, 0, 1800, 1800);
+      this.canvasService.foregroundCTX.clearRect(0, 0, this.gridService.width * 32 * this.canvasService.scale, this.gridService.height * 32 * this.canvasService.scale);
+      // this.canvasService.backgroundCTX.clearRect(0, 0, this.gridService.width * 32 * this.canvasService.scale, this.gridService.height * 32 * this.canvasService.scale);
+      this.canvasService.blackoutCTX.clearRect(0, 0, this.gridService.width * 32 * this.canvasService.scale, this.gridService.height * 32 * this.canvasService.scale);
 
       // Ensure the viewport does not kick back a negative number (cells don't work with negatives)
       const topLeftPosX = -1 * this.canvasService.canvasViewPortOffsetX + 1 < 0 ? 1 : -1 * this.canvasService.canvasViewPortOffsetX + 1
       const topLeftPosY = -1 * this.canvasService.canvasViewPortOffsetY + 1 < 0 ? 1 : -1 * this.canvasService.canvasViewPortOffsetY + 1
 
-      const topRightPosX =
-        -1 * this.canvasService.canvasViewPortOffsetX * this.canvasService.scale + 1280 > this.gridService.width * (32 * this.canvasService.scale)
-          ? this.gridService.width * (32 * this.canvasService.scale)
-          : -1 * this.canvasService.canvasViewPortOffsetX * this.canvasService.scale + 1280
 
-      const bottomPosY = -1 * this.canvasService.canvasViewPortOffsetY * this.canvasService.scale + 1344 > this.gridService.height * (32 * this.canvasService.scale)
+      const topRightPosX =
+        -1 * this.canvasService.canvasViewPortOffsetX * this.canvasService.scale + this.canvasService.canvasSize > this.gridService.width * (32 * this.canvasService.scale)
+          ? this.gridService.width * (32 * this.canvasService.scale)
+          : -1 * this.canvasService.canvasViewPortOffsetX * this.canvasService.scale + this.canvasService.canvasSize
+      console.log(topRightPosX)
+      const bottomPosY = -1 * this.canvasService.canvasViewPortOffsetY * this.canvasService.scale + this.canvasService.canvasSize > this.gridService.height * (32 * this.canvasService.scale)
         ? this.gridService.height * (32 * this.canvasService.scale)
-        : -1 * this.canvasService.canvasViewPortOffsetY * this.canvasService.scale + 1344
+        : -1 * this.canvasService.canvasViewPortOffsetY * this.canvasService.scale + this.canvasService.canvasSize
 
       const cellTopLeft = this.gridService.getGridCellByCoordinate(topLeftPosX, topLeftPosY)
       const cellTopRight = this.gridService.getGridCellByCoordinate(topRightPosX, topLeftPosY)
       const cellBottomLeft = this.gridService.getGridCellByCoordinate(topLeftPosX, bottomPosY)
 
       try {
-        //  const cellBottomRight = this.gridService.getGridCellByCoordinate(this.canvasService.canvasViewPortOffsetX + 1200, this.canvasService.canvasViewPortOffsetY + 1200)
-        // for (let y = 0; y <= 20; y++) {
-        //   for (let x = 0; x <= 20; x++) {
         for (let y = cellTopLeft.y; y <= cellBottomLeft.y; y++) {
-          for (let x = cellTopLeft.x; x <= cellTopRight.x; x++) {
+
+          for (let x = cellTopLeft?.x; x <= cellTopRight?.x; x++) {
             const drawableCell = this.gridService.getCell(x, y)
-            this.drawOnBackgroundCell(drawableCell)
             this.drawOnCell(drawableCell)
+            this.drawOnBackgroundCell(drawableCell)
 
             const gameComponent = drawableCell.occupiedBy
 
@@ -347,7 +353,7 @@ export class DrawService {
 
   public drawEditableObject(): void {
     if (!this.editorService.selectedAsset || !this.editorService.hoveringCell) { return }
-
+    console.log("FFF")
     this.canvasService.foregroundCTX.drawImage(
       this.editorService.selectedAsset.spriteSheet,
       this.editorService.selectedAsset.spriteGridPosX * this.editorService.selectedAsset.multiplier,
@@ -363,6 +369,7 @@ export class DrawService {
 
   public drawObstacles(): void {
     if (this.canvasService.foregroundCTX && this.assetService.obstaclesDirty) {
+      console.log("EEE")
       this.canvasService.foregroundCTX.clearRect(0, 0, this.gridService.width * (36 * this.canvasService.scale), this.gridService.height * (36 * this.canvasService.scale));
       this.gridService.gridDisplay.forEach(row => {
         row.forEach((cell: Cell) => {
@@ -380,6 +387,7 @@ export class DrawService {
 
   private drawOnCell(cell: Cell): void {
     if (cell && cell.visible && cell.imageTile) {
+      // console.log("DDD")
       this.canvasService.foregroundCTX.drawImage(
         cell.imageTile.spriteSheet,
         cell.imageTile.spriteGridPosX * cell.imageTile.multiplier,
@@ -397,6 +405,7 @@ export class DrawService {
   public drawOnBackgroundCell(cell: Cell): void {
     if (cell && cell.backgroundTile) {
 
+      // console.log("CCC")
       this.canvasService.backgroundCTX.imageSmoothingEnabled = false
       this.canvasService.backgroundCTX.drawImage(
         cell.backgroundTile.spriteSheet,
@@ -416,6 +425,8 @@ export class DrawService {
     const drawableItem = growableItems.find(item => {
       return selectedCell.growableTileId.includes(item.id)
     })
+    console.log("BBB")
+    
 
     const topNeighbor = selectedCell.neighbors[0]
     const topRightNeighbor = selectedCell.neighbors[4]
@@ -472,6 +483,7 @@ export class DrawService {
     const growableItem = growableItems.find(item => {
       return selectedCell.backgroundGrowableTileId.includes(item.id)
     })
+    console.log("AAA")
     const topNeighbor = selectedCell.neighbors[0]
     const topRightNeighbor = selectedCell.neighbors[4]
     const rightNeighbor = selectedCell.neighbors[1]

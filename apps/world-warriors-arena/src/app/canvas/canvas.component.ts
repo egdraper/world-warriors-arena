@@ -39,7 +39,8 @@ export class CanvasComponent {
   // this needs to be put in a public function so we can pass in grid information 
   public ngAfterViewInit(): void {
     this.canvasService.canvasSize = window.innerHeight <= 1344 ? window.innerHeight : 1344 
-
+    this.canvasService.centerPointX = Math.floor(this.canvasService.canvasSize / 2)
+    this.canvasService.centerPointY = Math.floor(this.canvasService.canvasSize / 2)
     // Background
     this.backgroundContext = this.backgroundCanvas.nativeElement.getContext('2d');
     this.canvasService.backgroundCTX = this.backgroundContext
@@ -120,8 +121,8 @@ export class CanvasComponent {
     } else {
       // select Asset
       this.canvasService.resetViewport()
-      const assetXPos = -1 * this.assetService.selectedGameComponent.cell.posX + 256
-      const assetYPos = -1 * this.assetService.selectedGameComponent.cell.posY + 256
+      const assetXPos = -1 * this.assetService.selectedGameComponent.cell.posX + this.canvasService.centerPointX
+      const assetYPos = -1 * this.assetService.selectedGameComponent.cell.posY + this.canvasService.centerPointY
       this.canvasService.adustViewPort(assetXPos, assetYPos)
     }
     
