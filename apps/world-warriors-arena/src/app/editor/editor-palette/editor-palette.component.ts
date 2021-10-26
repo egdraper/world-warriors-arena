@@ -20,11 +20,11 @@ export class EditorpaletteComponent implements OnInit {
   public currentImageSrc: string = ""
 
   constructor(
+    public assetService: AssetsService,
+    public canvasService: CanvasService,
     private editorService: EditorService,
     private shortestPath: ShortestPath,
     private grid: GridService,
-    private assetService: AssetsService,
-    public canvasService: CanvasService,
     private drawService: DrawService
     ) { }
 
@@ -73,7 +73,7 @@ export class EditorpaletteComponent implements OnInit {
   public generateRandomMap(): void {
     const inverted = true
     this.assetService.obstaclesDirty = true
-    this.grid.createGrid(60, 60, "DrawableTree")
+    this.grid.createGrid(150, 150, "DrawableTree")
     this.canvasService.setupCanvases(this.grid.width, this.grid.height)
 
     this.drawService.autoFillTerrain("greenGrass")
@@ -82,9 +82,6 @@ export class EditorpaletteComponent implements OnInit {
   }
 
   public imageClick(event: any): void {
-    // console.log(event.offsetX)
-    // console.log(event.offsetY)
-
     let x = event.offsetX
     let y = event.offsetY
     while (x % 32 !== 0) {

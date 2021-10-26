@@ -45,7 +45,6 @@ export class ShortestPath {
   }
 
   private visitedNow(endingPoint: Cell, visited: any) {
-    
     if ((visited[`x${endingPoint.x}:y${endingPoint.y}`] && visited[`x${endingPoint.x}:y${endingPoint.y}`].cell === endingPoint)) {
       return;
     }

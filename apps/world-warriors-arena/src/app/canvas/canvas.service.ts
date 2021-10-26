@@ -39,8 +39,8 @@ export class CanvasService {
     if(asset) {
       if(asset.positionX <= this.centerPointX + 32) { xPos = 0 }
       if(asset.positionY <= this.centerPointY + 32 ) { yPos = 0 }
-      if(asset.positionX >= 1920 - this.centerPointX - 32 ) { xPos = 0 }
-      if(asset.positionY >= 1920 - this.centerPointY - 32) { yPos = 0 }
+      if(asset.positionX >= 4800 - this.centerPointX - 32 ) { xPos = 0 }
+      if(asset.positionY >= 4800 - this.centerPointY - 32) { yPos = 0 }
     }
     this.canvasViewPortOffsetX += xPos
     this.canvasViewPortOffsetY += yPos
@@ -50,15 +50,6 @@ export class CanvasService {
     this.backgroundCTX.translate(xPos, yPos)
     this.overlayCTX.translate(xPos, yPos)
     this.foregroundCTX.translate(xPos, yPos)
-
-    if (saveLocation) {
-      this.fogCTX.save()
-      this.blackoutCTX.save()
-      this.backgroundCTX.save()
-      this.overlayCTX.save()
-      this.foregroundCTX.save()
-    }
-
   }
 
   public resetViewPortal(): void {

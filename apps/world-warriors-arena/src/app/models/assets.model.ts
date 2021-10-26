@@ -20,6 +20,7 @@ export class GameComponent {
 export class AnimationComponent extends GameComponent {
   public animationFrame: number[] | number = 10
   public moving: boolean
+  public assetDirty: boolean
   public update(): void {}
   public move(): void {}  
 }
@@ -48,6 +49,7 @@ export abstract class MotionAsset extends Asset {
   public currentPath: Cell[] = []
   public selectionIndicator: SelectionIndicator
   public destinationIndicator: ClickAnimation
+  public assetDirty = false
   
   private redirection: { start: Cell, end: Cell, charactersOnGrid: MotionAsset[] }
   private nextCell: Cell
@@ -118,17 +120,6 @@ export abstract class MotionAsset extends Asset {
     this.destinationIndicator=undefined
   }
 
-  // this.canvasService.fogCTX.save()
-  // this.canvasService.blackoutCTX.save()
-  // this.canvasService.backgroundCTX.save()
-  // this.canvasService.overlayCTX.save()
-  // this.canvasService.foregroundCTX.save()
-
-          // this.canvasService.fogCTX.restore()
-        // this.canvasService.blackoutCTX.restore()
-        // this.canvasService.backgroundCTX.restore()
-        // this.canvasService.overlayCTX.restore()
-        // this.canvasService.foregroundCTX.restore()
 
 
   public move() {
@@ -143,7 +134,7 @@ export abstract class MotionAsset extends Asset {
     this.positionX += nextXMove
     this.positionY += nextYMove
 
-    this.canvasService.adustViewPort(-1 * nextXMove, -1 * nextYMove, true, this)
+    this.canvasService.adustViewPort(-1 * nextXMove, -1 * nextYMove, false, this)
 
     if (this.positionY % (32) === 0 && this.positionX % (32) === 0) {
       this.cell = this.grid.grid[`x${this.positionX / (32)}:y${this.positionY / (32)}`]

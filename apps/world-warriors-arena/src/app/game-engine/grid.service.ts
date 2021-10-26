@@ -22,16 +22,13 @@ export class GridService {
   }
 
   public getGridCellByCoordinate(x: number, y: number): Cell {
-    let foundCell: Cell
-    this.gridDisplay.forEach(row => {
-      row.forEach(cell => {
-        if(((cell.posX * this.canvasService.scale) < x && (cell.posX * this.canvasService.scale) + (32 * this.canvasService.scale) >= x ) && (cell.posY * this.canvasService.scale < y && cell.posY * this.canvasService.scale + (32 * this.canvasService.scale) >= y)) {
-          foundCell = cell
-          if(!foundCell) { }
-        }
-      })
-    })
-    return foundCell
+    while (x % (32 * this.canvasService.scale) !== 0) {
+      x--
+    }
+    while (y % (32 * this.canvasService.scale) !== 0) {
+      y--
+    }
+    return this.grid[`x${x/(32 * this.canvasService.scale)}:y${y/(32 * this.canvasService.scale)}`]
   }
 
   public getCell(x: number, y: number): Cell {

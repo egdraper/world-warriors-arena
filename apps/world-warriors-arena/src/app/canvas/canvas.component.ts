@@ -39,6 +39,7 @@ export class CanvasComponent {
   // this needs to be put in a public function so we can pass in grid information 
   public ngAfterViewInit(): void {
     this.canvasService.canvasSize = window.innerHeight <= 1344 ? window.innerHeight : 1344 
+
     this.canvasService.centerPointX = Math.floor(this.canvasService.canvasSize / 2)
     this.canvasService.centerPointY = Math.floor(this.canvasService.canvasSize / 2)
     // Background
@@ -80,16 +81,17 @@ export class CanvasComponent {
     }
 
     if (event.key === "ArrowRight") {
-      this.canvasService.adustViewPort(-15, 0)
+      this.canvasService.adustViewPort(-30, 0)
     }
     if (event.key === "ArrowLeft") {
-      this.canvasService.adustViewPort(15, 0)
+      // console.log("AAA")
+      this.canvasService.adustViewPort(30, 0)
     }
     if (event.key === "ArrowUp") {
-      this.canvasService.adustViewPort(0, 15)
+      this.canvasService.adustViewPort(0, 30)
     }
     if (event.key === "ArrowDown") {
-      this.canvasService.adustViewPort(0, -15)
+      this.canvasService.adustViewPort(0, -30)
     }
   }
 
