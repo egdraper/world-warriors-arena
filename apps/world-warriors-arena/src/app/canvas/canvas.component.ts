@@ -38,7 +38,8 @@ export class CanvasComponent {
 
   // this needs to be put in a public function so we can pass in grid information 
   public ngAfterViewInit(): void {
-    this.canvasService.canvasSize = window.innerHeight <= 1344 ? window.innerHeight : 1344 
+    // this.canvasService.canvasSize = window.innerHeight <= 1344 ? window.innerHeight : 1344 
+    this.canvasService.canvasSize = 600 
 
     this.canvasService.centerPointX = Math.floor(this.canvasService.canvasSize / 2)
     this.canvasService.centerPointY = Math.floor(this.canvasService.canvasSize / 2)

@@ -233,6 +233,8 @@ export class DrawService {
 
 
   public drawShortLivedAnimation(animation: ShortLivedAnimation): void {
+    this.canvasService.overlayCTX.clearRect(0, 0, this.gridService.width * 32 * this.canvasService.scale, this.gridService.height * 32 * this.canvasService.scale);
+
     if (!animation.cell) { return }
     this.canvasService.foregroundCTX.imageSmoothingEnabled = false
     this.canvasService.backgroundCTX.imageSmoothingEnabled = false
