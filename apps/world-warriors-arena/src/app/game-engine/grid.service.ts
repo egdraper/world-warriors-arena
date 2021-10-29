@@ -11,6 +11,7 @@ export class GridService {
   public gridDisplay: Cell[][] = [];
   public inverted = true
   public gridDirty = false
+  public loaded = false
 
   constructor(private canvasService: CanvasService) {}
 
@@ -19,6 +20,7 @@ export class GridService {
     this.height = height
     this.width = width
     this.generateGrid(width, height, invertedDrawableTerrainId)
+    this.loaded = true
   }
 
   public getGridCellByCoordinate(x: number, y: number): Cell {

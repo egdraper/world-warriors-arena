@@ -38,8 +38,8 @@ export class CanvasComponent {
 
   // this needs to be put in a public function so we can pass in grid information 
   public ngAfterViewInit(): void {
-    // this.canvasService.canvasSize = window.innerHeight <= 1344 ? window.innerHeight : 1344 
-    this.canvasService.canvasSize = 600 
+    this.canvasService.canvasSize = window.innerHeight <= 768 ? window.innerHeight : 768 
+
 
     this.canvasService.centerPointX = Math.floor(this.canvasService.canvasSize / 2)
     this.canvasService.centerPointY = Math.floor(this.canvasService.canvasSize / 2)
@@ -101,10 +101,6 @@ export class CanvasComponent {
     if (event.key === "Control") {
       this.controlPressed = false
       this.editorService.hoveringCell = undefined 
-    }
-
-    if( event.key === "Enter") {
-      this.canvasService.resetViewPortal()
     }
   }
 

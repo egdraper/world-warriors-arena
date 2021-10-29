@@ -271,9 +271,9 @@ export class DrawService {
   // }
 
 
-
+public index = 0
   public drawAnimatedAssets(): void {
-    if (Object.keys(this.gridService.grid).length === 0) { return }
+    if (!this.gridService.loaded) { return }
 
     if (this.canvasService.foregroundCTX) {
 

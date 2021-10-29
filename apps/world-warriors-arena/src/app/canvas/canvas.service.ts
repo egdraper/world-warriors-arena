@@ -35,7 +35,6 @@ export class CanvasService {
   public blackoutCTX: CanvasRenderingContext2D;
 
   public adustViewPort(xPos: number, yPos: number, saveLocation: boolean = false, asset?: Asset) {
-
     if(asset) {
       if(asset.positionX <= this.centerPointX + 32) { xPos = 0 }
       if(asset.positionY <= this.centerPointY + 32 ) { yPos = 0 }
@@ -52,14 +51,6 @@ export class CanvasService {
     this.foregroundCTX.translate(xPos, yPos)
   }
 
-  public resetViewPortal(): void {
-    this.fogCTX.restore()
-    this.blackoutCTX.restore()
-    this.backgroundCTX.restore()
-    this.overlayCTX.restore()
-    this.foregroundCTX.restore()
-  }
-
   public resetViewport(): void {
     const xPos = -1 * this.canvasViewPortOffsetX
     const yPos = -1 * this.canvasViewPortOffsetY
@@ -68,19 +59,7 @@ export class CanvasService {
 
   public setupCanvases(gridWidth: number, gridHeight: number): void {
     this.backgroundCTX.canvas.height = gridHeight * GRID_CELL_MULTIPLIER
-    // this.backgroundCTX.canvas.width = gridWidth * GRID_CELL_MULTIPLIER
 
-    // this.foregroundCTX.canvas.height = gridHeight * GRID_CELL_MULTIPLIER
-    // this.foregroundCTX.canvas.width = gridWidth * GRID_CELL_MULTIPLIER
-
-    // this.overlayCTX.canvas.height = gridHeight * GRID_CELL_MULTIPLIER
-    // this.overlayCTX.canvas.width = gridWidth * GRID_CELL_MULTIPLIER
-
-    // this.fogCTX.canvas.height = gridHeight * GRID_CELL_MULTIPLIER
-    // this.fogCTX.canvas.width = gridWidth * GRID_CELL_MULTIPLIER
-
-    // this.blackoutCTX.canvas.height = gridHeight * GRID_CELL_MULTIPLIER
-    // this.blackoutCTX.canvas.width = gridWidth * GRID_CELL_MULTIPLIER
     this.backgroundCTX.canvas.height = this.canvasSize
     this.backgroundCTX.canvas.width = this.canvasSize
     this.backgroundCTX.scale(this.scale, this.scale)

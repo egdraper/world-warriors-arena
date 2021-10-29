@@ -109,13 +109,13 @@ export abstract class MotionAsset extends Asset {
     this.nextCell = this.currentPath.pop()
     this.nextCell.occupiedBy = this
     this.setSpriteDirection()
-    this.animationFrame = 10
+    this.animationFrame = 8
   }
 
   public endMovement(): void {
     this.currentPath = null
     this.moving = false
-    this.animationFrame = 20
+    this.animationFrame = 16
     this.destinationIndicator.forceStop()
     this.destinationIndicator=undefined
   }

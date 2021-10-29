@@ -73,7 +73,8 @@ export class EditorpaletteComponent implements OnInit {
   public generateRandomMap(): void {
     const inverted = true
     this.assetService.obstaclesDirty = true
-    this.grid.createGrid(150, 150, "DrawableTree")
+    this.editorService.backgroundDirty = true
+    this.grid.createGrid(144, 144, "DrawableTree")
     this.canvasService.setupCanvases(this.grid.width, this.grid.height)
 
     this.drawService.autoFillTerrain("greenGrass")

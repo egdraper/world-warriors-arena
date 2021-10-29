@@ -65,6 +65,7 @@ export class Engine {
       })
     }
 
+    console.log(this.frame)
     this.drawService.drawAnimatedAssets()
     this.drawService.drawObstacles()
     this.drawService.drawEditableObject()
