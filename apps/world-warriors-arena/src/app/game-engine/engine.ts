@@ -65,13 +65,12 @@ export class Engine {
       })
     }
 
-    console.log(this.frame)
     this.drawService.drawAnimatedAssets()
     this.drawService.drawObstacles()
     this.drawService.drawEditableObject()
 
     requestAnimationFrame(this.startEngine.bind(this)); 
-
+    console.log(this.frame)
     this.frame >= 60 ? this.frame = 1 : this.frame += 1
   }
 }

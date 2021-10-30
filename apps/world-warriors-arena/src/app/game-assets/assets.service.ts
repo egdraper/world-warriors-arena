@@ -50,17 +50,15 @@ export class AssetsService {
     this.obstacles.push(selectedCell.id)
   }
 
-  public checkForAsset(selectedCell: Cell): boolean {
-    if (selectedCell.occupiedBy) {
-      const character = selectedCell.occupiedBy
-      this.gameComponents.forEach(asset => asset.selectionIndicator = undefined)
-      this.selectedGameComponent = character
-      this.selectedGameComponent.selectCharacter()
-
-      return true
-    } 
-
-    return false
+  public selectDeselectAsset(selectedCell: Cell): void {
+    this.gameComponents.forEach(asset => asset.selectionIndicator = undefined)
+    
+    if (selectedCell.occupiedBy && this.selectedGameComponent !== selectedCell.occupiedBy) {
+      this.selectedGameComponent = selectedCell.occupiedBy
+      this.selectedGameComponent.addSelectionIndicator()
+    } else {
+      this.selectedGameComponent = undefined
+    }
   }
 
   private addRequiredNeighborTiles(selectedCell: Cell, drawableItem: DrawableTiles): void {

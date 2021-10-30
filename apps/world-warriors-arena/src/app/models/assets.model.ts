@@ -70,7 +70,7 @@ export abstract class MotionAsset extends Asset {
       super()
   }
 
-  public selectCharacter(): void {
+  public addSelectionIndicator(): void {
     this.selectionIndicator = new SelectionIndicator(6, this.engineService, `../../../assets/images/ExplosionClick1.png`)
   }
 

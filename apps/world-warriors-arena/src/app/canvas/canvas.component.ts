@@ -28,6 +28,7 @@ export class CanvasComponent {
 
   private mouseIsDown = false
   private controlPressed = false
+  private shiftPressed = false
 
   constructor(
     public canvasService: CanvasService,
@@ -38,7 +39,7 @@ export class CanvasComponent {
 
   // this needs to be put in a public function so we can pass in grid information 
   public ngAfterViewInit(): void {
-    this.canvasService.canvasSize = window.innerHeight <= 768 ? window.innerHeight : 768 
+    this.canvasService.canvasSize = window.innerHeight <= 1380 ? window.innerHeight : 1380
 
 
     this.canvasService.centerPointX = Math.floor(this.canvasService.canvasSize / 2)
@@ -81,6 +82,10 @@ export class CanvasComponent {
       this.editorService.hoveringCell = this.hoveringCell 
     }
 
+    if (event.key === "Shift") {
+      this.shiftPressed = true
+    }
+
     if (event.key === "ArrowRight") {
       this.canvasService.adustViewPort(-30, 0)
     }
@@ -102,28 +107,35 @@ export class CanvasComponent {
       this.controlPressed = false
       this.editorService.hoveringCell = undefined 
     }
+    
+    if (event.key === "Shift") {
+      this.shiftPressed = false
+    }
   }
 
   public onCanvasClick(event: any): void {
     this.mouseIsDown = true
+    
     const clickX = event.offsetX + (-1 * this.canvasService.canvasViewPortOffsetX)
     const clickY = event.offsetY + (-1 * this.canvasService.canvasViewPortOffsetY)
 
     const selectedCell = this.gridService.getGridCellByCoordinate(clickX, clickY)
-    
-    // determine movement or selection
-    const hasAsset = this.assetService.checkForAsset(selectedCell)
 
-    if(this.assetService.selectedGameComponent && !hasAsset) {
-      // move Asset
-      this.assetService.selectedGameComponent.startMovement(this.assetService.selectedGameComponent.cell, selectedCell, this.assetService.gameComponents)
-    } else {
-      // select Asset
-      this.canvasService.resetViewport()
-      const assetXPos = -1 * this.assetService.selectedGameComponent.cell.posX + this.canvasService.centerPointX
-      const assetYPos = -1 * this.assetService.selectedGameComponent.cell.posY + this.canvasService.centerPointY
-      this.canvasService.adustViewPort(assetXPos, assetYPos)
+    if(selectedCell.occupiedBy) {
+      this.assetService.selectDeselectAsset(selectedCell)
     }
+
+    if(!selectedCell.occupiedBy && this.assetService.selectedGameComponent) {
+      this.assetService.selectedGameComponent.startMovement(this.assetService.selectedGameComponent.cell, selectedCell, this.assetService.gameComponents)
+    }
+    
+    // } else {
+    //   // select Asset
+    //   this.canvasService.resetViewport()
+    //   const assetXPos = -1 * this.assetService.selectedGameComponent.cell.posX + this.canvasService.centerPointX
+    //   const assetYPos = -1 * this.assetService.selectedGameComponent.cell.posY + this.canvasService.centerPointY
+    //   this.canvasService.adustViewPort(assetXPos, assetYPos)
+    // }
     
     this.onMouseMove(event)
   }
@@ -134,14 +146,22 @@ export class CanvasComponent {
     
     this.hoveringCell = this.gridService.getGridCellByCoordinate(clickX, clickY)
     
+    // Shift Pressed
+    if(this.shiftPressed) {
+      this.canvasService.scrollCanvas(clickX, clickY, 32, 160)
+    }
+
+
+    // Control Pressed
     if (event.offsetX < 0 || event.offsetY < 0) { return }
     if (!this.mouseIsDown || !this.controlPressed) { return }
     
-    if(this.gridService.inverted ) {
+    this.canvasService.scrollCanvas(clickX, clickY)
+
+    if(this.gridService.inverted ) { // Rename to this.gridService.removing or something
       this.assetService.addInvertedMapAsset(this.hoveringCell)
       this.editorService.backgroundDirty = true
     } else if (this.mouseIsDown && this.controlPressed) {
-      this.editorService
       const selectedAsset = this.editorService.selectedAsset
       const drawableItem = growableItems.find(item => item.id === this.editorService.selectedGrowableAsset)
 
@@ -154,5 +174,7 @@ export class CanvasComponent {
   public onMouseUp(event: any): void {
     this.mouseIsDown = false
   }
+
+
  
 }

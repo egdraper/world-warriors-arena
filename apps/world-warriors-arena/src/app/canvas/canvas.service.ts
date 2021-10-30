@@ -82,4 +82,24 @@ export class CanvasService {
 
 
   }
+
+  public scrollCanvas(clickX: number, clickY: number, speed: number = 8, sensitivity: number = 96): void {
+  
+    
+    if(clickX > (-1 * this.canvasViewPortOffsetX + this.canvasSize - sensitivity)) {
+      this.adustViewPort(-1 * speed, 0)
+    }
+
+    if(clickY > (-1 * this.canvasViewPortOffsetY + this.canvasSize - sensitivity)) {
+      this.adustViewPort(0, -1 * speed)
+    }
+
+    if(clickX < (-1 * this.canvasViewPortOffsetX + sensitivity) && (this.canvasViewPortOffsetX < 0)) {
+      this.adustViewPort(speed, 0)
+    }
+
+    if(clickY < (-1 * this.canvasViewPortOffsetY + sensitivity) && (this.canvasViewPortOffsetY < 0)) {
+      this.adustViewPort(0, speed)
+    }
+  }
 }
