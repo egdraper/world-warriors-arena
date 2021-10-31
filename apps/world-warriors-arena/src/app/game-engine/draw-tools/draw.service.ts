@@ -4,6 +4,7 @@ import { EditorService } from "../../editor/editor-palette/editor.service";
 import { AssetsService } from "../../game-assets/assets.service";
 import { ShortLivedAnimation } from "../../game-assets/click-animation";
 import { growableItems } from "../../game-assets/tiles.db.ts/tile-assets.db";
+import { GameComponent } from "../../models/assets.model";
 import { Cell } from "../../models/cell.model";
 import { GridService } from "../grid.service";
 import { FogOfWarService } from "../visibility.service";
@@ -278,8 +279,8 @@ public index = 0
     if (this.canvasService.foregroundCTX) {
 
       // Ensure the viewport does not kick back a negative number (cells don't work with negatives)
-      const topLeftPosX = -1 * this.canvasService.canvasViewPortOffsetX + 1 < 0 ? 1 : -1 * this.canvasService.canvasViewPortOffsetX + 1
-      const topLeftPosY = -1 * this.canvasService.canvasViewPortOffsetY + 1 < 0 ? 1 : -1 * this.canvasService.canvasViewPortOffsetY + 1
+      const topLeftPosX = -1 * this.canvasService.canvasViewPortOffsetX < 0 ? 1 : -1 * this.canvasService.canvasViewPortOffsetX
+      const topLeftPosY = -1 * this.canvasService.canvasViewPortOffsetY < 0 ? 1 : -1 * this.canvasService.canvasViewPortOffsetY
 
       const topRightPosX =
         -1 * this.canvasService.canvasViewPortOffsetX * this.canvasService.scale + this.canvasService.canvasSize > this.gridService.width * (32 * this.canvasService.scale)
@@ -297,13 +298,58 @@ public index = 0
       this.canvasService.foregroundCTX.clearRect(0, 0, this.gridService.width * 32 * this.canvasService.scale, this.gridService.height * 32 * this.canvasService.scale);
       this.canvasService.backgroundCTX.clearRect(0, 0, this.gridService.width * 32 * this.canvasService.scale, this.gridService.height * 32 * this.canvasService.scale);
       this.canvasService.blackoutCTX.clearRect(0, 0, this.gridService.width * 32 * this.canvasService.scale, this.gridService.height * 32 * this.canvasService.scale);
+     
+      if(this.canvasService.largeImageBackground) {
+        console.log(topLeftPosX)
+          this.canvasService.backgroundCTX.imageSmoothingEnabled = false
+          this.canvasService.backgroundCTX.drawImage(
+            this.canvasService.largeImageBackground,
+            topLeftPosX,
+            topLeftPosY,
+            1500,
+            1500,
+            topLeftPosX,
+            topLeftPosY,
+            1500,
+            1500
+          )
+        
+      
+          this.canvasService.foregroundCTX.imageSmoothingEnabled = false
+          this.canvasService.foregroundCTX.drawImage(
+            this.canvasService.largeImageForeground,
+            topLeftPosX,
+            topLeftPosY,
+            1500,
+            1500,
+            topLeftPosX,
+            topLeftPosY,
+            1500,
+            1500
+          )
+        }
+      
+     
+
+        
+     
       try {
+        if(!this.canvasService.largeImageBackground) {
+        
+          
+
+
         for (let y = cellTopLeft.y; y <= cellBottomLeft.y; y++) {
           for (let x = cellTopLeft?.x; x <= cellTopRight?.x; x++) {
             const drawableCell = this.gridService.getCell(x, y)
-            this.drawOnCell(drawableCell)
-            this.drawOnBackgroundCell(drawableCell)
-            const gameComponent = drawableCell.occupiedBy
+
+              this.drawOnCell(drawableCell)
+              this.drawOnBackgroundCell(drawableCell)
+            }
+            // const gameComponent = drawableCell.occupiedBy
+      }}
+
+            const gameComponent = this.assetService.selectedGameComponent
 
             if (gameComponent && gameComponent.assetDirty) {
 
@@ -335,8 +381,8 @@ public index = 0
               gameComponent.assetDirty = false
             }
 
-          }
-        }
+        //   }
+        // }
       } catch (e) {
         debugger
       }

@@ -9,6 +9,9 @@ export class CanvasService {
   public canvasViewPortOffsetY = 0
   public centerPointX = 0
   public centerPointY = 0
+
+  public largeImageBackground: HTMLImageElement
+  public largeImageForeground: HTMLImageElement
   
   public _scale = 1
   public get scale() {
@@ -33,6 +36,9 @@ export class CanvasService {
 
   public blackoutCanvas: ElementRef<HTMLCanvasElement>;
   public blackoutCTX: CanvasRenderingContext2D;
+ 
+  public drawingCanvas: ElementRef<HTMLCanvasElement>;
+  public drawingCTX: CanvasRenderingContext2D;
 
   public adustViewPort(xPos: number, yPos: number, saveLocation: boolean = false, asset?: Asset) {
     if(asset) {

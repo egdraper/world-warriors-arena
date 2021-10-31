@@ -70,7 +70,7 @@ export class Engine {
     this.drawService.drawEditableObject()
 
     requestAnimationFrame(this.startEngine.bind(this)); 
-    console.log(this.frame)
-    this.frame >= 60 ? this.frame = 1 : this.frame += 1
+
+    this.frame >= 64 ? this.frame = 1 : this.frame += 1
   }
 }
