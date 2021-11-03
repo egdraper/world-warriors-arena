@@ -2,7 +2,7 @@ import { ShortestPath } from "../../game-engine/shortest-path";
 import { TerrainType } from "../../game-assets/tiles.db.ts/tile-assets.db";
 import { GridService } from "../../game-engine/grid.service";
 import { Cell } from "../../models/cell.model";
-import { EditorService } from "../editor-pallete/editor.service";
+import { EditorService } from "../editor-palette/editor.service";
 
 export class RandomMapGenerator {
   constructor(
@@ -23,7 +23,6 @@ export class RandomMapGenerator {
       try {
         this.clearObstacles()
         this.randomlyPlaceLargeObstacles()
-        this.addRandomTerrain()
         path = this.shortestPath.find(this.gridService.grid[`x0:y${randomLeft}`], this.gridService.grid[`x${width - 2}:y${randomRight}`], [])
 
       } catch { }
@@ -31,6 +30,7 @@ export class RandomMapGenerator {
     }
 
     this.clearObstacles()
+    this.addRandomTerrain()
     path.forEach(cell => {
       if (cell.neighbors[0]) { cell.neighbors[0].backgroundGrowableTileId = "DrawableDirtRoad" }
       if (cell.neighbors[1]) { cell.neighbors[1].backgroundGrowableTileId = "DrawableDirtRoad" }
@@ -155,31 +155,33 @@ export class RandomMapGenerator {
     })
   }
 
-  public addRandomTerrain(weight: number = 3 ): void {
-    const randomY = Math.floor(Math.random() * this.gridService.height)
-    const randomX = Math.floor(Math.random() * this.gridService.height)
+  public addRandomTerrain(frequency: number = 20, weight: number = 3): void {
+    for (let a = 0; a < frequency; a++) {
+      const randomY = Math.floor(Math.random() * this.gridService.height)
+      const randomX = Math.floor(Math.random() * this.gridService.height)
 
-    const startCell = this.gridService.getCell(randomX, randomY)
-    startCell.obstacle = true
-    startCell.growableTileId = "DrawableTree"
+      const startCell = this.gridService.getCell(randomX, randomY)
+      startCell.obstacle = true
+      startCell.growableTileId = "DrawableTree"
 
-    for (let i = 0; i < 8; i++) {
-      if (startCell.neighbors[i]) {
-        startCell.neighbors[i].obstacle = true
-        startCell.neighbors[i].growableTileId = "DrawableTree"
+      for (let i = 0; i < 8; i++) {
+        if (startCell.neighbors[i]) {
+          startCell.neighbors[i].obstacle = true
+          startCell.neighbors[i].growableTileId = "DrawableTree"
 
-        this.populateCell(startCell, i, weight)
+          this.populateCell(startCell, i, weight)
+        }
       }
     }
   }
 
   private populateCell(cell: Cell, neighborIndex: number, weight: number): void {
-    const isPlaced = !!!Math.floor(Math.random() * weight)
-    if (cell.neighbors[neighborIndex] && neighborIndex < 8 && isPlaced) {
+    const isPlaced = !!Math.floor(Math.random() * weight)
+    if (cell && cell.neighbors[neighborIndex] && neighborIndex < 8 && isPlaced) {
       const neighbor = cell.neighbors[neighborIndex]
 
       for (let i = 0; i < 8; i++) {
-        if (neighbor.neighbors[i]) {
+        if (neighbor && neighbor.neighbors[i]) {
           neighbor.neighbors[i].obstacle = true
           neighbor.neighbors[i].growableTileId = "DrawableTree"
 

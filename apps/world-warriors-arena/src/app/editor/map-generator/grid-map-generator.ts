@@ -1,3 +1,4 @@
+import { CanvasService } from "../../canvas/canvas.service";
 import { GridService } from "../../game-engine/grid.service";
 import { Cell, GridMapCell, MapDetails } from "../../models/cell.model";
 
@@ -5,7 +6,9 @@ export class GridMapGenerator {
   private mapDetails: MapDetails
 
   constructor(
-    private gridService: GridService) { }
+    private gridService: GridService,
+    private canvasService: CanvasService,
+  ) { }
 
   public generateMap(gridMapCell: GridMapCell, mapDetails: MapDetails) {
     this.mapDetails = mapDetails
@@ -16,7 +19,7 @@ export class GridMapGenerator {
     let clearing: Cell[] = []
     gridMapCell.markers.forEach(marker => {
       try {
-        clearing.push(this.gridService.getGridCellByCoordinate(marker.x * gridMapCell.relationX, marker.y * gridMapCell.relationY))
+        clearing.push(this.gridService.getGridCellByCoordinate(marker.x * (gridMapCell.relationX * this.canvasService.scale), marker.y * (gridMapCell.relationY * this.canvasService.scale )))
 
       } catch { }
     })

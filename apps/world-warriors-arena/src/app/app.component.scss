@@ -4,10 +4,31 @@
 :host {
   display: block;
   font-family: sans-serif;
-  min-width: 300px;
-  max-width: 600px;
+
 }
 
 .game-area {
   display: flex;
+}
+
+
+.upper-section {
+  display: flex;
+
+  .left-toolbar {
+    flex: 1;
+    max-width: 144px;
+  }
+  
+  .game-view {
+    max-height: calc(100vh);
+    flex: 2;
+  }
+  
+  .right-toolbar{    
+    max-height: calc(100vh);
+    flex: 1;
+    max-width: 75px;
+    overflow: auto;
+  }
 }

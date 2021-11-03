@@ -40,31 +40,6 @@ export class AppComponent {
       this.visibilityService.preloadVisibility(this.assetService.obstacles)
       this.drawService.drawBlackoutFog()
     }
-    this.assetService.addCharacter()
   }
 
-  public onGridClick(event: { clickX: number, clickY: number }): void {
-    this.selectedCell = this.grid.getGridCellByCoordinate(event.clickX, event.clickY)
-    console.log(this.selectedCell)
-    if (this.selectedCell.occupiedBy) {
-      const character = this.selectedCell.occupiedBy
-      this.assetService.gameComponents.forEach(asset => asset.selectionIndicator = undefined)
-      this.assetService.selectedGameComponent = character
-      this.assetService.selectedGameComponent.selectCharacter()
-    } else {
-      if(this.assetService.selectedGameComponent) {
-        this.assetService.selectedGameComponent.startMovement(this.assetService.selectedGameComponent.cell, this.selectedCell, this.assetService.gameComponents)
-      }
-    }
-  }
-
-  public generateRandomMap(): void {
-    const inverted = true
-    this.grid.createGrid(40, 40, "DrawableDungeon", true)
-    this.canvasService.setupCanvases(this.grid.width, this.grid.height)
-
-    this.drawService.autoFillTerrain("caveDirt")
-    this.drawService.drawBackground(true)
-    this.drawService.drawLines()
-  }
 }

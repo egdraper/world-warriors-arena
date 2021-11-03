@@ -1,4 +1,5 @@
 import { Injectable } from "@angular/core";
+import { interval } from "rxjs";
 
 import { removeFromArray } from "../common/functions";
 import { ShortLivedAnimation } from "../game-assets/click-animation";
@@ -36,33 +37,40 @@ export class Engine {
         // handles specific frames for uneven animation. example [3, 10, 15, 16, 17]
         if (asset.animationFrame.find(_frame => _frame === this.frame)) {
           asset.update()
+          asset.assetDirty = true
         }
       } else {
         // handles even frame animation. Example "5", which represents every 5 frames the update function are ran
         if(this.frame % asset.animationFrame === 0) {
           asset.update()
+          asset.assetDirty = true
         }
       }
 
       // asset motion frame, for moving from cell to cell
       if(this.frame % 1 === 0) {
-        asset.move()
+        asset.assetDirty = true
+       if(asset.moving) { 
+         asset.move()
+        }
       }
     })
 
     if(this.shortLivedAnimations.length > 0) {
       this.shortLivedAnimations.forEach(animation => {
-        if (this.frame % animation.animationFrame === 0) { animation.update() }
-        this.drawService.drawShortLivedAnimation(animation)
+        if (this.frame % animation.animationFrame === 0) { 
+          animation.update() 
+          this.drawService.drawShortLivedAnimation(animation)
+        }
       })
     }
-  
+
     this.drawService.drawAnimatedAssets()
-    this.drawService.drawBackground()
+    this.drawService.drawObstacles()
     this.drawService.drawEditableObject()
 
     requestAnimationFrame(this.startEngine.bind(this)); 
 
-    this.frame >= 60 ? this.frame = 1 : this.frame++
+    this.frame >= 64 ? this.frame = 1 : this.frame += 1
   }
 }

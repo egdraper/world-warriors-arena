@@ -1,20 +1,20 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { EditorPalleteComponent } from './editor-pallete.component';
+import { EditorpaletteComponent } from './editor-palette.component';
 
-describe('EditorPalleteComponent', () => {
-  let component: EditorPalleteComponent;
-  let fixture: ComponentFixture<EditorPalleteComponent>;
+describe('EditorpaletteComponent', () => {
+  let component: EditorpaletteComponent;
+  let fixture: ComponentFixture<EditorpaletteComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ EditorPalleteComponent ]
+      declarations: [ EditorpaletteComponent ]
     })
     .compileComponents();
   });
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(EditorPalleteComponent);
+    fixture = TestBed.createComponent(EditorpaletteComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

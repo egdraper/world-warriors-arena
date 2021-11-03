@@ -10,13 +10,13 @@ import { AssetsService } from './game-assets/assets.service';
 import { DrawService } from './game-engine/draw-tools/draw.service';
 import { ShortestPath } from './game-engine/shortest-path';
 import { FogOfWarService } from './game-engine/visibility.service';
-import { EditorPalleteComponent } from './editor/editor-pallete/editor-pallete.component';
-import { EditorService } from './editor/editor-pallete/editor.service';
-import { CharacterEditorPalleteComponent } from './editor/character-edtor-pallete/character-editor-pallete/character-editor-pallete.component';
 import { GlobalMapComponent } from './editor/global-map/global-map.component';
+import { CharacterEditorPaletteComponent } from './editor/character-edtor-palette/character-editor-pallete/character-editor-palette.component';
+import { EditorpaletteComponent } from './editor/editor-palette/editor-palette.component';
+import { EditorService } from './editor/editor-palette/editor.service';
 
 @NgModule({
-  declarations: [AppComponent, CanvasComponent, EditorPalleteComponent, CharacterEditorPalleteComponent, GlobalMapComponent],
+  declarations: [AppComponent, CanvasComponent, EditorpaletteComponent, CharacterEditorPaletteComponent, GlobalMapComponent],
   imports: [BrowserModule],
   providers: [
     AssetsService,

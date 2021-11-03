@@ -205,7 +205,6 @@ export class FogOfWarService {
     if (obstacle1 && obstacle2) {
       return
     } else {
-      console.log(cell.id)
       const object = {
         playerPointX: cell.posX + 16, 
         playerPointY: cell.posY + 16,
@@ -220,6 +219,7 @@ export class FogOfWarService {
         obstacle: obstacle
       }
       console.log(object)
+
       this.visibleCell[cell.id].push(object)
     }
   }
@@ -311,7 +311,6 @@ export class FogOfWarService {
   }
 
   private traceStraitLine(assetCell: Cell, obstacle: Cell, direction: number): boolean {
-
     if (assetCell.neighbors[direction] && assetCell.neighbors[direction].obstacle ) { 
       return assetCell.neighbors[direction].id !== obstacle.id
     }

@@ -19,6 +19,8 @@ export class GameComponent {
 
 export class AnimationComponent extends GameComponent {
   public animationFrame: number[] | number = 10
+  public moving: boolean
+  public assetDirty: boolean
   public update(): void {}
   public move(): void {}  
 }
@@ -47,6 +49,7 @@ export abstract class MotionAsset extends Asset {
   public currentPath: Cell[] = []
   public selectionIndicator: SelectionIndicator
   public destinationIndicator: ClickAnimation
+  public assetDirty = false
   
   private redirection: { start: Cell, end: Cell, charactersOnGrid: MotionAsset[] }
   private nextCell: Cell
@@ -67,7 +70,7 @@ export abstract class MotionAsset extends Asset {
       super()
   }
 
-  public selectCharacter(): void {
+  public addSelectionIndicator(): void {
     this.selectionIndicator = new SelectionIndicator(6, this.engineService, `../../../assets/images/ExplosionClick1.png`)
   }
 
@@ -106,22 +109,21 @@ export abstract class MotionAsset extends Asset {
     this.nextCell = this.currentPath.pop()
     this.nextCell.occupiedBy = this
     this.setSpriteDirection()
-    this.animationFrame = 10
+    this.animationFrame = 8
   }
 
   public endMovement(): void {
     this.currentPath = null
     this.moving = false
-    this.animationFrame = 20
+    this.animationFrame = 16
     this.destinationIndicator.forceStop()
     this.destinationIndicator=undefined
   }
 
 
+
   public move() {
     // called automatically every 1/60 of a second from the engine
-    if (!this.moving) { return }
-
     let nextXMove = 0
     let nextYMove = 0
     let speed = 2
@@ -132,8 +134,10 @@ export abstract class MotionAsset extends Asset {
     this.positionX += nextXMove
     this.positionY += nextYMove
 
-    if (this.positionY % 32 === 0 && this.positionX % 32 === 0) {
-      this.cell = this.grid.grid[`x${this.positionX / 32}:y${this.positionY / 32}`]
+    this.canvasService.adustViewPort(-1 * (nextXMove ), -1 * (nextYMove), false, this)
+
+    if (this.positionY % (32) === 0 && this.positionX % (32) === 0) {
+      this.cell = this.grid.grid[`x${this.positionX / (32)}:y${this.positionY / (32)}`]
 
       this.nextCell = this.currentPath.length > 0
         ? this.currentPath.pop()
