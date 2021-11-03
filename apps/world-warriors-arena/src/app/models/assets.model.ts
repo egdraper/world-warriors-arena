@@ -161,7 +161,6 @@ export abstract class MotionAsset extends Asset {
         //   if(this.grid.grid[cellId].obstacle) { this.drawService.clearFogLineOfSight(this.nextCell, this.grid.grid[cellId]) }
         // })
         this.drawService.clearFogLineOfSight(this.nextCell) 
-        // this.drawService.drawOnlyVisibleObstacle(this.nextCell.id)
         this.cell.occupiedBy = undefined
         this.nextCell.occupiedBy = this
         this.setSpriteDirection()

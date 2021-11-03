@@ -1,12 +1,12 @@
-import { Component, ElementRef, HostListener, OnInit, ViewChild, ViewChildren } from '@angular/core';
+import { Component, HostListener, OnInit } from '@angular/core';
 import { CanvasService } from '../../canvas/canvas.service';
 import { AssetsService } from '../../game-assets/assets.service';
 import { DrawService } from '../../game-engine/draw-tools/draw.service';
 import { GridService } from '../../game-engine/grid.service';
+import { ShortestPath } from '../../game-engine/shortest-path';
 import { GridMapCell, GRID_CELL_MULTIPLIER, MapDetails } from '../../models/cell.model';
 import { EditorService } from '../editor-palette/editor.service';
 import { GridMapGenerator } from '../map-generator/grid-map-generator';
-
 
 @Component({
   selector: 'world-warriors-arena-global-map',
@@ -29,6 +29,7 @@ export class GlobalMapComponent implements OnInit {
     public drawService: DrawService,
     public canvasService: CanvasService,
     public assetService: AssetsService,
+    public shortestPath: ShortestPath
   ) { }
 
   public ngOnInit(): void {
@@ -65,10 +66,8 @@ export class GlobalMapComponent implements OnInit {
     gridCanvas.height = 200
     gridCanvas.width = 200
     
-
     gridCell.context.imageSmoothingEnabled = false
 
-      // gridCell.context.clearRect(0, 0, 200, 200)
       gridCell.context.fillStyle = 'yellow'
       gridCell.context.fillRect(
         0,
@@ -99,7 +98,6 @@ export class GlobalMapComponent implements OnInit {
       gridCell.context.lineJoin = "round";
       gridCell.context.lineTo(mouseEvent.offsetX, mouseEvent.offsetY);
       gridCell.context.stroke();
-  
     }
   }
 
@@ -107,16 +105,18 @@ export class GlobalMapComponent implements OnInit {
     this.gridService.createGrid(60, 60, "DrawableDungeon")
     this.canvasService.setupCanvases(this.gridService.width, this.gridService.height)
 
-    this.drawService.autoFillTerrain("caveDirt")
     this.drawService.drawBackground(true)
-    this.drawService.drawLines()
-    const generator = new GridMapGenerator(this.gridService, this.canvasService)
+    this.drawService.drawGridLines()
+    const generator = new GridMapGenerator(this.gridService, this.shortestPath, this.editorService, this.canvasService)
+    generator.autoFillBackgroundTerrain("caveDirt")
 
     const mapDetails: MapDetails = {
       backgroundTypeId: "caveDirt",
       terrainTypeId: "DrawableDungeon",
       inverted: true,
-      pathTypeId: undefined
+      pathTypeId: undefined,
+      width: 5,
+      height: 5
     }
     
     generator.generateMap(this.gridOfGrids[0][0], mapDetails)

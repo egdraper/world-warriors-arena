@@ -27,8 +27,7 @@ export class CanvasComponent {
   public blackoutContext: CanvasRenderingContext2D;
   public drawingContext: CanvasRenderingContext2D;
   public hoveringCell: Cell
-
-  public drawing = true
+  public editMode = true
 
   private mouseIsDown = false
   private controlPressed = false
@@ -124,82 +123,18 @@ export class CanvasComponent {
     }
 
     if (event.key === "q") {
-      this.drawing = !this.drawing
-      setTimeout(()=> {
-        if(this.drawing) {
-           this.createLargeImage()
+      this.editMode = !this.editMode
+      setTimeout(() => {
+        if (!this.editMode) {
+          this.canvasService.createLargeImage(this.gridService.width * 32, this.gridService.height * 32, this.gridService)
         } else {
           this.canvasService.largeImageBackground = undefined
           this.canvasService.largeImageForeground = undefined
         }
-
       })
     }
   }
 
-  public createLargeImage() {
-    this.canvasService.drawingCTX.canvas.height = this.gridService.width * 32
-    this.canvasService.drawingCTX.canvas.width = this.gridService.height * 32
-    this.canvasService.drawingCTX.scale(this.canvasService.scale, this.canvasService.scale)
-
-    this.drawObstacles(this.canvasService.drawingCTX)
-    
-    const bimg = this.canvasService.drawingCanvas.nativeElement.toDataURL("image/png")
-    const fimg = this.canvasService.drawingCanvas.nativeElement.toDataURL("image/png")
-    const bimage = new Image()
-    const fimage = new Image()
-    bimage.src = bimg
-    fimage.src = fimg
-    this.canvasService.largeImageBackground = bimage
-    this.canvasService.largeImageForeground = fimage
-
- 
-  }
-
-  public drawObstacles(ctx: CanvasRenderingContext2D): void {
-    this.gridService.gridDisplay.forEach(row => {
-      row.forEach((cell: Cell) => {
-        this.drawOnBackgroundCell(cell, ctx)
-      })
-    })
-    this.gridService.gridDisplay.forEach(row => {
-      row.forEach((cell: Cell) => {
-        this.drawOnCell(cell, ctx)
-      })
-    })
-  }
-
-  private drawOnCell(cell: Cell, ctx: CanvasRenderingContext2D): void {
-    if(cell.imageTile) {
-    
-    ctx.drawImage(
-      cell.imageTile.spriteSheet,
-      cell.imageTile.spriteGridPosX * cell.imageTile.multiplier,
-      cell.imageTile.spriteGridPosY * cell.imageTile.multiplier,
-      cell.imageTile.tileWidth * cell.imageTile.multiplier,
-      cell.imageTile.tileHeight * cell.imageTile.multiplier,
-      cell.posX + cell.imageTile.tileOffsetX,
-      cell.posY + cell.imageTile.tileOffsetY,
-      cell.imageTile.tileWidth * (cell.imageTile.sizeAdjustment || cell.imageTile.multiplier),
-      cell.imageTile.tileHeight * (cell.imageTile.sizeAdjustment || cell.imageTile.multiplier)
-    )
-    }
-  }
-
-  public drawOnBackgroundCell(cell: Cell, ctx: CanvasRenderingContext2D): void {
-    ctx.imageSmoothingEnabled = false
-    ctx.drawImage(
-      cell.backgroundTile.spriteSheet,
-      cell.backgroundTile.spriteGridPosX[0] * 32,
-      cell.backgroundTile.spriteGridPosY[0] * 32,
-      32,
-      32,
-      cell.posX,
-      cell.posY,
-      32,
-      32
-    )
-  }
 
   public onCanvasClick(event: any): void {
     this.mouseIsDown = true
@@ -217,7 +152,7 @@ export class CanvasComponent {
       this.assetService.selectedGameComponent.startMovement(this.assetService.selectedGameComponent.cell, selectedCell, this.assetService.gameComponents)
     }
 
-   else {
+    else {
       // select Asset
       this.canvasService.resetViewport()
       const assetXPos = -1 * this.assetService.selectedGameComponent.cell.posX + this.canvasService.centerPointX
@@ -261,7 +196,4 @@ export class CanvasComponent {
   public onMouseUp(event: any): void {
     this.mouseIsDown = false
   }
-
-
-
 }

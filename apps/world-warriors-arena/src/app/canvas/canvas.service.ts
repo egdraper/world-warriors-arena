@@ -1,6 +1,7 @@
 import { ElementRef, Injectable } from "@angular/core";
+import { GridService } from "../game-engine/grid.service";
 import { Asset } from "../models/assets.model";
-import { GRID_CELL_MULTIPLIER } from "../models/cell.model";
+import { Cell, GRID_CELL_MULTIPLIER } from "../models/cell.model";
 
 @Injectable()
 export class CanvasService {
@@ -85,13 +86,27 @@ export class CanvasService {
     this.blackoutCTX.canvas.height = this.canvasSize
     this.blackoutCTX.canvas.width = this.canvasSize
     this.blackoutCTX.scale(this.scale, this.scale)
+  }
 
+  public createLargeImage(gridWidth: number, gridHeight: number, gridService: GridService) {
+    this.drawingCTX.canvas.height = gridWidth
+    this.drawingCTX.canvas.width = gridHeight
+    this.drawingCTX.scale(this.scale, this.scale)
 
+    this.drawLargeImageObstacles(this.drawingCTX, gridService)
+    
+    const bimg = this.drawingCanvas.nativeElement.toDataURL("image/png")
+    const fimg = this.drawingCanvas.nativeElement.toDataURL("image/png")
+    const bimage = new Image()
+    const fimage = new Image()
+    bimage.src = bimg
+    fimage.src = fimg
+    this.largeImageBackground = bimage
+    this.largeImageForeground = fimage
   }
 
   public scrollCanvas(clickX: number, clickY: number, speed: number = 8, sensitivity: number = 96): void {
   
-    
     if(clickX > (-1 * this.canvasViewPortOffsetX + this.canvasSize - sensitivity)) {
       this.adustViewPort(-1 * speed, 0)
     }
@@ -107,5 +122,50 @@ export class CanvasService {
     if(clickY < (-1 * this.canvasViewPortOffsetY + sensitivity) && (this.canvasViewPortOffsetY < 0)) {
       this.adustViewPort(0, speed)
     }
+  }
+
+  public drawLargeImageObstacles(ctx: CanvasRenderingContext2D, gridService: GridService): void {
+    gridService.gridDisplay.forEach(row => {
+      row.forEach((cell: Cell) => {
+        this.drawLargeImageBackgroundCell(cell, ctx)
+      })
+    })
+    gridService.gridDisplay.forEach(row => {
+      row.forEach((cell: Cell) => {
+        this.drawLargeImageCells(cell, ctx)
+      })
+    })
+  }
+
+  private drawLargeImageCells(cell: Cell, ctx: CanvasRenderingContext2D): void {
+    if(cell.imageTile) {
+    
+    ctx.drawImage(
+      cell.imageTile.spriteSheet,
+      cell.imageTile.spriteGridPosX * cell.imageTile.multiplier,
+      cell.imageTile.spriteGridPosY * cell.imageTile.multiplier,
+      cell.imageTile.tileWidth * cell.imageTile.multiplier,
+      cell.imageTile.tileHeight * cell.imageTile.multiplier,
+      cell.posX + cell.imageTile.tileOffsetX,
+      cell.posY + cell.imageTile.tileOffsetY,
+      cell.imageTile.tileWidth * (cell.imageTile.sizeAdjustment || cell.imageTile.multiplier),
+      cell.imageTile.tileHeight * (cell.imageTile.sizeAdjustment || cell.imageTile.multiplier)
+    )
+    }
+  }
+
+  public drawLargeImageBackgroundCell(cell: Cell, ctx: CanvasRenderingContext2D): void {
+    ctx.imageSmoothingEnabled = false
+    ctx.drawImage(
+      cell.backgroundTile.spriteSheet,
+      cell.backgroundTile.spriteGridPosX[0] * 32,
+      cell.backgroundTile.spriteGridPosY[0] * 32,
+      32,
+      32,
+      cell.posX,
+      cell.posY,
+      32,
+      32
+    )
   }
 }

@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { ShortestPath } from '../../game-engine/shortest-path';
 import { growableItems, TerrainType } from '../../game-assets/tiles.db.ts/tile-assets.db';
 import { GridService } from '../../game-engine/grid.service';
-import { SpriteTile } from '../../models/cell.model';
+import { MapDetails, SpriteTile } from '../../models/cell.model';
 import { RandomMapGenerator } from '../map-generator/random-map-generator';
 import { EditorService } from './editor.service';
 import { AssetsService } from '../../game-assets/assets.service';
@@ -56,30 +56,32 @@ export class EditorpaletteComponent implements OnInit {
     this.assetService.obstaclesDirty = true
   }
 
-
-  public paintClicked(): void {
-    const mapGenerator = new RandomMapGenerator(this.editorService, this.shortestPath, this.grid)
-    mapGenerator.generateMap(this.grid.width, this.grid.height, TerrainType.Block)
-    this.assetService.obstaclesDirty = true
-    // this.editorService.baseOnly = false
-  }
-
   public invertedClicked(): void {
-    // this.editorService.editMode = false
     this.grid.inverted = !this.grid.inverted
   }
 
     
   public generateRandomMap(): void {
-    const inverted = true
+    const mapGenerator = new RandomMapGenerator(this.editorService, this.shortestPath, this.grid)
+
+    const mapDetails: MapDetails = {
+      backgroundTypeId: "greenGrass",
+      terrainTypeId: "DrawableTrees",
+      inverted: true,
+      pathTypeId: undefined,
+      width: 100,
+      height: 100
+    }
+
+    mapGenerator.generateMap(mapDetails)
+    this.canvasService.setupCanvases(mapDetails.width, mapDetails.height)
+   
+    // CLEANUP - Rethink the "Dirty" locations, if they should be in drawing service or where they are
     this.assetService.obstaclesDirty = true
     this.editorService.backgroundDirty = true
-    this.grid.createGrid(144, 144, "DrawableTree")
-    this.canvasService.setupCanvases(this.grid.width, this.grid.height)
 
-    this.drawService.autoFillTerrain("greenGrass")
-    this.drawService.drawBackground(true)
-    this.drawService.drawLines()
+    // CLEANUP - Needs to be moved into somewhere that re-draws
+    this.drawService.drawGridLines()
   }
 
   public imageClick(event: any): void {

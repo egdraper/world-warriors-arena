@@ -5,7 +5,7 @@ import { EditorService } from "../../editor/editor-palette/editor.service";
 import { AssetsService } from "../../game-assets/assets.service";
 import { ShortLivedAnimation } from "../../game-assets/click-animation";
 import { growableItems } from "../../game-assets/tiles.db.ts/tile-assets.db";
-import { GameComponent, MotionAsset } from "../../models/assets.model";
+import { MotionAsset } from "../../models/assets.model";
 import { Cell } from "../../models/cell.model";
 import { GridService } from "../grid.service";
 import { FogOfWarService } from "../visibility.service";
@@ -18,15 +18,14 @@ export class DrawService {
     public fogOfWarService: FogOfWarService,
     public editorService: EditorService,
     public assetService: AssetsService
-  ) {
+  ) { }
 
-  }
-
-  public drawLines(): void {
+  // Draws Grid Lines  
+  public drawGridLines(): void {
     if (this.editorService.backgroundDirty) {
-      // Draw Lines
       for (let h = 0; h <= this.gridService.height; h++) {
         for (let w = 0; w <= this.gridService.width; w++) {
+          // Horizontal lines
           this.canvasService.backgroundCTX.beginPath()
           this.canvasService.backgroundCTX.moveTo(w * 32, h * 32)
           this.canvasService.backgroundCTX.lineTo(w * 32, (h * 32) + 32)
@@ -34,7 +33,7 @@ export class DrawService {
           this.canvasService.backgroundCTX.strokeStyle = "rgba(255, 255 ,255,.5)"
           this.canvasService.backgroundCTX.stroke()
 
-
+          // Vertical Lines
           this.canvasService.backgroundCTX.beginPath()
           this.canvasService.backgroundCTX.moveTo(w * 32, h * 32)
           this.canvasService.backgroundCTX.lineTo((w * 32) + 32, h * 32)
@@ -46,50 +45,11 @@ export class DrawService {
     }
   }
 
-  public autoFillTerrain(collectionId: string) {
-    for (let h = 0; h < this.gridService.height; h++) {
-      for (let w = 0; w < this.gridService.width; w++) {
-        let spriteSheet
-        let xPos = 0
-        let yPos = 0
-        const cell = this.gridService.grid[`x${w}:y${h}`]
-
-        //Randomly generates random texture
-        let weight = 0
-        this.editorService.findBackgroundCollection(collectionId).forEach(tile => {
-          tile.lowWeight = weight
-          weight += tile.rarity
-          tile.highWeight = weight
-        })
-
-        const rand = Math.floor(Math.random() * weight);
-        spriteSheet = this.editorService.findBackgroundCollection(collectionId)[0].spriteSheet
-
-        this.editorService.findBackgroundCollection(collectionId).forEach(tile => {
-          if (rand < tile.highWeight && rand >= tile.lowWeight) {
-            xPos = Math.floor(Math.random() * tile.spriteGridPosX.length)
-            yPos = Math.floor(Math.random() * tile.spriteGridPosY.length)
-            xPos = tile.spriteGridPosX[xPos]
-            yPos = tile.spriteGridPosY[yPos]
-            spriteSheet = tile.spriteSheet
-          }
-        })
-
-        cell.backgroundTile = {
-          id: `x${xPos}:Y${yPos}${collectionId}`,
-          spriteSheet: spriteSheet,
-          spriteGridPosX: [xPos],
-          spriteGridPosY: [yPos],
-          rarity: 0
-        }
-      }
-    }
-  }
-
+  // Draws baground tiles when needed
   public drawBackground(forceDraw: boolean = false): void {
-    if (Object.keys(this.gridService.grid).length === 0) { return }
+    if (this.gridService.gridLoaded) { return }
 
-    if (this.editorService.backgroundDirty || forceDraw)
+    if (this.editorService.backgroundDirty || forceDraw) {
       for (let h = 0; h < this.gridService.height; h++) {
         for (let w = 0; w < this.gridService.width; w++) {
           const cell = this.gridService.grid[`x${w}:y${h}`]
@@ -103,16 +63,14 @@ export class DrawService {
             debugger
           }
         }
-
       }
-    // this.drawLines()
 
-    this.editorService.backgroundDirty = false
-    this.blackOutEdges()
+      this.editorService.backgroundDirty = false
+    }
   }
 
-
-  public blackOutEdges(): void {
+  // Paints a black box over the edges to give one cell's worth of room to have players step in and out of view
+  public drawBlackOutEdges(): void {
     if (this.canvasService.blackoutCTX) {
       this.canvasService.blackoutCTX.fillStyle = 'black';
       this.canvasService.blackoutCTX.fillRect(
@@ -121,7 +79,6 @@ export class DrawService {
         32,
         this.gridService.width * 32,
       )
-
     }
 
     if (this.canvasService.blackoutCTX) {
@@ -143,11 +100,10 @@ export class DrawService {
         64,
         this.gridService.height * 32,
       )
-
     }
   }
 
-
+  // Fog Of War Complete Black Out
   public drawBlackoutFog(): void {
     if (this.fogOfWarService.fogEnabled) {
       this.canvasService.blackoutCTX.globalCompositeOperation = 'destination-over'
@@ -164,6 +120,7 @@ export class DrawService {
     // this.addOpaqueFogLineOfSight()
   }
 
+  // Fog Of War Transparent fog
   public drawFog(): void {
     if (this.fogOfWarService.fogEnabled) {
       this.canvasService.fogCTX.globalCompositeOperation = 'destination-over'
@@ -180,6 +137,7 @@ export class DrawService {
     // this.addOpaqueFogLineOfSight()
   }
 
+  // Fog of War, preps and draws the seeable area
   public clearFogLineOfSight(cell: Cell): void {
     if (this.fogOfWarService.fogEnabled) {
       this.drawFog()
@@ -203,6 +161,7 @@ export class DrawService {
     }
   }
 
+  // Fog of War clears Line of Sight
   public drawLineOfSight(ctx: any, cell: Cell): void {
     if (this.fogOfWarService.fogEnabled) {
       this.fogOfWarService.visibleCell[cell.id].forEach(points => {
@@ -222,18 +181,7 @@ export class DrawService {
     }
   }
 
-  // public addOpaqueFogLineOfSight(): void {
-  //   let a = 0
-  //   // console.log(Object.keys(this.fogOfWarService.visitedVisibleCell).length)
-  //   Object.keys(this.fogOfWarService.visitedVisibleCell).forEach(visitedCellId => {
-  //     this.fogOfWarService.visitedVisibleCell[visitedCellId].forEach(clearing => {
-  //       // // console.log(this.fogOfWarService.visitedVisibleCell[visitedCellId].length)
-  //     })
-  //   })
-  // }
-
-
-
+  // Draws animations that have a short life span
   public drawShortLivedAnimation(animation: ShortLivedAnimation): void {
     this.canvasService.overlayCTX.clearRect(0, 0, this.gridService.width * 32 * this.canvasService.scale, this.gridService.height * 32 * this.canvasService.scale);
 
@@ -256,6 +204,7 @@ export class DrawService {
     )
   }
 
+  // For performance, I may implement this.
   // public  drawOnlyVisibleObstacle(id: string): void {
   //   this.fogOfWarService.visibleCell[id].forEach(drawObject => {
 
@@ -275,7 +224,7 @@ export class DrawService {
 
   public index = 0
   public drawAnimatedAssets(): void {
-    if (!this.gridService.loaded) { return }
+    if (!this.gridService.gridLoaded) { return }
 
     if (this.canvasService.foregroundCTX) {
 
@@ -300,53 +249,27 @@ export class DrawService {
       this.canvasService.backgroundCTX.clearRect(0, 0, this.gridService.width * 32 * this.canvasService.scale, this.gridService.height * 32 * this.canvasService.scale);
       this.canvasService.blackoutCTX.clearRect(0, 0, this.gridService.width * 32 * this.canvasService.scale, this.gridService.height * 32 * this.canvasService.scale);
 
-      if (this.canvasService.largeImageBackground) {
-        console.log(topLeftPosX)
-        this.canvasService.backgroundCTX.imageSmoothingEnabled = false
-        this.canvasService.backgroundCTX.drawImage(
-          this.canvasService.largeImageBackground,
-          topLeftPosX,
-          topLeftPosY,
-          1500,
-          1500,
-          topLeftPosX,
-          topLeftPosY,
-          1500,
-          1500
-        )
-
-        this.canvasService.foregroundCTX.imageSmoothingEnabled = false
-        this.canvasService.foregroundCTX.drawImage(
-          this.canvasService.largeImageForeground,
-          topLeftPosX,
-          topLeftPosY,
-          1500,
-          1500,
-          topLeftPosX,
-          topLeftPosY,
-          1500,
-          1500
-        )
-      }
-
       try {
-        if (!this.canvasService.largeImageBackground) {
-          for (let y = cellTopLeft.y; y <= cellBottomLeft.y; y++) {
-            for (let x = cellTopLeft?.x; x <= cellTopRight?.x; x++) {
-              const drawableCell = this.gridService.getCell(x, y)
-
-              if (drawableCell.occupiedBy) {
-                this.drawAsset(drawableCell.occupiedBy)
-              }
-
-              this.drawOnCell(drawableCell)
-              this.drawOnBackgroundCell(drawableCell)
-            }
-          }
-        } else {
+        if (this.canvasService.largeImageBackground) {
+          this.drawLargeImageBackground(topLeftPosX, topLeftPosY)
           this.assetService.gameComponents.forEach(gameComponent => {
             this.drawAroundAsset(gameComponent)
           })
+        } else {
+          if (!this.canvasService.largeImageBackground) {
+            for (let y = cellTopLeft.y; y <= cellBottomLeft.y; y++) {
+              for (let x = cellTopLeft?.x; x <= cellTopRight?.x; x++) {
+                const drawableCell = this.gridService.getCell(x, y)
+
+                if (drawableCell.occupiedBy) {
+                  this.drawAsset(drawableCell.occupiedBy)
+                }
+
+                this.drawOnCell(drawableCell)
+                this.drawOnBackgroundCell(drawableCell)
+              }
+            }
+          }
         }
       }
       catch (e) {
@@ -355,6 +278,37 @@ export class DrawService {
     }
   }
 
+  // Draws the Background and Foreground as a Single Image. In Game Mode the map is not being drawn a square at a time but as an entire image. 
+  public drawLargeImageBackground(canvasTopLeftPosX: number, canvasTopLeftPosY: number): void {
+    console.log(canvasTopLeftPosX)
+    this.canvasService.backgroundCTX.imageSmoothingEnabled = false
+    this.canvasService.backgroundCTX.drawImage(
+      this.canvasService.largeImageBackground,
+      canvasTopLeftPosX,
+      canvasTopLeftPosY,
+      this.canvasService.canvasSize,
+      this.canvasService.canvasSize,
+      canvasTopLeftPosX,
+      canvasTopLeftPosY,
+      this.canvasService.canvasSize,
+      this.canvasService.canvasSize
+    )
+
+    this.canvasService.foregroundCTX.imageSmoothingEnabled = false
+    this.canvasService.foregroundCTX.drawImage(
+      this.canvasService.largeImageForeground,
+      canvasTopLeftPosX,
+      canvasTopLeftPosY,
+      this.canvasService.canvasSize,
+      this.canvasService.canvasSize,
+      canvasTopLeftPosX,
+      canvasTopLeftPosY,
+      this.canvasService.canvasSize,
+      this.canvasService.canvasSize
+    )
+  }
+
+  // Draws draws around the asset so asset can stand behind objects in game mode (single image background)
   private drawAroundAsset(asset: MotionAsset): void {
     const x = asset.cell.x
     const y = asset.cell.y
@@ -369,16 +323,15 @@ export class DrawService {
 
         const paintingArea = this.gridService.getCell(x + l, y + i)
 
-        if(paintingArea.imageTile) {
+        if (paintingArea.imageTile) {
           this.drawOnCell(paintingArea, true)
         }
       }
     }
   }
 
-
+  // draws asset
   public drawAsset(gameComponent: MotionAsset): void {
-
     if (gameComponent && gameComponent.assetDirty) {
       this.canvasService.foregroundCTX.drawImage(
         gameComponent.image,
@@ -407,9 +360,9 @@ export class DrawService {
       }
       gameComponent.assetDirty = false
     }
-
   }
 
+  // Draws Items being placed in Edit mode
   public drawEditableObject(): void {
     if (!this.editorService.selectedAsset || !this.editorService.hoveringCell) { return }
     this.canvasService.foregroundCTX.drawImage(
@@ -425,8 +378,9 @@ export class DrawService {
     )
   }
 
+  // draws the entire grid foreground objects
   public drawObstacles(): void {
-    if (this.canvasService.foregroundCTX && this.assetService.obstaclesDirty) {
+    if (this.canvasService.foregroundCTX && this.assetService.obstaclesDirty && !this.canvasService.largeImageBackground) {
       // this.canvasService.foregroundCTX.clearRect(0, 0, this.gridService.width * (36 * this.canvasService.scale), this.gridService.height * (36 * this.canvasService.scale));
       this.gridService.gridDisplay.forEach(row => {
         row.forEach((cell: Cell) => {
@@ -442,10 +396,11 @@ export class DrawService {
     }
   }
 
+  // draws each foreground item for the cell provided
   private drawOnCell(cell: Cell, makeTransparent: boolean = false): void {
     if (cell && cell.visible && cell.imageTile) {
 
-      if(makeTransparent) {
+      if (makeTransparent) {
         this.canvasService.foregroundCTX.globalAlpha = .5
       }
 
@@ -464,6 +419,7 @@ export class DrawService {
     }
   }
 
+  // draws the background item for each cell provided
   public drawOnBackgroundCell(cell: Cell): void {
     if (cell && cell.backgroundTile) {
 
@@ -483,11 +439,13 @@ export class DrawService {
     }
   }
 
+  // Helper functions
+
+  // This is used for drawable terrain, it determines which tile goes where when drawing terrain.
   private calculateGrowableTerrain(selectedCell: Cell): void {
     const drawableItem = growableItems.find(item => {
       return selectedCell.growableTileId.includes(item.id)
     })
-
 
     const topNeighbor = selectedCell.neighbors[0]
     const topRightNeighbor = selectedCell.neighbors[4]

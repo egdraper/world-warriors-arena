@@ -146,4 +146,6 @@ export class MapDetails {
   backgroundTypeId: string
   pathTypeId: string
   inverted: boolean
+  width: number
+  height: number
 }
