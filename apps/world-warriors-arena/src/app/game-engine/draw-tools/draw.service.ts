@@ -1,10 +1,11 @@
+import { CONTEXT_NAME } from "@angular/compiler/src/render3/view/util";
 import { Injectable } from "@angular/core";
 import { CanvasService } from "../../canvas/canvas.service";
 import { EditorService } from "../../editor/editor-palette/editor.service";
 import { AssetsService } from "../../game-assets/assets.service";
 import { ShortLivedAnimation } from "../../game-assets/click-animation";
 import { growableItems } from "../../game-assets/tiles.db.ts/tile-assets.db";
-import { GameComponent } from "../../models/assets.model";
+import { GameComponent, MotionAsset } from "../../models/assets.model";
 import { Cell } from "../../models/cell.model";
 import { GridService } from "../grid.service";
 import { FogOfWarService } from "../visibility.service";
@@ -89,8 +90,8 @@ export class DrawService {
     if (Object.keys(this.gridService.grid).length === 0) { return }
 
     if (this.editorService.backgroundDirty || forceDraw)
-    for (let h = 0; h < this.gridService.height; h++) {
-      for (let w = 0; w < this.gridService.width; w++) {
+      for (let h = 0; h < this.gridService.height; h++) {
+        for (let w = 0; w < this.gridService.width; w++) {
           const cell = this.gridService.grid[`x${w}:y${h}`]
 
           try {
@@ -272,7 +273,7 @@ export class DrawService {
   // }
 
 
-public index = 0
+  public index = 0
   public drawAnimatedAssets(): void {
     if (!this.gridService.loaded) { return }
 
@@ -294,100 +295,119 @@ public index = 0
       const cellTopLeft = this.gridService.getGridCellByCoordinate(topLeftPosX, topLeftPosY)
       const cellTopRight = this.gridService.getGridCellByCoordinate(topRightPosX, topLeftPosY)
       const cellBottomLeft = this.gridService.getGridCellByCoordinate(topLeftPosX, bottomPosY)
-      
+
       this.canvasService.foregroundCTX.clearRect(0, 0, this.gridService.width * 32 * this.canvasService.scale, this.gridService.height * 32 * this.canvasService.scale);
       this.canvasService.backgroundCTX.clearRect(0, 0, this.gridService.width * 32 * this.canvasService.scale, this.gridService.height * 32 * this.canvasService.scale);
       this.canvasService.blackoutCTX.clearRect(0, 0, this.gridService.width * 32 * this.canvasService.scale, this.gridService.height * 32 * this.canvasService.scale);
-     
-      if(this.canvasService.largeImageBackground) {
+
+      if (this.canvasService.largeImageBackground) {
         console.log(topLeftPosX)
-          this.canvasService.backgroundCTX.imageSmoothingEnabled = false
-          this.canvasService.backgroundCTX.drawImage(
-            this.canvasService.largeImageBackground,
-            topLeftPosX,
-            topLeftPosY,
-            1500,
-            1500,
-            topLeftPosX,
-            topLeftPosY,
-            1500,
-            1500
-          )
-        
-      
-          this.canvasService.foregroundCTX.imageSmoothingEnabled = false
-          this.canvasService.foregroundCTX.drawImage(
-            this.canvasService.largeImageForeground,
-            topLeftPosX,
-            topLeftPosY,
-            1500,
-            1500,
-            topLeftPosX,
-            topLeftPosY,
-            1500,
-            1500
-          )
-        }
-      
-     
+        this.canvasService.backgroundCTX.imageSmoothingEnabled = false
+        this.canvasService.backgroundCTX.drawImage(
+          this.canvasService.largeImageBackground,
+          topLeftPosX,
+          topLeftPosY,
+          1500,
+          1500,
+          topLeftPosX,
+          topLeftPosY,
+          1500,
+          1500
+        )
 
-        
-     
+        this.canvasService.foregroundCTX.imageSmoothingEnabled = false
+        this.canvasService.foregroundCTX.drawImage(
+          this.canvasService.largeImageForeground,
+          topLeftPosX,
+          topLeftPosY,
+          1500,
+          1500,
+          topLeftPosX,
+          topLeftPosY,
+          1500,
+          1500
+        )
+      }
+
       try {
-        if(!this.canvasService.largeImageBackground) {
-        
-          
+        if (!this.canvasService.largeImageBackground) {
+          for (let y = cellTopLeft.y; y <= cellBottomLeft.y; y++) {
+            for (let x = cellTopLeft?.x; x <= cellTopRight?.x; x++) {
+              const drawableCell = this.gridService.getCell(x, y)
 
-
-        for (let y = cellTopLeft.y; y <= cellBottomLeft.y; y++) {
-          for (let x = cellTopLeft?.x; x <= cellTopRight?.x; x++) {
-            const drawableCell = this.gridService.getCell(x, y)
+              if (drawableCell.occupiedBy) {
+                this.drawAsset(drawableCell.occupiedBy)
+              }
 
               this.drawOnCell(drawableCell)
               this.drawOnBackgroundCell(drawableCell)
             }
-            // const gameComponent = drawableCell.occupiedBy
-      }}
-
-            const gameComponent = this.assetService.selectedGameComponent
-
-            if (gameComponent && gameComponent.assetDirty) {
-
-              this.canvasService.foregroundCTX.drawImage(
-                gameComponent.image,
-                gameComponent.frameXPosition[gameComponent.frameCounter],
-                gameComponent.frameYPosition,
-                25,
-                36,
-                gameComponent.positionX - 8,
-                gameComponent.positionY - 58,
-                50,
-                80
-              )
-              if (gameComponent.selectionIndicator) {
-                this.canvasService.overlayCTX.clearRect(gameComponent.positionX, gameComponent.positionY, 32, 32);
-                this.canvasService.overlayCTX.drawImage(
-                  gameComponent.selectionIndicator.image,
-                  gameComponent.selectionIndicator.frameXPosition[gameComponent.selectionIndicator.frameXCounter],
-                  gameComponent.selectionIndicator.frameYPosition[gameComponent.selectionIndicator.frameYCounter],
-                  25,
-                  25,
-                  gameComponent.positionX,
-                  gameComponent.positionY,
-                  32,
-                  32
-                )
-              }
-              gameComponent.assetDirty = false
-            }
-
-        //   }
-        // }
-      } catch (e) {
+          }
+        } else {
+          this.assetService.gameComponents.forEach(gameComponent => {
+            this.drawAroundAsset(gameComponent)
+          })
+        }
+      }
+      catch (e) {
         debugger
       }
-
     }
+  }
+
+  private drawAroundAsset(asset: MotionAsset): void {
+    const x = asset.cell.x
+    const y = asset.cell.y
+
+    for (let i = -1; i < 4; i++) {
+      for (let l = -1; l < 2; l++) {
+
+        if (i === 0 && l === 1) {
+          this.drawAsset(asset)
+          continue
+        }
+
+        const paintingArea = this.gridService.getCell(x + l, y + i)
+
+        if(paintingArea.imageTile) {
+          this.drawOnCell(paintingArea, true)
+        }
+      }
+    }
+  }
+
+
+  public drawAsset(gameComponent: MotionAsset): void {
+
+    if (gameComponent && gameComponent.assetDirty) {
+      this.canvasService.foregroundCTX.drawImage(
+        gameComponent.image,
+        gameComponent.frameXPosition[gameComponent.frameCounter],
+        gameComponent.frameYPosition,
+        25,
+        36,
+        gameComponent.positionX - 8,
+        gameComponent.positionY - 58,
+        50,
+        80
+      )
+      if (gameComponent.selectionIndicator) {
+        this.canvasService.overlayCTX.clearRect(gameComponent.positionX, gameComponent.positionY, 32, 32);
+        this.canvasService.overlayCTX.drawImage(
+          gameComponent.selectionIndicator.image,
+          gameComponent.selectionIndicator.frameXPosition[gameComponent.selectionIndicator.frameXCounter],
+          gameComponent.selectionIndicator.frameYPosition[gameComponent.selectionIndicator.frameYCounter],
+          25,
+          25,
+          gameComponent.positionX,
+          gameComponent.positionY,
+          32,
+          32
+        )
+      }
+      gameComponent.assetDirty = false
+    }
+
   }
 
   public drawEditableObject(): void {
@@ -407,7 +427,7 @@ public index = 0
 
   public drawObstacles(): void {
     if (this.canvasService.foregroundCTX && this.assetService.obstaclesDirty) {
-      this.canvasService.foregroundCTX.clearRect(0, 0, this.gridService.width * (36 * this.canvasService.scale), this.gridService.height * (36 * this.canvasService.scale));
+      // this.canvasService.foregroundCTX.clearRect(0, 0, this.gridService.width * (36 * this.canvasService.scale), this.gridService.height * (36 * this.canvasService.scale));
       this.gridService.gridDisplay.forEach(row => {
         row.forEach((cell: Cell) => {
 
@@ -422,9 +442,13 @@ public index = 0
     }
   }
 
-  private drawOnCell(cell: Cell): void {
+  private drawOnCell(cell: Cell, makeTransparent: boolean = false): void {
     if (cell && cell.visible && cell.imageTile) {
-      // console.log("DDD")
+
+      if(makeTransparent) {
+        this.canvasService.foregroundCTX.globalAlpha = .5
+      }
+
       this.canvasService.foregroundCTX.drawImage(
         cell.imageTile.spriteSheet,
         cell.imageTile.spriteGridPosX * cell.imageTile.multiplier,
@@ -436,6 +460,7 @@ public index = 0
         cell.imageTile.tileWidth * (cell.imageTile.sizeAdjustment || cell.imageTile.multiplier),
         cell.imageTile.tileHeight * (cell.imageTile.sizeAdjustment || cell.imageTile.multiplier)
       )
+      this.canvasService.foregroundCTX.globalAlpha = 1
     }
   }
 
@@ -462,7 +487,7 @@ public index = 0
     const drawableItem = growableItems.find(item => {
       return selectedCell.growableTileId.includes(item.id)
     })
-    
+
 
     const topNeighbor = selectedCell.neighbors[0]
     const topRightNeighbor = selectedCell.neighbors[4]

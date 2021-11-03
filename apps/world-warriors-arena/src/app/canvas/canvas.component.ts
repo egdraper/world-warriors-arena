@@ -123,7 +123,7 @@ export class CanvasComponent {
       this.shiftPressed = false
     }
 
-    if (event.key === "a") {
+    if (event.key === "q") {
       this.drawing = !this.drawing
       setTimeout(()=> {
         if(this.drawing) {
@@ -160,6 +160,10 @@ export class CanvasComponent {
     this.gridService.gridDisplay.forEach(row => {
       row.forEach((cell: Cell) => {
         this.drawOnBackgroundCell(cell, ctx)
+      })
+    })
+    this.gridService.gridDisplay.forEach(row => {
+      row.forEach((cell: Cell) => {
         this.drawOnCell(cell, ctx)
       })
     })
@@ -167,6 +171,7 @@ export class CanvasComponent {
 
   private drawOnCell(cell: Cell, ctx: CanvasRenderingContext2D): void {
     if(cell.imageTile) {
+    
     ctx.drawImage(
       cell.imageTile.spriteSheet,
       cell.imageTile.spriteGridPosX * cell.imageTile.multiplier,
@@ -212,13 +217,13 @@ export class CanvasComponent {
       this.assetService.selectedGameComponent.startMovement(this.assetService.selectedGameComponent.cell, selectedCell, this.assetService.gameComponents)
     }
 
-    // } else {
-    //   // select Asset
-    //   this.canvasService.resetViewport()
-    //   const assetXPos = -1 * this.assetService.selectedGameComponent.cell.posX + this.canvasService.centerPointX
-    //   const assetYPos = -1 * this.assetService.selectedGameComponent.cell.posY + this.canvasService.centerPointY
-    //   this.canvasService.adustViewPort(assetXPos, assetYPos)
-    // }
+   else {
+      // select Asset
+      this.canvasService.resetViewport()
+      const assetXPos = -1 * this.assetService.selectedGameComponent.cell.posX + this.canvasService.centerPointX
+      const assetYPos = -1 * this.assetService.selectedGameComponent.cell.posY + this.canvasService.centerPointY
+      this.canvasService.adustViewPort(assetXPos, assetYPos)
+    }
 
     this.onMouseMove(event)
   }
@@ -233,7 +238,6 @@ export class CanvasComponent {
     if (this.shiftPressed) {
       this.canvasService.scrollCanvas(clickX, clickY, 32, 160)
     }
-
 
     // Control Pressed
     if (event.offsetX < 0 || event.offsetY < 0) { return }
