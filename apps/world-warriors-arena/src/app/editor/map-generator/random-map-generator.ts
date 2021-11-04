@@ -57,6 +57,7 @@ export class RandomMapGenerator extends BaseMapGenerator {
 
     // clears all obstacles from path
     this.clearOpening(path)
+    this.terrainCleanup()
     this.editorService.backgroundDirty = true
   }
 

@@ -2,6 +2,7 @@ import { ElementRef, Injectable } from "@angular/core";
 import { GridService } from "../game-engine/grid.service";
 import { Asset } from "../models/assets.model";
 import { Cell, GRID_CELL_MULTIPLIER } from "../models/cell.model";
+import { GameSettings, MapSettings } from "../models/game-settings";
 
 @Injectable()
 export class CanvasService {
@@ -13,7 +14,6 @@ export class CanvasService {
 
   public largeImageBackground: HTMLImageElement
   public largeImageForeground: HTMLImageElement
-  
   public _scale = 1
   public get scale() {
     return this._scale
@@ -25,28 +25,32 @@ export class CanvasService {
 
   public overlayCanvas: ElementRef<HTMLCanvasElement>;
   public overlayCTX: CanvasRenderingContext2D;
-  
+
   public foregroundCanvas: ElementRef<HTMLCanvasElement>;
   public foregroundCTX: CanvasRenderingContext2D;
-   
+
   public backgroundCanvas: ElementRef<HTMLCanvasElement>;
   public backgroundCTX: CanvasRenderingContext2D;
-  
+
   public fogCanvas: ElementRef<HTMLCanvasElement>;
   public fogCTX: CanvasRenderingContext2D;
 
   public blackoutCanvas: ElementRef<HTMLCanvasElement>;
   public blackoutCTX: CanvasRenderingContext2D;
- 
+
   public drawingCanvas: ElementRef<HTMLCanvasElement>;
   public drawingCTX: CanvasRenderingContext2D;
 
-  public adustViewPort(xPos: number, yPos: number, saveLocation: boolean = false, asset?: Asset) {
-    if(asset) {
-      if(asset.positionX <= this.centerPointX + 32) { xPos = 0 }
-      if(asset.positionY <= this.centerPointY + 32 ) { yPos = 0 }
-      if(asset.positionX >= 4800 - this.centerPointX - 32 ) { xPos = 0 }
-      if(asset.positionY >= 4800 - this.centerPointY - 32) { yPos = 0 }
+  public adustViewPort(xPos: number, yPos: number, asset?: Asset, gridWidth?: number, gridHeight?: number) {
+    if (asset && gridWidth && gridHeight) {
+      if (!gridHeight || !gridHeight) {
+        throw new Error("Passing in asset requires gridWidth and grid height")
+      }
+      
+      if (asset.positionX <= this.centerPointX + 32) { xPos = 0 }
+      if (asset.positionY <= this.centerPointY + 32) { yPos = 0 }
+      if (asset.positionX >= (gridWidth * 32) - this.centerPointX - 32) { xPos = 0 }
+      if (asset.positionY >= (gridHeight * 32) - this.centerPointY - 32) { yPos = 0 }
     }
     this.canvasViewPortOffsetX += xPos
     this.canvasViewPortOffsetY += yPos
@@ -94,7 +98,7 @@ export class CanvasService {
     this.drawingCTX.scale(this.scale, this.scale)
 
     this.drawLargeImageObstacles(this.drawingCTX, gridService)
-    
+
     const bimg = this.drawingCanvas.nativeElement.toDataURL("image/png")
     const fimg = this.drawingCanvas.nativeElement.toDataURL("image/png")
     const bimage = new Image()
@@ -105,21 +109,43 @@ export class CanvasService {
     this.largeImageForeground = fimage
   }
 
+  public centerOverAsset(asset: Asset, gridWidth: number, gridHeight: number): void {
+
+    if (!asset) { return }
+
+    // select Asset
+    this.resetViewport()
+
+    let assetXPos = asset.cell.posX <= this.centerPointX ? 0 : -1 * asset.cell.posX + this.centerPointX
+    let assetYPos = asset.cell.posY <= this.centerPointY ? 0 : -1 * asset.cell.posY + this.centerPointY
+
+    assetXPos = asset.cell.posX >= (gridWidth * 32) - this.centerPointX ? -1 * ((gridWidth * 32) - this.canvasSize - 64) : assetXPos
+    assetYPos = asset.cell.posY >= (gridWidth * 32) - this.centerPointY ? -1 * ((gridHeight * 32) - this.canvasSize - 64) : assetYPos
+
+    // if(assetXPos <= this.centerPointX + 32) { assetXPos = 0 }
+    // if(asset.positionY <= this.centerPointY + 32 ) { yPos = 0 }
+    // if(asset.positionX >= 4800 - this.centerPointX - 32 ) { xPos = 0 }
+    // if(asset.positionY >= 4800 - this.centerPointY - 32) { yPos = 0 }
+
+    this.adustViewPort(assetXPos, assetYPos)
+  }
+
+
   public scrollCanvas(clickX: number, clickY: number, speed: number = 8, sensitivity: number = 96): void {
-  
-    if(clickX > (-1 * this.canvasViewPortOffsetX + this.canvasSize - sensitivity)) {
+
+    if (clickX > (-1 * this.canvasViewPortOffsetX + this.canvasSize - sensitivity)) {
       this.adustViewPort(-1 * speed, 0)
     }
 
-    if(clickY > (-1 * this.canvasViewPortOffsetY + this.canvasSize - sensitivity)) {
+    if (clickY > (-1 * this.canvasViewPortOffsetY + this.canvasSize - sensitivity)) {
       this.adustViewPort(0, -1 * speed)
     }
 
-    if(clickX < (-1 * this.canvasViewPortOffsetX + sensitivity) && (this.canvasViewPortOffsetX < 0)) {
+    if (clickX < (-1 * this.canvasViewPortOffsetX + sensitivity) && (this.canvasViewPortOffsetX < 0)) {
       this.adustViewPort(speed, 0)
     }
 
-    if(clickY < (-1 * this.canvasViewPortOffsetY + sensitivity) && (this.canvasViewPortOffsetY < 0)) {
+    if (clickY < (-1 * this.canvasViewPortOffsetY + sensitivity) && (this.canvasViewPortOffsetY < 0)) {
       this.adustViewPort(0, speed)
     }
   }
@@ -130,27 +156,56 @@ export class CanvasService {
         this.drawLargeImageBackgroundCell(cell, ctx)
       })
     })
+    this.drawGridLines(gridService, ctx)
     gridService.gridDisplay.forEach(row => {
       row.forEach((cell: Cell) => {
         this.drawLargeImageCells(cell, ctx)
       })
     })
+
   }
 
+  // Draws Grid Lines  
+  public drawGridLines(gridService: GridService, ctx: CanvasRenderingContext2D): void {
+    for (let h = 0; h <= gridService.height; h++) {
+      for (let w = 0; w <= gridService.width; w++) {
+        // Horizontal lines
+        const dim = GameSettings.cellDimension
+
+        ctx.beginPath()
+        ctx.moveTo(w * dim, h * dim)
+        ctx.lineTo(w * dim, (h * dim) + dim)
+        ctx.lineWidth = GameSettings.gridLineThickness;
+        ctx.strokeStyle = GameSettings.gridLineStyle
+        ctx.stroke()
+
+        // Vertical Lines
+        ctx.beginPath()
+        ctx.moveTo(w * GameSettings.cellDimension, h * dim)
+        ctx.lineTo((w * dim) + dim, h * dim)
+        ctx.strokeStyle = GameSettings.gridLineStyle
+        ctx.lineWidth = GameSettings.gridLineThickness
+        ctx.stroke()
+      }
+    }
+  }
+
+
+
   private drawLargeImageCells(cell: Cell, ctx: CanvasRenderingContext2D): void {
-    if(cell.imageTile) {
-    
-    ctx.drawImage(
-      cell.imageTile.spriteSheet,
-      cell.imageTile.spriteGridPosX * cell.imageTile.multiplier,
-      cell.imageTile.spriteGridPosY * cell.imageTile.multiplier,
-      cell.imageTile.tileWidth * cell.imageTile.multiplier,
-      cell.imageTile.tileHeight * cell.imageTile.multiplier,
-      cell.posX + cell.imageTile.tileOffsetX,
-      cell.posY + cell.imageTile.tileOffsetY,
-      cell.imageTile.tileWidth * (cell.imageTile.sizeAdjustment || cell.imageTile.multiplier),
-      cell.imageTile.tileHeight * (cell.imageTile.sizeAdjustment || cell.imageTile.multiplier)
-    )
+    if (cell.imageTile) {
+
+      ctx.drawImage(
+        cell.imageTile.spriteSheet,
+        cell.imageTile.spriteGridPosX * cell.imageTile.multiplier,
+        cell.imageTile.spriteGridPosY * cell.imageTile.multiplier,
+        cell.imageTile.tileWidth * cell.imageTile.multiplier,
+        cell.imageTile.tileHeight * cell.imageTile.multiplier,
+        cell.posX + cell.imageTile.tileOffsetX,
+        cell.posY + cell.imageTile.tileOffsetY,
+        cell.imageTile.tileWidth * (cell.imageTile.sizeAdjustment || cell.imageTile.multiplier),
+        cell.imageTile.tileHeight * (cell.imageTile.sizeAdjustment || cell.imageTile.multiplier)
+      )
     }
   }
 
@@ -158,14 +213,14 @@ export class CanvasService {
     ctx.imageSmoothingEnabled = false
     ctx.drawImage(
       cell.backgroundTile.spriteSheet,
-      cell.backgroundTile.spriteGridPosX[0] * 32,
-      cell.backgroundTile.spriteGridPosY[0] * 32,
-      32,
-      32,
+      cell.backgroundTile.spriteGridPosX[0] * GameSettings.cellDimension,
+      cell.backgroundTile.spriteGridPosY[0] * GameSettings.cellDimension,
+      GameSettings.cellDimension,
+      GameSettings.cellDimension,
       cell.posX,
       cell.posY,
-      32,
-      32
+      GameSettings.cellDimension,
+      GameSettings.cellDimension
     )
   }
 }

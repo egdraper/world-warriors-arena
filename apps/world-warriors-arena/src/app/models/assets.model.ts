@@ -134,7 +134,7 @@ export abstract class MotionAsset extends Asset {
     this.positionX += nextXMove
     this.positionY += nextYMove
 
-    this.canvasService.adustViewPort(-1 * (nextXMove ), -1 * (nextYMove), false, this)
+    this.canvasService.adustViewPort(-1 * (nextXMove ), -1 * (nextYMove), this, this.grid.width, this.grid.height)
 
     if (this.positionY % (32) === 0 && this.positionX % (32) === 0) {
       this.cell = this.grid.grid[`x${this.positionX / (32)}:y${this.positionY / (32)}`]

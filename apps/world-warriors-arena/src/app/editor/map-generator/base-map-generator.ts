@@ -178,6 +178,24 @@ export class BaseMapGenerator {
     }
   }
 
+  public terrainCleanup(): void {
+    this.gridService.gridDisplay.forEach(row => {
+      row.forEach(cell => {
+        if(cell.growableTileId) {          
+          if((cell.neighbors[1] && !cell.neighbors[1].growableTileId) && (cell.neighbors[3] && !cell.neighbors[3].growableTileId)) {
+            cell.growableTileId = undefined
+            cell.obstacle = false
+          }
+
+          if((cell.neighbors[0] && !cell.neighbors[0].growableTileId) && (cell.neighbors[2] && !cell.neighbors[2].growableTileId)) {
+            cell.growableTileId = undefined
+            cell.obstacle = false
+          }
+        }
+      })
+    })
+  }
+
   private populateCell(cell: Cell, neighborIndex: number, weight: number): void {
     const isPlaced = !!!Math.floor(Math.random() * weight)
     if (!cell) { return }

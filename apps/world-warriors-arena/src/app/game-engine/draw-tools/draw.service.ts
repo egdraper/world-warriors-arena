@@ -270,6 +270,8 @@ export class DrawService {
               }
             }
           }
+
+          this.drawGridLines()
         }
       }
       catch (e) {
@@ -280,7 +282,6 @@ export class DrawService {
 
   // Draws the Background and Foreground as a Single Image. In Game Mode the map is not being drawn a square at a time but as an entire image. 
   public drawLargeImageBackground(canvasTopLeftPosX: number, canvasTopLeftPosY: number): void {
-    console.log(canvasTopLeftPosX)
     this.canvasService.backgroundCTX.imageSmoothingEnabled = false
     this.canvasService.backgroundCTX.drawImage(
       this.canvasService.largeImageBackground,

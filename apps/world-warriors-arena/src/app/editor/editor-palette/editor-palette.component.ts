@@ -82,6 +82,10 @@ export class EditorpaletteComponent implements OnInit {
 
     // CLEANUP - Needs to be moved into somewhere that re-draws
     this.drawService.drawGridLines()
+
+    const centerCell = this.grid.getGridCellByCoordinate(Math.floor(this.canvasService.canvasSize / 2), Math.floor(this.canvasService.canvasSize / 2))
+    this.canvasService.centerPointX = centerCell.posX
+    this.canvasService.centerPointY = centerCell.posY
   }
 
   public imageClick(event: any): void {

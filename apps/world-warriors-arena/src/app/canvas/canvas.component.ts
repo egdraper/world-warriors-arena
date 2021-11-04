@@ -4,6 +4,7 @@ import { AssetsService } from '../game-assets/assets.service';
 import { growableItems, TerrainType } from '../game-assets/tiles.db.ts/tile-assets.db';
 import { GridService } from '../game-engine/grid.service';
 import { Cell } from '../models/cell.model';
+import { GameSettings } from '../models/game-settings';
 import { CanvasService } from './canvas.service';
 
 @Component({
@@ -46,9 +47,6 @@ export class CanvasComponent {
     this.canvasService.canvasSize = window.innerHeight <= 1536 ? window.innerHeight : 1536
     // this.canvasService.canvasSize = 32 * 32
 
-
-    this.canvasService.centerPointX = Math.floor(this.canvasService.canvasSize / 2)
-    this.canvasService.centerPointY = Math.floor(this.canvasService.canvasSize / 2)
     // Background
     this.backgroundContext = this.backgroundCanvas.nativeElement.getContext('2d');
     this.canvasService.backgroundCTX = this.backgroundContext
@@ -151,13 +149,8 @@ export class CanvasComponent {
     if (!selectedCell.occupiedBy && this.assetService.selectedGameComponent) {
       this.assetService.selectedGameComponent.startMovement(this.assetService.selectedGameComponent.cell, selectedCell, this.assetService.gameComponents)
     }
-
     else {
-      // select Asset
-      this.canvasService.resetViewport()
-      const assetXPos = -1 * this.assetService.selectedGameComponent.cell.posX + this.canvasService.centerPointX
-      const assetYPos = -1 * this.assetService.selectedGameComponent.cell.posY + this.canvasService.centerPointY
-      this.canvasService.adustViewPort(assetXPos, assetYPos)
+      this.canvasService.centerOverAsset(this.assetService.selectedGameComponent, this.gridService.width, this.gridService.height)
     }
 
     this.onMouseMove(event)
@@ -171,14 +164,14 @@ export class CanvasComponent {
 
     // Shift Pressed
     if (this.shiftPressed) {
-      this.canvasService.scrollCanvas(clickX, clickY, 32, 160)
+      this.canvasService.scrollCanvas(clickX, clickY, GameSettings.scrollSpeed, GameSettings.scrollSensitivity)
     }
 
     // Control Pressed
     if (event.offsetX < 0 || event.offsetY < 0) { return }
     if (!this.mouseIsDown || !this.controlPressed) { return }
 
-    this.canvasService.scrollCanvas(clickX, clickY)
+    this.canvasService.scrollCanvas(clickX, clickY, GameSettings.scrollSpeed, GameSettings.scrollSensitivity)
 
     if (this.gridService.inverted) { // Rename to this.gridService.removing or something
       this.assetService.addInvertedMapAsset(this.hoveringCell)
