@@ -44,7 +44,7 @@ export class CanvasComponent {
 
   // this needs to be put in a public function so we can pass in grid information 
   public ngAfterViewInit(): void {
-    this.canvasService.canvasSize = window.innerHeight <= 1536 ? window.innerHeight : 1536
+    this.canvasService.canvasSize = window.innerHeight
     // this.canvasService.canvasSize = 32 * 32
 
     // Background
@@ -137,8 +137,8 @@ export class CanvasComponent {
   public onCanvasClick(event: any): void {
     this.mouseIsDown = true
 
-    const clickX = event.offsetX + (-1 * this.canvasService.canvasViewPortOffsetX)
-    const clickY = event.offsetY + (-1 * this.canvasService.canvasViewPortOffsetY)
+    const clickX = event.offsetX + (-1 * this.canvasService.canvasViewPortOffsetX * this.canvasService.scale)
+    const clickY = event.offsetY + (-1 * this.canvasService.canvasViewPortOffsetY * this.canvasService.scale)
 
     const selectedCell = this.gridService.getGridCellByCoordinate(clickX, clickY)
 
@@ -157,8 +157,8 @@ export class CanvasComponent {
   }
 
   public onMouseMove(event: any): void {
-    const clickX = event.offsetX + (-1 * this.canvasService.canvasViewPortOffsetX)
-    const clickY = event.offsetY + (-1 * this.canvasService.canvasViewPortOffsetY)
+    const clickX = event.offsetX + (-1 * this.canvasService.canvasViewPortOffsetX * this.canvasService.scale)
+    const clickY = event.offsetY + (-1 * this.canvasService.canvasViewPortOffsetY * this.canvasService.scale)
 
     this.hoveringCell = this.gridService.getGridCellByCoordinate(clickX, clickY)
 

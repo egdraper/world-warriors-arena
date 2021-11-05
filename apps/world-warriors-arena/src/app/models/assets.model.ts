@@ -7,10 +7,11 @@ import { ClickAnimation } from '../game-assets/click-animation';
 import { SelectionIndicator } from '../game-assets/selection-indicator';
 import { GridService } from '../game-engine/grid.service';
 import { Cell } from './cell.model';
+import { GameSettings } from './game-settings';
 
 export class GameComponent {
   public id: string
-  public cell: Cell = null  
+  public cell: Cell = null
 
   constructor() {
     this.id = uuidv4()
@@ -21,8 +22,8 @@ export class AnimationComponent extends GameComponent {
   public animationFrame: number[] | number = 10
   public moving: boolean
   public assetDirty: boolean
-  public update(): void {}
-  public move(): void {}  
+  public update(): void { }
+  public move(): void { }
 }
 
 export class Asset extends AnimationComponent {
@@ -30,9 +31,9 @@ export class Asset extends AnimationComponent {
   public positionX = 0
   public positionY = 0
   public frameCounter = 0
-  
+
   public setDirection(keyEvent: KeyboardEvent): void { return }
-  
+
   public update() {
     if (this.frameCounter < 3) {
       this.frameCounter++
@@ -50,10 +51,10 @@ export abstract class MotionAsset extends Asset {
   public selectionIndicator: SelectionIndicator
   public destinationIndicator: ClickAnimation
   public assetDirty = false
-  
+
   private redirection: { start: Cell, end: Cell, charactersOnGrid: MotionAsset[] }
   private nextCell: Cell
-  
+
   public set spriteDirection(value: string) {
     if (value === "down") { this.frameYPosition = 0 }
     if (value === "up") { this.frameYPosition = 108 }
@@ -67,7 +68,7 @@ export abstract class MotionAsset extends Asset {
     public engineService: Engine,
     public drawService: DrawService,
     public canvasService: CanvasService) {
-      super()
+    super()
   }
 
   public addSelectionIndicator(): void {
@@ -95,8 +96,8 @@ export abstract class MotionAsset extends Asset {
   public startMovement(startCell: Cell, endCell: Cell, charactersOnGrid: MotionAsset[]): void {
     this.destinationIndicator = new ClickAnimation(350, this.engineService, `../../../assets/images/DestinationX.png`, endCell)
 
-    if(this.moving) {
-      this.redirection = {start: undefined, end: endCell, charactersOnGrid: charactersOnGrid } 
+    if (this.moving) {
+      this.redirection = { start: undefined, end: endCell, charactersOnGrid: charactersOnGrid }
       return
     } else {
       this.redirection = undefined
@@ -117,7 +118,7 @@ export abstract class MotionAsset extends Asset {
     this.moving = false
     this.animationFrame = 16
     this.destinationIndicator.forceStop()
-    this.destinationIndicator=undefined
+    this.destinationIndicator = undefined
   }
 
 
@@ -134,7 +135,9 @@ export abstract class MotionAsset extends Asset {
     this.positionX += nextXMove
     this.positionY += nextYMove
 
-    this.canvasService.adustViewPort(-1 * (nextXMove ), -1 * (nextYMove), this, this.grid.width, this.grid.height)
+    if (!GameSettings.gm || GameSettings.trackMovement) {
+      this.canvasService.adustViewPort(-1 * (nextXMove), -1 * (nextYMove), this, this.grid.width, this.grid.height)
+    }
 
     if (this.positionY % (32) === 0 && this.positionX % (32) === 0) {
       this.cell = this.grid.grid[`x${this.positionX / (32)}:y${this.positionY / (32)}`]
@@ -143,24 +146,24 @@ export abstract class MotionAsset extends Asset {
         ? this.currentPath.pop()
         : null
 
-        
-        if(this.redirection) {
-          this.cell.occupiedBy = undefined
-          this.endMovement()
-          this.startMovement(this.cell, this.redirection.end, this.redirection.charactersOnGrid)
-        }
 
-        // TODO: Re-calculate path if something has moved into it
-        
-        if (!this.nextCell) {  
-          this.drawService.clearFogLineOfSight(this.cell)  
-          this.endMovement()
-        } else {     
-        
+      if (this.redirection) {
+        this.cell.occupiedBy = undefined
+        this.endMovement()
+        this.startMovement(this.cell, this.redirection.end, this.redirection.charactersOnGrid)
+      }
+
+      // TODO: Re-calculate path if something has moved into it
+
+      if (!this.nextCell) {
+        this.drawService.clearFogLineOfSight(this.cell)
+        this.endMovement()
+      } else {
+
         // this.grid.obstacles.forEach(cellId => {
         //   if(this.grid.grid[cellId].obstacle) { this.drawService.clearFogLineOfSight(this.nextCell, this.grid.grid[cellId]) }
         // })
-        this.drawService.clearFogLineOfSight(this.nextCell) 
+        this.drawService.clearFogLineOfSight(this.nextCell)
         this.cell.occupiedBy = undefined
         this.nextCell.occupiedBy = this
         this.setSpriteDirection()

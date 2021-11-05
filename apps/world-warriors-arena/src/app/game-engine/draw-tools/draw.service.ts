@@ -245,9 +245,9 @@ export class DrawService {
       const cellTopRight = this.gridService.getGridCellByCoordinate(topRightPosX, topLeftPosY)
       const cellBottomLeft = this.gridService.getGridCellByCoordinate(topLeftPosX, bottomPosY)
 
-      this.canvasService.foregroundCTX.clearRect(0, 0, this.gridService.width * 32 * this.canvasService.scale, this.gridService.height * 32 * this.canvasService.scale);
-      this.canvasService.backgroundCTX.clearRect(0, 0, this.gridService.width * 32 * this.canvasService.scale, this.gridService.height * 32 * this.canvasService.scale);
-      this.canvasService.blackoutCTX.clearRect(0, 0, this.gridService.width * 32 * this.canvasService.scale, this.gridService.height * 32 * this.canvasService.scale);
+      this.canvasService.foregroundCTX.clearRect(0, 0, this.gridService.width * 32, this.gridService.height * 32);
+      this.canvasService.backgroundCTX.clearRect(0, 0, this.gridService.width * 32, this.gridService.height * 32);
+      this.canvasService.blackoutCTX.clearRect(0, 0, this.gridService.width * 32, this.gridService.height * 32);
 
       try {
         if (this.canvasService.largeImageBackground) {
@@ -271,7 +271,6 @@ export class DrawService {
             }
           }
 
-          this.drawGridLines()
         }
       }
       catch (e) {
@@ -287,12 +286,12 @@ export class DrawService {
       this.canvasService.largeImageBackground,
       canvasTopLeftPosX,
       canvasTopLeftPosY,
-      this.canvasService.canvasSize,
-      this.canvasService.canvasSize,
+      this.canvasService.canvasSize * (1 / this.canvasService.scale),
+      this.canvasService.canvasSize * (1 / this.canvasService.scale),
       canvasTopLeftPosX,
       canvasTopLeftPosY,
-      this.canvasService.canvasSize,
-      this.canvasService.canvasSize
+      this.canvasService.canvasSize * (1 / this.canvasService.scale),
+      this.canvasService.canvasSize * (1 / this.canvasService.scale)
     )
 
     this.canvasService.foregroundCTX.imageSmoothingEnabled = false
@@ -300,12 +299,12 @@ export class DrawService {
       this.canvasService.largeImageForeground,
       canvasTopLeftPosX,
       canvasTopLeftPosY,
-      this.canvasService.canvasSize,
-      this.canvasService.canvasSize,
+      this.canvasService.canvasSize * (1 / this.canvasService.scale),
+      this.canvasService.canvasSize * (1 / this.canvasService.scale),
       canvasTopLeftPosX,
       canvasTopLeftPosY,
-      this.canvasService.canvasSize,
-      this.canvasService.canvasSize
+      this.canvasService.canvasSize * (1 / this.canvasService.scale),
+      this.canvasService.canvasSize * (1 / this.canvasService.scale)
     )
   }
 

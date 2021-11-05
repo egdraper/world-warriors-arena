@@ -26,7 +26,7 @@ export class EditorpaletteComponent implements OnInit {
     private shortestPath: ShortestPath,
     private grid: GridService,
     private drawService: DrawService
-    ) { }
+  ) { }
 
   ngOnInit(): void {
     this.imageArray = this.editorService.findObjectCollection("trees")
@@ -50,17 +50,32 @@ export class EditorpaletteComponent implements OnInit {
   }
 
   public changeScale(scale: any): void {
+    this.canvasService.resetViewport()
     this.canvasService.scale = Number(scale.value)
     this.canvasService.setupCanvases(this.grid.width, this.grid.height)
     this.editorService.backgroundDirty  = true
     this.assetService.obstaclesDirty = true
+
+    // if (this.grid.gridLoaded) {
+    //   this.canvasService.largeImageBackground = undefined
+    //   this.canvasService.largeImageForeground = undefined
+
+
+    //   setTimeout(() => { 
+    //   this.canvasService.setupCanvases(this.grid.width, this.grid.height)
+    //   // this.editorService.backgroundDirty = true
+    //   // this.assetService.obstaclesDirty = true
+
+    //     this.canvasService.createLargeImage(this.grid.width * 32, this.grid.height * 32, this.grid)
+    //   })
+    // }
   }
 
   public invertedClicked(): void {
     this.grid.inverted = !this.grid.inverted
   }
 
-    
+
   public generateRandomMap(): void {
     const mapGenerator = new RandomMapGenerator(this.editorService, this.shortestPath, this.grid)
 
@@ -75,7 +90,7 @@ export class EditorpaletteComponent implements OnInit {
 
     mapGenerator.generateMap(mapDetails)
     this.canvasService.setupCanvases(mapDetails.width, mapDetails.height)
-   
+
     // CLEANUP - Rethink the "Dirty" locations, if they should be in drawing service or where they are
     this.assetService.obstaclesDirty = true
     this.editorService.backgroundDirty = true
@@ -84,8 +99,8 @@ export class EditorpaletteComponent implements OnInit {
     this.drawService.drawGridLines()
 
     const centerCell = this.grid.getGridCellByCoordinate(Math.floor(this.canvasService.canvasSize / 2), Math.floor(this.canvasService.canvasSize / 2))
-    this.canvasService.centerPointX = centerCell.posX
-    this.canvasService.centerPointY = centerCell.posY
+    this.canvasService.centerPointX = centerCell.posX * this.canvasService.scale
+    this.canvasService.centerPointY = centerCell.posY * this.canvasService.scale
   }
 
   public imageClick(event: any): void {

@@ -14,14 +14,7 @@ export class CanvasService {
 
   public largeImageBackground: HTMLImageElement
   public largeImageForeground: HTMLImageElement
-  public _scale = 1
-  public get scale() {
-    return this._scale
-  }
-
-  public set scale(value: number) {
-    this._scale = value
-  }
+  public scale = 1
 
   public overlayCanvas: ElementRef<HTMLCanvasElement>;
   public overlayCTX: CanvasRenderingContext2D;
@@ -52,14 +45,18 @@ export class CanvasService {
       if (asset.positionX >= (gridWidth * 32) - this.centerPointX - 32) { xPos = 0 }
       if (asset.positionY >= (gridHeight * 32) - this.centerPointY - 32) { yPos = 0 }
     }
-    this.canvasViewPortOffsetX += xPos
-    this.canvasViewPortOffsetY += yPos
 
-    this.fogCTX.translate(xPos, yPos)
-    this.blackoutCTX.translate(xPos, yPos)
-    this.backgroundCTX.translate(xPos, yPos)
-    this.overlayCTX.translate(xPos, yPos)
-    this.foregroundCTX.translate(xPos, yPos)
+    const xPosAdjust = xPos
+    const yPosAdjust = yPos
+
+    this.canvasViewPortOffsetX += xPosAdjust
+    this.canvasViewPortOffsetY += yPosAdjust
+
+    this.fogCTX.translate(xPosAdjust, yPosAdjust)
+    this.blackoutCTX.translate(xPosAdjust, yPosAdjust)
+    this.backgroundCTX.translate(xPosAdjust, yPosAdjust)
+    this.overlayCTX.translate(xPosAdjust, yPosAdjust)
+    this.foregroundCTX.translate(xPosAdjust, yPosAdjust)
   }
 
   public resetViewport(): void {
@@ -95,7 +92,6 @@ export class CanvasService {
   public createLargeImage(gridWidth: number, gridHeight: number, gridService: GridService) {
     this.drawingCTX.canvas.height = gridWidth
     this.drawingCTX.canvas.width = gridHeight
-    this.drawingCTX.scale(this.scale, this.scale)
 
     this.drawLargeImageObstacles(this.drawingCTX, gridService)
 
@@ -111,7 +107,7 @@ export class CanvasService {
 
   public centerOverAsset(asset: Asset, gridWidth: number, gridHeight: number): void {
 
-    if (!asset) { return }
+    if (!asset || GameSettings.gm || !GameSettings.trackMovement) { return }
 
     // select Asset
     this.resetViewport()
@@ -162,7 +158,6 @@ export class CanvasService {
         this.drawLargeImageCells(cell, ctx)
       })
     })
-
   }
 
   // Draws Grid Lines  
