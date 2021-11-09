@@ -8,6 +8,7 @@ import { EditorService } from './editor.service';
 import { AssetsService } from '../../game-assets/assets.service';
 import { CanvasService } from '../../canvas/canvas.service';
 import { DrawService } from '../../game-engine/draw-tools/draw.service';
+import { GameSettings } from '../../models/game-settings';
 
 @Component({
   selector: 'world-warriors-arena-editor-palette',
@@ -18,6 +19,7 @@ export class EditorpaletteComponent implements OnInit {
   public images: any[] = []
   public imageArray: any[] = []
   public currentImageSrc: string = ""
+  public lockState = "Locked"
 
   constructor(
     public assetService: AssetsService,
@@ -42,6 +44,20 @@ export class EditorpaletteComponent implements OnInit {
 
   public tileClick(tile: SpriteTile): void {
     this.editorService.selectedAsset = tile
+  }
+
+  public changeLockState(): void {
+    this.lockState = this.lockState === "Locked" ? "UnLocked" : "Locked"
+
+    if(this.lockState === "Locked") {
+      if(this.assetService.selectedGameComponent) {
+        this.canvasService.centerOverAsset(this.assetService.selectedGameComponent, this.grid.width, this.grid.height)
+      }
+      GameSettings.gm = false
+    } else {
+      GameSettings.gm = true
+    }
+
   }
 
   public baseClicked(): void {

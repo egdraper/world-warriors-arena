@@ -70,26 +70,11 @@ export class CanvasService {
 
 
   public adustViewPort(xPos: number, yPos: number, asset?: Asset, gridWidth?: number, gridHeight?: number) {
-    // if(xPos > 0 && (this.canvasViewPortOffsetX < 0 && this.canvasViewPortOffsetX > -32 * this.scale)) {
-    //   xPos += this.canvasViewPortOffsetX
-    // } else if (xPos > 0 && this.canvasViewPortOffsetX >= 0) {
-    //   xPos = 0 
-    // }
-
-    // if(yPos > 0 && (this.canvasViewPortOffsetY < 0 && this.canvasViewPortOffsetY > -32 * this.scale)) {
-    //   yPos += this.canvasViewPortOffsetY
-    // } else if (yPos > 0 && this.canvasViewPortOffsetY >= 0) {
-    //   yPos = 0 
-    // }
-
-    // //////
     if (yPos > 0 && this.canvasViewPortOffsetY >= 0) {
         yPos = 0 
     } if(xPos > 0 && this.canvasViewPortOffsetX >= 0) {
       xPos = 0 
     }
-
-
     if(xPos < 0 && this.canvasViewPortOffsetX - this.canvasSize <= (-1 * gridWidth * GameSettings.cellDimension) + 64) {
       xPos = 0 
     }
@@ -97,24 +82,8 @@ export class CanvasService {
       yPos = 0 
     }
 
-    //////
-
     let xPosAdjust = 0
     let yPosAdjust = 0
-
-    // if((gridWidth * 32 * this.scale) === (-1 * (this.canvasViewPortOffsetX - this.canvasSize - (32 * (1/this.scale))))) {
-    //   xPosAdjust = 0
-    //   xPos = 0
-    // } else if((gridWidth * 32 * this.scale) < (-1 * (this.canvasViewPortOffsetX - this.canvasSize - (32 * (1/this.scale)) + xPos))) {
-    //   xPos = -1 * ((gridWidth * 32 * this.scale) - (-1 * (this.canvasViewPortOffsetX - this.canvasSize - (32 * (1/this.scale)) + xPos)))
-    // }
-
-    // if((gridHeight * 32 * this.scale) === (-1 * (this.canvasViewPortOffsetY - this.canvasSize - (32 * (1/this.scale))))) {
-    //   yPosAdjust = 0
-    //   yPos = 0
-    // } else if((gridHeight * 32 * this.scale) < (-1 * (this.canvasViewPortOffsetY - this.canvasSize - (32 * (1/this.scale)) + yPos))) {
-    //   yPos = -1 * ((gridHeight * 32 * this.scale) - (-1 * (this.canvasViewPortOffsetY - this.canvasSize - (32 * (1/this.scale)) + yPos)))
-    // }
     
     xPosAdjust = xPos * (1 / this.scale)
     yPosAdjust = yPos * (1 / this.scale)

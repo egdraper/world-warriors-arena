@@ -2,6 +2,7 @@
 <button (click)="invertedClicked()">Invert</button>
 <button (click)="baseClicked()">Layer</button>
 <button (click)="canvasService.resetViewport()">Reset View Port</button>
+<button (click)="changeLockState()" [class.color]="lockState === 'Locked'? 'red' : 'blue'">{{lockState}}</button>
 
 <select (change)="changeScale($event.target)">
   <option>.5</option>

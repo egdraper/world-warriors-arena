@@ -233,38 +233,6 @@ export class DrawService {
       let topRightPosX = topLeftPosX + this.canvasService.canvasSize + (32 * (1/this.canvasService.scale))
       let bottomPosY = topLeftPosY + this.canvasService.canvasSize + (32 * (1/this.canvasService.scale)) 
 
-      if (topLeftPosX === undefined) {
-        debugger
-      }
-      if (topLeftPosY === undefined) {
-        debugger
-      }
-      if (topRightPosX === undefined) {
-        debugger
-      }
-      if (!bottomPosY === undefined) {
-        debugger
-      }
-
-      // if(this.gridService.height * (32 * this.canvasService.scale) <= bottomPosY) {
-      //   bottomPosY = this.gridService.height *  (32 * this.canvasService.scale) - 1
-      // }
-
-      // if(topLeftPosY < 0) {
-      //   topLeftPosY = 0
-      //   this.canvasService.canvasViewPortOffsetY += topLeftPosY
-      // }
- 
-      // if(this.gridService.width * (32 * this.canvasService.scale) <= topRightPosX) {
-      //   topRightPosX = this.gridService.width *  (32 * this.canvasService.scale) - 1
-      // }
-
-      // if(topLeftPosX < 0) {
-      //   topLeftPosX = 0
-      //   this.canvasService.canvasViewPortOffsetX += topLeftPosX
-      // }
- 
-
       const cellTopLeft = this.gridService.getGridCellByCoordinate(topLeftPosX, topLeftPosY)
       let cellTopRight = this.gridService.getGridCellByCoordinate(topRightPosX, topLeftPosY)
       let cellBottomLeft = this.gridService.getGridCellByCoordinate(topLeftPosX, bottomPosY)
