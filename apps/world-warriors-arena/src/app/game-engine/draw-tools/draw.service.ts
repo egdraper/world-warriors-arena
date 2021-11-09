@@ -1,4 +1,3 @@
-import { CONTEXT_NAME } from "@angular/compiler/src/render3/view/util";
 import { Injectable } from "@angular/core";
 import { CanvasService } from "../../canvas/canvas.service";
 import { EditorService } from "../../editor/editor-palette/editor.service";
@@ -92,15 +91,15 @@ export class DrawService {
 
     }
 
-    if (this.canvasService.blackoutCTX) {
-      this.canvasService.blackoutCTX.fillStyle = 'black';
-      this.canvasService.blackoutCTX.fillRect(
-        this.gridService.width * 32 - 32,
-        0,
-        64,
-        this.gridService.height * 32,
-      )
-    }
+    // if (this.canvasService.blackoutCTX) {
+    //   this.canvasService.blackoutCTX.fillStyle = 'black';
+    //   this.canvasService.blackoutCTX.fillRect(
+    //     this.gridService.width * 32 - 32,
+    //     0,
+    //     0,
+    //     this.gridService.height * 32,
+    //   )
+    // }
   }
 
   // Fog Of War Complete Black Out
@@ -229,21 +228,53 @@ export class DrawService {
     if (this.canvasService.foregroundCTX) {
 
       // Ensure the viewport does not kick back a negative number (cells don't work with negatives)
-      const topLeftPosX = -1 * this.canvasService.canvasViewPortOffsetX < 0 ? 1 : -1 * this.canvasService.canvasViewPortOffsetX
-      const topLeftPosY = -1 * this.canvasService.canvasViewPortOffsetY < 0 ? 1 : -1 * this.canvasService.canvasViewPortOffsetY
+      let topLeftPosX = -1 * this.canvasService.canvasViewPortOffsetX
+      let topLeftPosY = -1 * this.canvasService.canvasViewPortOffsetY
+      let topRightPosX = topLeftPosX + this.canvasService.canvasSize + (32 * (1/this.canvasService.scale))
+      let bottomPosY = topLeftPosY + this.canvasService.canvasSize + (32 * (1/this.canvasService.scale)) 
 
-      const topRightPosX =
-        -1 * this.canvasService.canvasViewPortOffsetX * this.canvasService.scale + this.canvasService.canvasSize > this.gridService.width * (32 * this.canvasService.scale)
-          ? this.gridService.width * (32 * this.canvasService.scale)
-          : -1 * this.canvasService.canvasViewPortOffsetX * this.canvasService.scale + this.canvasService.canvasSize
+      if (topLeftPosX === undefined) {
+        debugger
+      }
+      if (topLeftPosY === undefined) {
+        debugger
+      }
+      if (topRightPosX === undefined) {
+        debugger
+      }
+      if (!bottomPosY === undefined) {
+        debugger
+      }
 
-      const bottomPosY = -1 * this.canvasService.canvasViewPortOffsetY * this.canvasService.scale + this.canvasService.canvasSize > this.gridService.height * (32 * this.canvasService.scale)
-        ? this.gridService.height * (32 * this.canvasService.scale)
-        : -1 * this.canvasService.canvasViewPortOffsetY * this.canvasService.scale + this.canvasService.canvasSize
+      // if(this.gridService.height * (32 * this.canvasService.scale) <= bottomPosY) {
+      //   bottomPosY = this.gridService.height *  (32 * this.canvasService.scale) - 1
+      // }
+
+      // if(topLeftPosY < 0) {
+      //   topLeftPosY = 0
+      //   this.canvasService.canvasViewPortOffsetY += topLeftPosY
+      // }
+ 
+      // if(this.gridService.width * (32 * this.canvasService.scale) <= topRightPosX) {
+      //   topRightPosX = this.gridService.width *  (32 * this.canvasService.scale) - 1
+      // }
+
+      // if(topLeftPosX < 0) {
+      //   topLeftPosX = 0
+      //   this.canvasService.canvasViewPortOffsetX += topLeftPosX
+      // }
+ 
 
       const cellTopLeft = this.gridService.getGridCellByCoordinate(topLeftPosX, topLeftPosY)
-      const cellTopRight = this.gridService.getGridCellByCoordinate(topRightPosX, topLeftPosY)
-      const cellBottomLeft = this.gridService.getGridCellByCoordinate(topLeftPosX, bottomPosY)
+      let cellTopRight = this.gridService.getGridCellByCoordinate(topRightPosX, topLeftPosY)
+      let cellBottomLeft = this.gridService.getGridCellByCoordinate(topLeftPosX, bottomPosY)
+
+      if(!cellBottomLeft) {
+        cellBottomLeft = this.gridService.grid[`x0:y${this.gridService.height - 1}`]
+      }
+      if(!cellTopRight) {
+        cellTopRight = this.gridService.grid[`x${this.gridService.width - 1}:y0`]
+      }
 
       this.canvasService.foregroundCTX.clearRect(0, 0, this.gridService.width * 32, this.gridService.height * 32);
       this.canvasService.backgroundCTX.clearRect(0, 0, this.gridService.width * 32, this.gridService.height * 32);
@@ -276,6 +307,7 @@ export class DrawService {
       catch (e) {
         debugger
       }
+      this.drawGridLines()
     }
   }
 

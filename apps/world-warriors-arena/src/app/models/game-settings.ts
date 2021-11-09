@@ -5,7 +5,7 @@ export class GameSettings {
   public static cellDimension: number = 32
   public static scrollSpeed: number = 8
   public static scrollSensitivity: number = 96
-  public static gm: boolean = true
+  public static gm: boolean = false
   public static trackMovement: boolean = false
 }
 

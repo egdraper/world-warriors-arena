@@ -2,6 +2,7 @@ import { Component, ElementRef, EventEmitter, HostListener, Output, ViewChild } 
 import { EditorService } from '../editor/editor-palette/editor.service';
 import { AssetsService } from '../game-assets/assets.service';
 import { growableItems, TerrainType } from '../game-assets/tiles.db.ts/tile-assets.db';
+import { Engine } from '../game-engine/engine';
 import { GridService } from '../game-engine/grid.service';
 import { Cell } from '../models/cell.model';
 import { GameSettings } from '../models/game-settings';
@@ -33,6 +34,10 @@ export class CanvasComponent {
   private mouseIsDown = false
   private controlPressed = false
   private shiftPressed = false
+  private rightArrowDown = false
+  private leftArrowDown = false
+  private upArrowDown = false
+  private downArrowDown = false
   canvasSize: number;
 
   constructor(
@@ -40,11 +45,34 @@ export class CanvasComponent {
     private gridService: GridService,
     private assetService: AssetsService,
     private editorService: EditorService,
-  ) { }
+    private engineService: Engine
+  ) {
+
+    this.engineService.onFire.subscribe((frame) => {
+      if(this.rightArrowDown) {
+        this.canvasService.scrollViewPort(1, 0, this.gridService)
+      }
+      if(this.leftArrowDown) {
+        this.canvasService.scrollViewPort(-1, 0, this.gridService)
+      }
+      if(this.upArrowDown) {
+        this.canvasService.scrollViewPort(0, -1, this.gridService)
+      }
+      if(this.downArrowDown) {
+        this.canvasService.scrollViewPort(0, 1, this.gridService)
+      }
+    })
+   }
 
   // this needs to be put in a public function so we can pass in grid information 
   public ngAfterViewInit(): void {
-    this.canvasService.canvasSize = window.innerHeight
+    let perfectHeight = window.innerHeight
+    while (perfectHeight % (this.canvasService.scale * 32) !== 0) {
+      perfectHeight--
+    }
+
+    this.canvasService.maxCellCountX = perfectHeight / (32 * this.canvasService.scale)
+
     // this.canvasService.canvasSize = 32 * 32
 
     // Background
@@ -95,17 +123,16 @@ export class CanvasComponent {
     }
 
     if (event.key === "ArrowRight") {
-      this.canvasService.adustViewPort(-32, 0)
+      this.rightArrowDown = true
     }
     if (event.key === "ArrowLeft") {
-      // console.log("AAA")
-      this.canvasService.adustViewPort(32, 0)
+      this.leftArrowDown = true
     }
     if (event.key === "ArrowUp") {
-      this.canvasService.adustViewPort(0, 32)
+      this.upArrowDown = true
     }
     if (event.key === "ArrowDown") {
-      this.canvasService.adustViewPort(0, -32)
+      this.downArrowDown = true
     }
   }
 
@@ -114,6 +141,19 @@ export class CanvasComponent {
     if (event.key === "Control") {
       this.controlPressed = false
       this.editorService.hoveringCell = undefined
+    }
+
+    if (event.key === "ArrowRight") {
+      this.rightArrowDown = false
+    }
+    if (event.key === "ArrowLeft") {
+      this.leftArrowDown = false
+    }
+    if (event.key === "ArrowUp") {
+      this.upArrowDown = false
+    }
+    if (event.key === "ArrowDown") {
+      this.downArrowDown = false
     }
 
     if (event.key === "Shift") {

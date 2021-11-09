@@ -1,8 +1,8 @@
 import { ElementRef, Injectable } from "@angular/core";
 import { GridService } from "../game-engine/grid.service";
 import { Asset } from "../models/assets.model";
-import { Cell, GRID_CELL_MULTIPLIER } from "../models/cell.model";
-import { GameSettings, MapSettings } from "../models/game-settings";
+import { Cell } from "../models/cell.model";
+import { GameSettings } from "../models/game-settings";
 
 @Injectable()
 export class CanvasService {
@@ -11,6 +11,12 @@ export class CanvasService {
   public canvasViewPortOffsetY = 0
   public centerPointX = 0
   public centerPointY = 0
+  public topLeftVisibleCell: Cell
+  public topRightVisibleCell: Cell
+  public bottomLeftVisibleCell: Cell
+  public maxCellCountX = 0
+  public cellOffsetX = 0
+  public cellOffsetY = 0
 
   public largeImageBackground: HTMLImageElement
   public largeImageForeground: HTMLImageElement
@@ -34,23 +40,87 @@ export class CanvasService {
   public drawingCanvas: ElementRef<HTMLCanvasElement>;
   public drawingCTX: CanvasRenderingContext2D;
 
-  public adustViewPort(xPos: number, yPos: number, asset?: Asset, gridWidth?: number, gridHeight?: number) {
-    if (asset && gridWidth && gridHeight) {
-      if (!gridHeight || !gridHeight) {
-        throw new Error("Passing in asset requires gridWidth and grid height")
-      }
-      
-      if (asset.positionX <= this.centerPointX + 32) { xPos = 0 }
-      if (asset.positionY <= this.centerPointY + 32) { yPos = 0 }
-      if (asset.positionX >= (gridWidth * 32) - this.centerPointX - 32) { xPos = 0 }
-      if (asset.positionY >= (gridHeight * 32) - this.centerPointY - 32) { yPos = 0 }
+  public scrollViewPort(x: number, y: number, grid: GridService): void {
+    if(x > 0 && this.cellOffsetX + this.maxCellCountX < grid.width - 1) {
+      this.cellOffsetX += (1/this.scale)
+      this.adustViewPort(-32,0)
+    }
+    if(x < 0 && this.cellOffsetX > 0) {
+      this.cellOffsetX -= (1/this.scale)
+      this.adustViewPort(32,0)
+    }
+    if(y > 0 && this.cellOffsetY + this.maxCellCountX < grid.height - 1) {
+      this.cellOffsetY += (1/this.scale)
+      this.adustViewPort(0,-32)
+    }
+    if(y < 0 && this.cellOffsetY > 0) {
+      this.cellOffsetY -= (1/this.scale)
+      this.adustViewPort(0,32)
     }
 
-    const xPosAdjust = xPos
-    const yPosAdjust = yPos
 
-    this.canvasViewPortOffsetX += xPosAdjust
-    this.canvasViewPortOffsetY += yPosAdjust
+      // Ensure the viewport does not kick back a negative number (cells don't work with negatives)
+      // let topLeftPosX = -1 * this.canvasService.canvasViewPortOffsetX
+      // let topLeftPosY = -1 * this.canvasService.canvasViewPortOffsetY
+      // let topRightPosX = topLeftPosX + this.canvasService.canvasSize + (32 * (1/this.canvasService.scale))
+      // let bottomPosY = topLeftPosY + this.canvasService.canvasSize + (32 * (1/this.canvasService.scale)) 
+
+  }
+
+
+
+  public adustViewPort(xPos: number, yPos: number, asset?: Asset, gridWidth?: number, gridHeight?: number) {
+    // if(xPos > 0 && (this.canvasViewPortOffsetX < 0 && this.canvasViewPortOffsetX > -32 * this.scale)) {
+    //   xPos += this.canvasViewPortOffsetX
+    // } else if (xPos > 0 && this.canvasViewPortOffsetX >= 0) {
+    //   xPos = 0 
+    // }
+
+    // if(yPos > 0 && (this.canvasViewPortOffsetY < 0 && this.canvasViewPortOffsetY > -32 * this.scale)) {
+    //   yPos += this.canvasViewPortOffsetY
+    // } else if (yPos > 0 && this.canvasViewPortOffsetY >= 0) {
+    //   yPos = 0 
+    // }
+
+    // //////
+    if (yPos > 0 && this.canvasViewPortOffsetY >= 0) {
+        yPos = 0 
+    } if(xPos > 0 && this.canvasViewPortOffsetX >= 0) {
+      xPos = 0 
+    }
+
+
+    if(xPos < 0 && this.canvasViewPortOffsetX - this.canvasSize <= (-1 * gridWidth * GameSettings.cellDimension) + 64) {
+      xPos = 0 
+    }
+    if(yPos < 0 && this.canvasViewPortOffsetY - this.canvasSize <= (-1 * gridHeight * GameSettings.cellDimension) + 64) {
+      yPos = 0 
+    }
+
+    //////
+
+    let xPosAdjust = 0
+    let yPosAdjust = 0
+
+    // if((gridWidth * 32 * this.scale) === (-1 * (this.canvasViewPortOffsetX - this.canvasSize - (32 * (1/this.scale))))) {
+    //   xPosAdjust = 0
+    //   xPos = 0
+    // } else if((gridWidth * 32 * this.scale) < (-1 * (this.canvasViewPortOffsetX - this.canvasSize - (32 * (1/this.scale)) + xPos))) {
+    //   xPos = -1 * ((gridWidth * 32 * this.scale) - (-1 * (this.canvasViewPortOffsetX - this.canvasSize - (32 * (1/this.scale)) + xPos)))
+    // }
+
+    // if((gridHeight * 32 * this.scale) === (-1 * (this.canvasViewPortOffsetY - this.canvasSize - (32 * (1/this.scale))))) {
+    //   yPosAdjust = 0
+    //   yPos = 0
+    // } else if((gridHeight * 32 * this.scale) < (-1 * (this.canvasViewPortOffsetY - this.canvasSize - (32 * (1/this.scale)) + yPos))) {
+    //   yPos = -1 * ((gridHeight * 32 * this.scale) - (-1 * (this.canvasViewPortOffsetY - this.canvasSize - (32 * (1/this.scale)) + yPos)))
+    // }
+    
+    xPosAdjust = xPos * (1 / this.scale)
+    yPosAdjust = yPos * (1 / this.scale)
+   
+    this.canvasViewPortOffsetX += xPos
+    this.canvasViewPortOffsetY += yPos   
 
     this.fogCTX.translate(xPosAdjust, yPosAdjust)
     this.blackoutCTX.translate(xPosAdjust, yPosAdjust)
@@ -66,8 +136,6 @@ export class CanvasService {
   }
 
   public setupCanvases(gridWidth: number, gridHeight: number): void {
-    this.backgroundCTX.canvas.height = gridHeight * GRID_CELL_MULTIPLIER
-
     this.backgroundCTX.canvas.height = this.canvasSize
     this.backgroundCTX.canvas.width = this.canvasSize
     this.backgroundCTX.scale(this.scale, this.scale)

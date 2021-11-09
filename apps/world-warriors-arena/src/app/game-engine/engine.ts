@@ -1,5 +1,5 @@
 import { Injectable } from "@angular/core";
-import { interval } from "rxjs";
+import { interval, Subject } from "rxjs";
 
 import { removeFromArray } from "../common/functions";
 import { ShortLivedAnimation } from "../game-assets/click-animation";
@@ -8,6 +8,7 @@ import { DrawService } from "./draw-tools/draw.service";
 
 @Injectable()
 export class Engine {
+  public onFire = new Subject<number>()
   public assets: AnimationComponent[] = []
   public shortLivedAnimations: ShortLivedAnimation[] = []
   public frame: number = 1
@@ -68,7 +69,8 @@ export class Engine {
     this.drawService.drawAnimatedAssets()
     this.drawService.drawObstacles()
     this.drawService.drawEditableObject()
-    this.drawService.drawBlackOutEdges()        
+    this.drawService.drawBlackOutEdges()    
+    this.onFire.next(this.frame)    
 
     requestAnimationFrame(this.startEngine.bind(this)); 
 

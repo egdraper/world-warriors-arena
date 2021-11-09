@@ -50,11 +50,35 @@ export class EditorpaletteComponent implements OnInit {
   }
 
   public changeScale(scale: any): void {
+    const tempViewPortX = this.canvasService.canvasViewPortOffsetX
+    const tempViewPortY = this.canvasService.canvasViewPortOffsetY
+
+
     this.canvasService.resetViewport()
     this.canvasService.scale = Number(scale.value)
+    // this.grid.gridDisplay.forEach(row => {
+    //   row.forEach(cell => {
+    //     cell.posX = cell.x * (32 * this.canvasService.scale)
+    //     cell.posY = cell.y * (32 * this.canvasService.scale)
+    //     if(cell.imageTile) {
+    //       cell.imageTile.tileOffsetX = cell.imageTile.tileOffsetX * this.canvasService.scale
+    //       cell.imageTile.tileOffsetY = cell.imageTile.tileOffsetY * this.canvasService.scale
+    //     }
+    //   })
+    // })
     this.canvasService.setupCanvases(this.grid.width, this.grid.height)
     this.editorService.backgroundDirty  = true
     this.assetService.obstaclesDirty = true
+
+    //TODO Move to canvas Service
+    let perfectHeight = window.innerHeight
+    while (perfectHeight % (this.canvasService.scale * 32) !== 0) {
+      perfectHeight--
+    }
+    // end todo
+    this.canvasService.maxCellCountX = perfectHeight / (32 * this.canvasService.scale)
+
+    this.canvasService.adustViewPort(tempViewPortX, tempViewPortY)
 
     // if (this.grid.gridLoaded) {
     //   this.canvasService.largeImageBackground = undefined

@@ -9,6 +9,8 @@ export class GridService {
   public grid: { [cell: string]: Cell } = {}
   public gridDisplayLite: GridDetails
   public gridDisplay: Cell[][] = [];
+  public widthPx = 0
+  public heightPx = 0
   public inverted = true
   public gridDirty = false
   public gridLoaded = false
