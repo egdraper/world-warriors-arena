@@ -38,6 +38,11 @@ export class CanvasComponent {
   private leftArrowDown = false
   private upArrowDown = false
   private downArrowDown = false
+
+  private rightQuadrant = false
+  private leftQuadrant = false
+  private bottomQuadrant = false
+  private topQuadrant = false
   canvasSize: number;
 
   constructor(
@@ -49,20 +54,37 @@ export class CanvasComponent {
   ) {
 
     this.engineService.onFire.subscribe((frame) => {
-      if(this.rightArrowDown) {
+      if (this.rightArrowDown) {
         this.canvasService.scrollViewPort(1, 0, this.gridService)
       }
-      if(this.leftArrowDown) {
+      if (this.leftArrowDown) {
         this.canvasService.scrollViewPort(-1, 0, this.gridService)
       }
-      if(this.upArrowDown) {
+      if (this.upArrowDown) {
         this.canvasService.scrollViewPort(0, -1, this.gridService)
       }
-      if(this.downArrowDown) {
+      if (this.downArrowDown) {
+        this.canvasService.scrollViewPort(0, 1, this.gridService)
+      }
+
+      if (this.rightQuadrant) {
+        console.log("r" + this.rightQuadrant)
+        this.canvasService.scrollViewPort(1, 0, this.gridService)
+      }
+      
+      if (this.leftQuadrant) {
+        this.canvasService.scrollViewPort(0, -1, this.gridService)
+      }
+      
+      if (this.topQuadrant) {
+        this.canvasService.scrollViewPort(-1, 0, this.gridService)
+      }
+      
+      if (this.bottomQuadrant) {
         this.canvasService.scrollViewPort(0, 1, this.gridService)
       }
     })
-   }
+  }
 
   // this needs to be put in a public function so we can pass in grid information 
   public ngAfterViewInit(): void {
@@ -106,6 +128,8 @@ export class CanvasComponent {
     this.canvasService.drawingCTX = this.drawingContext
     this.canvasService.drawingCanvas = this.drawingCanvas
   }
+
+
 
   @HostListener("document:keydown", ["$event"])
   public onKeyDown(event: KeyboardEvent): void {
@@ -158,6 +182,10 @@ export class CanvasComponent {
 
     if (event.key === "Shift") {
       this.shiftPressed = false
+      this.topQuadrant = false
+      this.bottomQuadrant = false
+      this.rightQuadrant = false
+      this.leftQuadrant = false
     }
 
     if (event.key === "q") {
@@ -202,16 +230,22 @@ export class CanvasComponent {
 
     this.hoveringCell = this.gridService.getGridCellByCoordinate(clickX, clickY)
 
-    // Shift Pressed
+    // Shift dow
     if (this.shiftPressed) {
-      this.canvasService.scrollCanvas(clickX, clickY, GameSettings.scrollSpeed, GameSettings.scrollSensitivity)
+      this.rightQuadrant = clickX > (-1 * this.canvasService.canvasViewPortOffsetX + this.canvasService.canvasSize) - this.canvasService.canvasSize / 3 
+      this.bottomQuadrant = clickY > (-1 * this.canvasService.canvasViewPortOffsetY + this.canvasService.canvasSize) - this.canvasService.canvasSize / 3
+      this.topQuadrant = clickX < (-1 * this.canvasService.canvasViewPortOffsetX + this.canvasService.canvasSize / 3) && (this.canvasService.canvasViewPortOffsetX < 0)
+      this.leftQuadrant = clickY < (-1 * this.canvasService.canvasViewPortOffsetY + this.canvasService.canvasSize / 3) && (this.canvasService.canvasViewPortOffsetY < 0)
     }
 
     // Control Pressed
     if (event.offsetX < 0 || event.offsetY < 0) { return }
     if (!this.mouseIsDown || !this.controlPressed) { return }
 
-    this.canvasService.scrollCanvas(clickX, clickY, GameSettings.scrollSpeed, GameSettings.scrollSensitivity)
+    this.rightQuadrant = clickX > (-1 * this.canvasService.canvasViewPortOffsetX + this.canvasService.canvasSize) - 96
+    this.bottomQuadrant = clickY > (-1 * this.canvasService.canvasViewPortOffsetY + this.canvasService.canvasSize) - 96
+    this.topQuadrant = clickX < (-1 * this.canvasService.canvasViewPortOffsetX + 96) && (this.canvasService.canvasViewPortOffsetX < 0)
+    this.leftQuadrant = clickY < (-1 * this.canvasService.canvasViewPortOffsetY + 96) && (this.canvasService.canvasViewPortOffsetY < 0)
 
     if (this.gridService.inverted) { // Rename to this.gridService.removing or something
       this.assetService.addInvertedMapAsset(this.hoveringCell)

@@ -41,55 +41,45 @@ export class CanvasService {
   public drawingCTX: CanvasRenderingContext2D;
 
   public scrollViewPort(x: number, y: number, grid: GridService): void {
-    if(x > 0 && this.cellOffsetX + this.maxCellCountX < grid.width - 1) {
-      this.cellOffsetX += (1/this.scale)
-      this.adustViewPort(-32,0)
+    if (x > 0 && this.cellOffsetX + this.maxCellCountX < grid.width - 1) {
+      this.cellOffsetX += (1 / this.scale)
+      this.adustViewPort(-32, 0)
     }
-    if(x < 0 && this.cellOffsetX > 0) {
-      this.cellOffsetX -= (1/this.scale)
-      this.adustViewPort(32,0)
+    if (x < 0 && this.cellOffsetX > 0) {
+      this.cellOffsetX -= (1 / this.scale)
+      this.adustViewPort(32, 0)
     }
-    if(y > 0 && this.cellOffsetY + this.maxCellCountX < grid.height - 1) {
-      this.cellOffsetY += (1/this.scale)
-      this.adustViewPort(0,-32)
+    if (y > 0 && this.cellOffsetY + this.maxCellCountX < grid.height - 1) {
+      this.cellOffsetY += (1 / this.scale)
+      this.adustViewPort(0, -32)
     }
-    if(y < 0 && this.cellOffsetY > 0) {
-      this.cellOffsetY -= (1/this.scale)
-      this.adustViewPort(0,32)
+    if (y < 0 && this.cellOffsetY > 0) {
+      this.cellOffsetY -= (1 / this.scale)
+      this.adustViewPort(0, 32)
     }
-
-
-      // Ensure the viewport does not kick back a negative number (cells don't work with negatives)
-      // let topLeftPosX = -1 * this.canvasService.canvasViewPortOffsetX
-      // let topLeftPosY = -1 * this.canvasService.canvasViewPortOffsetY
-      // let topRightPosX = topLeftPosX + this.canvasService.canvasSize + (32 * (1/this.canvasService.scale))
-      // let bottomPosY = topLeftPosY + this.canvasService.canvasSize + (32 * (1/this.canvasService.scale)) 
-
   }
-
-
 
   public adustViewPort(xPos: number, yPos: number, asset?: Asset, gridWidth?: number, gridHeight?: number) {
     if (yPos > 0 && this.canvasViewPortOffsetY >= 0) {
-        yPos = 0 
-    } if(xPos > 0 && this.canvasViewPortOffsetX >= 0) {
-      xPos = 0 
+      yPos = 0
+    } if (xPos > 0 && this.canvasViewPortOffsetX >= 0) {
+      xPos = 0
     }
-    if(xPos < 0 && this.canvasViewPortOffsetX - this.canvasSize <= (-1 * gridWidth * GameSettings.cellDimension) + 64) {
-      xPos = 0 
+    if (xPos < 0 && this.canvasViewPortOffsetX - this.canvasSize <= (-1 * gridWidth * GameSettings.cellDimension) + 64) {
+      xPos = 0
     }
-    if(yPos < 0 && this.canvasViewPortOffsetY - this.canvasSize <= (-1 * gridHeight * GameSettings.cellDimension) + 64) {
-      yPos = 0 
+    if (yPos < 0 && this.canvasViewPortOffsetY - this.canvasSize <= (-1 * gridHeight * GameSettings.cellDimension) + 64) {
+      yPos = 0
     }
 
     let xPosAdjust = 0
     let yPosAdjust = 0
-    
+
     xPosAdjust = xPos * (1 / this.scale)
     yPosAdjust = yPos * (1 / this.scale)
-   
+
     this.canvasViewPortOffsetX += xPos
-    this.canvasViewPortOffsetY += yPos   
+    this.canvasViewPortOffsetY += yPos
 
     this.fogCTX.translate(xPosAdjust, yPosAdjust)
     this.blackoutCTX.translate(xPosAdjust, yPosAdjust)
@@ -164,23 +154,8 @@ export class CanvasService {
   }
 
 
-  public scrollCanvas(clickX: number, clickY: number, speed: number = 8, sensitivity: number = 96): void {
+  public mouseScrollCanvas(clickX: number, clickY: number, grid: GridService, sensitivity: number = 96): void {
 
-    if (clickX > (-1 * this.canvasViewPortOffsetX + this.canvasSize - sensitivity)) {
-      this.adustViewPort(-1 * speed, 0)
-    }
-
-    if (clickY > (-1 * this.canvasViewPortOffsetY + this.canvasSize - sensitivity)) {
-      this.adustViewPort(0, -1 * speed)
-    }
-
-    if (clickX < (-1 * this.canvasViewPortOffsetX + sensitivity) && (this.canvasViewPortOffsetX < 0)) {
-      this.adustViewPort(speed, 0)
-    }
-
-    if (clickY < (-1 * this.canvasViewPortOffsetY + sensitivity) && (this.canvasViewPortOffsetY < 0)) {
-      this.adustViewPort(0, speed)
-    }
   }
 
   public drawLargeImageObstacles(ctx: CanvasRenderingContext2D, gridService: GridService): void {

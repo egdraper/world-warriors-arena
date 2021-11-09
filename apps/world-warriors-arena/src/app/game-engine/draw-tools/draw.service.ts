@@ -275,7 +275,7 @@ export class DrawService {
       catch (e) {
         debugger
       }
-      this.drawGridLines()
+      // this.drawGridLines()
     }
   }
 

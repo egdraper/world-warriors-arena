@@ -10,8 +10,14 @@
   </canvas>
   
   
-  <canvas #blackoutCanvas id="blackoutCanvas" (mousedown)="onCanvasClick($event)" (mousemove)="onMouseMove($event)"
-  (mouseup)="onMouseUp($event)" (keydown)="onKeyDown($event)" (keyup)="onKeyUp($event)"></canvas>
+  <canvas #blackoutCanvas 
+    id="blackoutCanvas"
+    (mousedown)="onCanvasClick($event)"
+    (mousemove)="onMouseMove($event)"
+    (mouseup)="onMouseUp($event)"
+    (keydown)="onKeyDown($event)"
+    (keyup)="onKeyUp($event)">
+  </canvas>
   <div class="character-hover">
     <!-- <h1>{{hoveringCell?.occupiedBy?.image?.src}}
     </h1> -->

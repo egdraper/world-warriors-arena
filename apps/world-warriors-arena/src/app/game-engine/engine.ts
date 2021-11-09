@@ -73,7 +73,6 @@ export class Engine {
     this.onFire.next(this.frame)    
 
     requestAnimationFrame(this.startEngine.bind(this)); 
-
     this.frame >= 64 ? this.frame = 1 : this.frame += 1
   }
 }
