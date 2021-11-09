@@ -73,7 +73,7 @@ export class CanvasComponent {
 
     this.canvasService.maxCellCountX = perfectHeight / (32 * this.canvasService.scale)
 
-    // this.canvasService.canvasSize = 32 * 32
+    this.canvasService.canvasSize = perfectHeight
 
     // Background
     this.backgroundContext = this.backgroundCanvas.nativeElement.getContext('2d');
