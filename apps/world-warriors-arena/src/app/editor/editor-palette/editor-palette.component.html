@@ -1,15 +1,13 @@
 <button (click)="generateRandomMap()">Generate Random Map</button>
-<button (click)="paintClicked()">Paint</button>
 <button (click)="invertedClicked()">Invert</button>
 <button (click)="baseClicked()">Layer</button>
 <button (click)="canvasService.resetViewport()">Reset View Port</button>
+<button (click)="changeLockState()" [class.color]="lockState === 'Locked'? 'red' : 'blue'">{{lockState}}</button>
 
 <select (change)="changeScale($event.target)">
   <option>.5</option>
   <option>1</option>
   <option>2</option>
-  <option>3</option>
-  <option>4</option>
 </select>
 
 <select (change)="onSelectionChange($event.target)">

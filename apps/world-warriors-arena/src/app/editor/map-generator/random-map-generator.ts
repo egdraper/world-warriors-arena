@@ -1,128 +1,64 @@
 import { ShortestPath } from "../../game-engine/shortest-path";
-import { TerrainType } from "../../game-assets/tiles.db.ts/tile-assets.db";
 import { GridService } from "../../game-engine/grid.service";
-import { Cell } from "../../models/cell.model";
+import { Cell, MapDetails } from "../../models/cell.model";
 import { EditorService } from "../editor-palette/editor.service";
+import { BaseMapGenerator } from "./base-map-generator";
 
-export class RandomMapGenerator {
+export class RandomMapGenerator extends BaseMapGenerator {
   constructor(
-    private editorService: EditorService,
-    private shortestPath: ShortestPath,
-    private gridService: GridService) { }
-
-  public generateMap(width: number, height: number, terrainTypeId: string) {
-    this.createNonObstructedPaths(width, height)
+    public editorService: EditorService,
+    public shortestPath: ShortestPath,
+    public gridService: GridService
+  ) { 
+    super(editorService, shortestPath, gridService)
   }
 
-  public createNonObstructedPaths(width: number, height: number): void {
-    const randomLeft = Math.floor(Math.random() * (height - 3) + 3)
-    const randomRight = Math.floor(Math.random() * (height - 3) + 3)
+  public generateMap(mapDetails: MapDetails) {
+    this.mapDetails = mapDetails
+    this.createGrid()
+    this.autoFillBackgroundTerrain(mapDetails.backgroundTypeId)
+    this.autoPopulateForegroundTerrain()
+  }
+
+  public createGrid(): void {
+    this.gridService.createGrid(this.mapDetails.width, this.mapDetails.height, this.mapDetails.terrainTypeId)
+  }
+
+  public autoPopulateForegroundTerrain(): void {
+    const randomLeft = Math.floor(Math.random() * (this.mapDetails.height - 3) + 3)
+    const randomRight = Math.floor(Math.random() * (this.mapDetails.height - 3) + 3)
 
     let path
+
+    // Places random obstacles in the map to make the path somewhat wind around
     for (let i = 0; i < 5; i++) {
       try {
         this.clearObstacles()
         this.randomlyPlaceLargeObstacles()
-        path = this.shortestPath.find(this.gridService.grid[`x0:y${randomLeft}`], this.gridService.grid[`x${width - 2}:y${randomRight}`], [])
+        path = this.shortestPath.find(this.gridService.grid[`x0:y${randomLeft}`], this.gridService.grid[`x${this.gridService.width - 2}:y${randomRight}`], [])
 
       } catch { }
-
     }
-
     this.clearObstacles()
+
+    // Adds random objects like trees or cliffs
     this.addRandomTerrain()
+    
+    // Creates a drawn path if desired
     path.forEach(cell => {
-      if (cell.neighbors[0]) { cell.neighbors[0].backgroundGrowableTileId = "DrawableDirtRoad" }
-      if (cell.neighbors[1]) { cell.neighbors[1].backgroundGrowableTileId = "DrawableDirtRoad" }
-      if (cell.neighbors[4]) { cell.neighbors[4].backgroundGrowableTileId = "DrawableDirtRoad" }
-      cell.backgroundGrowableTileId = "DrawableDirtRoad"
+      if (cell.neighbors[0]) { cell.neighbors[0].backgroundGrowableTileId = this.mapDetails.pathTypeId }
+      if (cell.neighbors[1]) { cell.neighbors[1].backgroundGrowableTileId = this.mapDetails.pathTypeId }
+      if (cell.neighbors[4]) { cell.neighbors[4].backgroundGrowableTileId = this.mapDetails.pathTypeId }
+      cell.backgroundGrowableTileId = this.mapDetails.pathTypeId
     })
+
+    // creates a randomized boarder to encapsulate the map
     this.createRandomizedBoarder()
+
+    // clears all obstacles from path
     this.clearOpening(path)
+    this.terrainCleanup()
     this.editorService.backgroundDirty = true
-  }
-
-  public clearOpening(path: Cell[]): void {
-    path.forEach(cell => {
-      cell.obstacle = false
-      cell.growableTileId = undefined
-
-      for (let i = 0; i < 8; i++) {
-        if (cell.neighbors[i]) {
-          cell.neighbors[i].obstacle = false
-          cell.neighbors[i].growableTileId = undefined
-          for (let l = 0; l < 8; l++) {
-            if (cell.neighbors[i].neighbors[l]) {
-              cell.neighbors[i].neighbors[l].obstacle = false
-              cell.neighbors[i].neighbors[l].growableTileId = undefined
-            }
-          }
-        }
-      }
-    })
-  }
-
-  public createRandomizedBoarder(): void {
-    const randomConsistency = 2
-
-    this.gridService.gridDisplay.forEach(row => {
-      row.forEach(cell => {
-        // Outer most layer
-        if (cell.x < 2 || cell.x > this.gridService.width - 3) {
-          cell.obstacle = true
-          cell.growableTileId = "DrawableTree"
-        }
-        if (cell.y < 3 || cell.y > this.gridService.height - 3) {
-          cell.obstacle = true
-          cell.growableTileId = "DrawableTree"
-        }
-
-        // left side 2nd layer
-        if (cell.x === 2) {
-          this.setEdgeLayerRandomization(cell, 0)
-        }
-        // left side 3rd layer
-        if (cell.x === 3 && cell.neighbors[3].obstacle && cell.neighbors[0] && cell.neighbors[0].neighbors[3].obstacle) {
-          this.setEdgeLayerRandomization(cell, 0)
-        }
-
-        // top side 2nd layer
-        if (cell.y === 3) {
-          this.setEdgeLayerRandomization(cell, 1)
-        }
-        // Top side 3rd Layer
-        if (cell.y === 4 && cell.neighbors[0].obstacle && cell.neighbors[1] && cell.neighbors[1].neighbors[0].obstacle) {
-          this.setEdgeLayerRandomization(cell, 1)
-        }
-      })
-    })
-
-    this.gridService.gridDisplay.forEach(row => {
-      row.forEach(cell => {
-        // right side 2nd layers
-        if (cell.x === this.gridService.width - 3) {
-          this.setEdgeLayerRandomization(cell, 2)
-        }
-
-        // bottom side 2nd layer
-        if (cell.y === this.gridService.height - 3) {
-          this.setEdgeLayerRandomization(cell, 1)
-        }
-      })
-    })
-
-    this.gridService.gridDisplay.forEach(row => {
-      row.forEach(cell => {
-        // right side 3rd layer
-        if (cell.x === this.gridService.width - 4 && cell.neighbors[1].obstacle && cell.neighbors[2] && cell.neighbors[2].neighbors[1].obstacle) {
-          this.setEdgeLayerRandomization(cell, 2)
-        }
-        // bottom side 3rd layer
-        if (cell.y === this.gridService.height - 4 && cell.neighbors[2].obstacle && cell.neighbors[1] && cell.neighbors[1].neighbors[2].obstacle) {
-          this.setEdgeLayerRandomization(cell, 1)
-        }
-      })
-    })
   }
 
   public setEdgeLayerRandomization(cell: Cell, neighborIndex: number): void {
@@ -130,11 +66,11 @@ export class RandomMapGenerator {
     if (random) {
       if (cell.neighbors[neighborIndex]) {
         cell.neighbors[neighborIndex].obstacle = true
-        cell.neighbors[neighborIndex].growableTileId = "DrawableTree"
+        cell.neighbors[neighborIndex].growableTileId = this.mapDetails.terrainTypeId
       }
 
       cell.obstacle = true
-      cell.growableTileId = "DrawableTree"
+      cell.growableTileId = this.mapDetails.terrainTypeId
     }
   }
 
@@ -144,69 +80,5 @@ export class RandomMapGenerator {
         cell.obstacle = !!!Math.floor(Math.random() * 4)
       })
     })
-  }
-
-
-  public clearObstacles(): void {
-    this.gridService.gridDisplay.forEach(row => {
-      row.forEach(cell => {
-        cell.obstacle = false
-      })
-    })
-  }
-
-  public addRandomTerrain(frequency: number = 20, weight: number = 3): void {
-    for (let a = 0; a < frequency; a++) {
-      const randomY = Math.floor(Math.random() * this.gridService.height)
-      const randomX = Math.floor(Math.random() * this.gridService.height)
-
-      const startCell = this.gridService.getCell(randomX, randomY)
-      startCell.obstacle = true
-      startCell.growableTileId = "DrawableTree"
-
-      for (let i = 0; i < 8; i++) {
-        if (startCell.neighbors[i]) {
-          startCell.neighbors[i].obstacle = true
-          startCell.neighbors[i].growableTileId = "DrawableTree"
-
-          this.populateCell(startCell, i, weight)
-        }
-      }
-    }
-  }
-
-  private populateCell(cell: Cell, neighborIndex: number, weight: number): void {
-    const isPlaced = !!Math.floor(Math.random() * weight)
-    if (cell && cell.neighbors[neighborIndex] && neighborIndex < 8 && isPlaced) {
-      const neighbor = cell.neighbors[neighborIndex]
-
-      for (let i = 0; i < 8; i++) {
-        if (neighbor && neighbor.neighbors[i]) {
-          neighbor.neighbors[i].obstacle = true
-          neighbor.neighbors[i].growableTileId = "DrawableTree"
-
-
-          if (neighbor.neighbors[i].neighbors[0]) {
-            neighbor.neighbors[i].neighbors[0].obstacle = true
-            neighbor.neighbors[i].neighbors[0].growableTileId = "DrawableTree"
-          }
-
-          if (neighbor.neighbors[i].neighbors[1]) {
-            neighbor.neighbors[i].neighbors[1].obstacle = true
-            neighbor.neighbors[i].neighbors[1].growableTileId = "DrawableTree"
-          }
-
-          if (neighbor.neighbors[i].neighbors[4]) {
-            neighbor.neighbors[i].neighbors[4].obstacle = true
-            neighbor.neighbors[i].neighbors[4].growableTileId = "DrawableTree"
-          }
-        }
-
-        this.populateCell(neighbor.neighbors[i], neighborIndex++, weight)
-      }
-
-    } else {
-      return
-    }
   }
 }

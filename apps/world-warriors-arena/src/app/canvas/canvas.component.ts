@@ -2,8 +2,10 @@ import { Component, ElementRef, EventEmitter, HostListener, Output, ViewChild } 
 import { EditorService } from '../editor/editor-palette/editor.service';
 import { AssetsService } from '../game-assets/assets.service';
 import { growableItems, TerrainType } from '../game-assets/tiles.db.ts/tile-assets.db';
+import { Engine } from '../game-engine/engine';
 import { GridService } from '../game-engine/grid.service';
 import { Cell } from '../models/cell.model';
+import { GameSettings } from '../models/game-settings';
 import { CanvasService } from './canvas.service';
 
 @Component({
@@ -27,12 +29,20 @@ export class CanvasComponent {
   public blackoutContext: CanvasRenderingContext2D;
   public drawingContext: CanvasRenderingContext2D;
   public hoveringCell: Cell
-
-  public drawing = true
+  public editMode = true
 
   private mouseIsDown = false
   private controlPressed = false
   private shiftPressed = false
+  private rightArrowDown = false
+  private leftArrowDown = false
+  private upArrowDown = false
+  private downArrowDown = false
+
+  private rightQuadrant = false
+  private leftQuadrant = false
+  private bottomQuadrant = false
+  private topQuadrant = false
   canvasSize: number;
 
   constructor(
@@ -40,16 +50,53 @@ export class CanvasComponent {
     private gridService: GridService,
     private assetService: AssetsService,
     private editorService: EditorService,
-  ) { }
+    private engineService: Engine
+  ) {
+
+    this.engineService.onFire.subscribe((frame) => {
+      if (this.rightArrowDown) {
+        this.canvasService.scrollViewPort(1, 0, this.gridService)
+      }
+      if (this.leftArrowDown) {
+        this.canvasService.scrollViewPort(-1, 0, this.gridService)
+      }
+      if (this.upArrowDown) {
+        this.canvasService.scrollViewPort(0, -1, this.gridService)
+      }
+      if (this.downArrowDown) {
+        this.canvasService.scrollViewPort(0, 1, this.gridService)
+      }
+
+      if (this.rightQuadrant) {
+        console.log("r" + this.rightQuadrant)
+        this.canvasService.scrollViewPort(1, 0, this.gridService)
+      }
+      
+      if (this.leftQuadrant) {
+        this.canvasService.scrollViewPort(0, -1, this.gridService)
+      }
+      
+      if (this.topQuadrant) {
+        this.canvasService.scrollViewPort(-1, 0, this.gridService)
+      }
+      
+      if (this.bottomQuadrant) {
+        this.canvasService.scrollViewPort(0, 1, this.gridService)
+      }
+    })
+  }
 
   // this needs to be put in a public function so we can pass in grid information 
   public ngAfterViewInit(): void {
-    this.canvasService.canvasSize = window.innerHeight <= 1536 ? window.innerHeight : 1536
-    // this.canvasService.canvasSize = 32 * 32
+    let perfectHeight = window.innerHeight
+    while (perfectHeight % (this.canvasService.scale * 32) !== 0) {
+      perfectHeight--
+    }
 
+    this.canvasService.maxCellCountX = perfectHeight / (32 * this.canvasService.scale)
 
-    this.canvasService.centerPointX = Math.floor(this.canvasService.canvasSize / 2)
-    this.canvasService.centerPointY = Math.floor(this.canvasService.canvasSize / 2)
+    this.canvasService.canvasSize = perfectHeight
+
     // Background
     this.backgroundContext = this.backgroundCanvas.nativeElement.getContext('2d');
     this.canvasService.backgroundCTX = this.backgroundContext
@@ -82,6 +129,8 @@ export class CanvasComponent {
     this.canvasService.drawingCanvas = this.drawingCanvas
   }
 
+
+
   @HostListener("document:keydown", ["$event"])
   public onKeyDown(event: KeyboardEvent): void {
     if (this.assetService.selectedGameComponent) {
@@ -98,17 +147,16 @@ export class CanvasComponent {
     }
 
     if (event.key === "ArrowRight") {
-      this.canvasService.adustViewPort(-32, 0)
+      this.rightArrowDown = true
     }
     if (event.key === "ArrowLeft") {
-      // console.log("AAA")
-      this.canvasService.adustViewPort(32, 0)
+      this.leftArrowDown = true
     }
     if (event.key === "ArrowUp") {
-      this.canvasService.adustViewPort(0, 32)
+      this.upArrowDown = true
     }
     if (event.key === "ArrowDown") {
-      this.canvasService.adustViewPort(0, -32)
+      this.downArrowDown = true
     }
   }
 
@@ -119,93 +167,46 @@ export class CanvasComponent {
       this.editorService.hoveringCell = undefined
     }
 
+    if (event.key === "ArrowRight") {
+      this.rightArrowDown = false
+    }
+    if (event.key === "ArrowLeft") {
+      this.leftArrowDown = false
+    }
+    if (event.key === "ArrowUp") {
+      this.upArrowDown = false
+    }
+    if (event.key === "ArrowDown") {
+      this.downArrowDown = false
+    }
+
     if (event.key === "Shift") {
       this.shiftPressed = false
+      this.topQuadrant = false
+      this.bottomQuadrant = false
+      this.rightQuadrant = false
+      this.leftQuadrant = false
     }
 
     if (event.key === "q") {
-      this.drawing = !this.drawing
-      setTimeout(()=> {
-        if(this.drawing) {
-           this.createLargeImage()
+      this.editMode = !this.editMode
+      setTimeout(() => {
+        if (!this.editMode) {
+          this.canvasService.createLargeImage(this.gridService.width * 32, this.gridService.height * 32, this.gridService)
         } else {
           this.canvasService.largeImageBackground = undefined
           this.canvasService.largeImageForeground = undefined
         }
-
       })
     }
   }
 
-  public createLargeImage() {
-    this.canvasService.drawingCTX.canvas.height = this.gridService.width * 32
-    this.canvasService.drawingCTX.canvas.width = this.gridService.height * 32
-    this.canvasService.drawingCTX.scale(this.canvasService.scale, this.canvasService.scale)
-
-    this.drawObstacles(this.canvasService.drawingCTX)
-    
-    const bimg = this.canvasService.drawingCanvas.nativeElement.toDataURL("image/png")
-    const fimg = this.canvasService.drawingCanvas.nativeElement.toDataURL("image/png")
-    const bimage = new Image()
-    const fimage = new Image()
-    bimage.src = bimg
-    fimage.src = fimg
-    this.canvasService.largeImageBackground = bimage
-    this.canvasService.largeImageForeground = fimage
-
- 
-  }
-
-  public drawObstacles(ctx: CanvasRenderingContext2D): void {
-    this.gridService.gridDisplay.forEach(row => {
-      row.forEach((cell: Cell) => {
-        this.drawOnBackgroundCell(cell, ctx)
-      })
-    })
-    this.gridService.gridDisplay.forEach(row => {
-      row.forEach((cell: Cell) => {
-        this.drawOnCell(cell, ctx)
-      })
-    })
-  }
-
-  private drawOnCell(cell: Cell, ctx: CanvasRenderingContext2D): void {
-    if(cell.imageTile) {
-    
-    ctx.drawImage(
-      cell.imageTile.spriteSheet,
-      cell.imageTile.spriteGridPosX * cell.imageTile.multiplier,
-      cell.imageTile.spriteGridPosY * cell.imageTile.multiplier,
-      cell.imageTile.tileWidth * cell.imageTile.multiplier,
-      cell.imageTile.tileHeight * cell.imageTile.multiplier,
-      cell.posX + cell.imageTile.tileOffsetX,
-      cell.posY + cell.imageTile.tileOffsetY,
-      cell.imageTile.tileWidth * (cell.imageTile.sizeAdjustment || cell.imageTile.multiplier),
-      cell.imageTile.tileHeight * (cell.imageTile.sizeAdjustment || cell.imageTile.multiplier)
-    )
-    }
-  }
-
-  public drawOnBackgroundCell(cell: Cell, ctx: CanvasRenderingContext2D): void {
-    ctx.imageSmoothingEnabled = false
-    ctx.drawImage(
-      cell.backgroundTile.spriteSheet,
-      cell.backgroundTile.spriteGridPosX[0] * 32,
-      cell.backgroundTile.spriteGridPosY[0] * 32,
-      32,
-      32,
-      cell.posX,
-      cell.posY,
-      32,
-      32
-    )
-  }
 
   public onCanvasClick(event: any): void {
     this.mouseIsDown = true
 
-    const clickX = event.offsetX + (-1 * this.canvasService.canvasViewPortOffsetX)
-    const clickY = event.offsetY + (-1 * this.canvasService.canvasViewPortOffsetY)
+    const clickX = event.offsetX + (-1 * this.canvasService.canvasViewPortOffsetX * this.canvasService.scale)
+    const clickY = event.offsetY + (-1 * this.canvasService.canvasViewPortOffsetY * this.canvasService.scale)
 
     const selectedCell = this.gridService.getGridCellByCoordinate(clickX, clickY)
 
@@ -216,34 +217,35 @@ export class CanvasComponent {
     if (!selectedCell.occupiedBy && this.assetService.selectedGameComponent) {
       this.assetService.selectedGameComponent.startMovement(this.assetService.selectedGameComponent.cell, selectedCell, this.assetService.gameComponents)
     }
-
-   else {
-      // select Asset
-      this.canvasService.resetViewport()
-      const assetXPos = -1 * this.assetService.selectedGameComponent.cell.posX + this.canvasService.centerPointX
-      const assetYPos = -1 * this.assetService.selectedGameComponent.cell.posY + this.canvasService.centerPointY
-      this.canvasService.adustViewPort(assetXPos, assetYPos)
+    else {
+      this.canvasService.centerOverAsset(this.assetService.selectedGameComponent, this.gridService.width, this.gridService.height)
     }
 
     this.onMouseMove(event)
   }
 
   public onMouseMove(event: any): void {
-    const clickX = event.offsetX + (-1 * this.canvasService.canvasViewPortOffsetX)
-    const clickY = event.offsetY + (-1 * this.canvasService.canvasViewPortOffsetY)
+    const clickX = event.offsetX + (-1 * this.canvasService.canvasViewPortOffsetX * this.canvasService.scale)
+    const clickY = event.offsetY + (-1 * this.canvasService.canvasViewPortOffsetY * this.canvasService.scale)
 
     this.hoveringCell = this.gridService.getGridCellByCoordinate(clickX, clickY)
 
-    // Shift Pressed
+    // Shift dow
     if (this.shiftPressed) {
-      this.canvasService.scrollCanvas(clickX, clickY, 32, 160)
+      this.rightQuadrant = clickX > (-1 * this.canvasService.canvasViewPortOffsetX + this.canvasService.canvasSize) - this.canvasService.canvasSize / 3 
+      this.bottomQuadrant = clickY > (-1 * this.canvasService.canvasViewPortOffsetY + this.canvasService.canvasSize) - this.canvasService.canvasSize / 3
+      this.topQuadrant = clickX < (-1 * this.canvasService.canvasViewPortOffsetX + this.canvasService.canvasSize / 3) && (this.canvasService.canvasViewPortOffsetX < 0)
+      this.leftQuadrant = clickY < (-1 * this.canvasService.canvasViewPortOffsetY + this.canvasService.canvasSize / 3) && (this.canvasService.canvasViewPortOffsetY < 0)
     }
 
     // Control Pressed
     if (event.offsetX < 0 || event.offsetY < 0) { return }
     if (!this.mouseIsDown || !this.controlPressed) { return }
 
-    this.canvasService.scrollCanvas(clickX, clickY)
+    this.rightQuadrant = clickX > (-1 * this.canvasService.canvasViewPortOffsetX + this.canvasService.canvasSize) - 96
+    this.bottomQuadrant = clickY > (-1 * this.canvasService.canvasViewPortOffsetY + this.canvasService.canvasSize) - 96
+    this.topQuadrant = clickX < (-1 * this.canvasService.canvasViewPortOffsetX + 96) && (this.canvasService.canvasViewPortOffsetX < 0)
+    this.leftQuadrant = clickY < (-1 * this.canvasService.canvasViewPortOffsetY + 96) && (this.canvasService.canvasViewPortOffsetY < 0)
 
     if (this.gridService.inverted) { // Rename to this.gridService.removing or something
       this.assetService.addInvertedMapAsset(this.hoveringCell)
@@ -261,7 +263,4 @@ export class CanvasComponent {
   public onMouseUp(event: any): void {
     this.mouseIsDown = false
   }
-
-
-
 }

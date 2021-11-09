@@ -62,7 +62,6 @@ export class AssetsService {
   }
 
   private addRequiredNeighborTiles(selectedCell: Cell, drawableItem: DrawableTiles): void {
-   
     if (drawableItem.terrainType === TerrainType.Background) {
       selectedCell.backgroundGrowableTileId = drawableItem.id + drawableItem.layers
 

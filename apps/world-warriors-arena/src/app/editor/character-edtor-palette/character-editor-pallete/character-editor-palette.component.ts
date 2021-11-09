@@ -45,7 +45,6 @@ export class CharacterEditorPaletteComponent implements OnInit {
     this.assetService.gameComponents.push(player)
 
     this.drawService.clearFogLineOfSight(gridCell1)
-    // this.drawService.drawOnlyVisibleObstacle(gridCell1.id)
   }
 
 
