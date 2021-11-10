@@ -124,8 +124,8 @@ export class EditorpaletteComponent implements OnInit {
       terrainTypeId: "DrawableTrees",
       inverted: true,
       pathTypeId: undefined,
-      width: 100,
-      height: 100
+      width: 50,
+      height: 50
     }
 
     mapGenerator.generateMap(mapDetails)
@@ -143,18 +143,5 @@ export class EditorpaletteComponent implements OnInit {
     this.canvasService.centerPointY = centerCell.posY * this.canvasService.scale
   }
 
-  public imageClick(event: any): void {
-    let x = event.offsetX
-    let y = event.offsetY
-    while (x % 32 !== 0) {
-      x--
-    }
-    while (y % 32 !== 0) {
-      y--
-    }
-
-    console.log(x + " and " + y)
-    this.images.push({ x, y })
-  }
 
 }

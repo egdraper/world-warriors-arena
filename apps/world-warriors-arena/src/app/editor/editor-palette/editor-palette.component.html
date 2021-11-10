@@ -1,8 +1,8 @@
-<button (click)="generateRandomMap()">Generate Random Map</button>
-<button (click)="invertedClicked()">Invert</button>
-<button (click)="baseClicked()">Layer</button>
-<button (click)="canvasService.resetViewport()">Reset View Port</button>
-<button (click)="changeLockState()" [class.color]="lockState === 'Locked'? 'red' : 'blue'">{{lockState}}</button>
+<div class="button" (click)="generateRandomMap()">Generate Map</div>
+<div class="button" (click)="invertedClicked()">Invert</div>
+<div class="button" (click)="baseClicked()">Layer</div>
+<div class="button" (click)="canvasService.resetViewport()">Reset View Port</div>
+<div class="button" (click)="changeLockState()" [class.color]="lockState === 'Locked'? 'red' : 'blue'">{{lockState}}</div>
 
 <select (change)="changeScale($event.target)">
   <option>.5</option>
@@ -25,10 +25,7 @@
   <option> dungeonTiles </option>
   
 </select>
-<!-- <img
-src="assets/images/tileA5_world.png"
-(click)="imageClick($event)"
-/> -->
+
 <div class="pallet-container">  
   <div *ngFor="let image of imageArray"
     class="image-container"
