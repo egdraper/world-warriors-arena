@@ -1,9 +1,12 @@
 import { Injectable } from '@angular/core';
 import { CanvasService } from '../canvas/canvas.service';
+import { MotionAsset } from '../models/assets.model';
 import { Cell, GridDetails, RelativePositionCell } from '../models/cell.model';
+import { LargeCanvasImage } from './draw-tools/large-image';
 
-@Injectable()
-export class GridService {
+export class Grid {
+  public id? = "1"
+  public name? = "newGrid"
   public height = 15
   public width = 15
   public grid: { [cell: string]: Cell } = {}
@@ -15,59 +18,101 @@ export class GridService {
   public gridDirty = false
   public gridLoaded = false
   public includeGridLines = false
+  public largeImage: LargeCanvasImage
+  public selectedGameComponent: MotionAsset
 
-  constructor(private canvasService: CanvasService) { }
-
-  public createGrid(width: number, height: number, invertedDrawableTerrainId?: string, inverted: boolean = false) {
-    this.inverted = inverted
-    this.height = height
-    this.width = width
-    this.generateGrid(width, height, invertedDrawableTerrainId)
-    this.gridLoaded = true
+  constructor(gridDetails: GridDetails) {
+    this.height = gridDetails.height
+    this.width = gridDetails.width
   }
-
+  
   public getGridCellByCoordinate(x: number, y: number): Cell {
-    while (x % (32 * this.canvasService.scale) !== 0) {
+    // while (x % (32 * GameSettings.scale) !== 0) {
+    //   x--
+    // }
+    // while (y % (32 * GameSettings.scale) !== 0) {
+    //   y--
+    // }
+    while (x % (32 * 1) !== 0) {
       x--
     }
-    while (y % (32 * this.canvasService.scale) !== 0) {
+    while (y % (32 * 1) !== 0) {
       y--
     }
-    return this.grid[`x${x / (32 * this.canvasService.scale)}:y${y / (32 * this.canvasService.scale)}`]
+    return this.grid[`x${x / (32 * 1)}:y${y / (32 * 1)}`]
   }
 
   public getCell(x: number, y: number): Cell {
     return this.grid[`x${x}:y${y}`]
   }
+}
 
-  private generateGrid(width: number, height: number, invertedDrawableTerrainId?: string, name: string = "No Name") {
-    this.gridDisplayLite = {
-      height,
-      width,
-      name
-    }
-    this.createDisplayArray(width, height, invertedDrawableTerrainId)
-    this.addNeighbors(width, height)
+@Injectable()
+export class GridService {
+  public grids: {[gridId: string]: Grid} = {}
+  public gridIds: string[] = []
+  public activeGrid: Grid
+
+  private index = 0
+
+  constructor(private canvasService: CanvasService) { }
+
+  public switchGrid(gridId: string): Grid {
+    this.activeGrid = this.grids[gridId]
+    this.canvasService.resetViewport()
+    
+    return this.activeGrid
   }
 
-  private createDisplayArray(width: number, height: number, invertedDrawableTerrainId?: string, grid?: { [key: string]: Cell }) {
+  public createNewGrid(width: number, height: number, invertedDrawableTerrainId?: string, inverted: boolean = false) {
+    const gridDetails: GridDetails = {
+      width,
+      height,
+    }
+
+    // Grid Setup
+    const newGrid = new Grid(gridDetails)
+    newGrid.largeImage = new LargeCanvasImage(this.canvasService.drawingCanvas, this.canvasService.drawingCTX)
+    newGrid.inverted = inverted
+    this.generateGrid(newGrid, invertedDrawableTerrainId)
+    newGrid.gridLoaded = true
+    newGrid.id = this.index.toString()
+    // Set Grid
+    this.gridIds.push(this.index.toString())
+    this.grids[(this.index++).toString()] = newGrid
+    this.activeGrid = newGrid
+    this.canvasService.resetViewport()
+    
+  }
+  
+  private generateGrid(grid: Grid, invertedDrawableTerrainId?: string, name: string = "No Name") {
+    grid.gridDisplayLite = {
+      height: grid.height,
+      width: grid.width,
+      name
+    }
+    this.createDisplayArray(grid, invertedDrawableTerrainId)
+    this.addNeighbors(grid)
+  }
+
+  private createDisplayArray(grid: Grid, invertedDrawableTerrainId?: string) {
     let imgIndexX = 1
     let imgIndexY = 1
 
-    for (let i = 0; i < height; i++) {
-      this.gridDisplay[i] = [];
+    for (let i = 0; i < grid.height; i++) {
+      grid.gridDisplay[i] = [];
 
-      for (let l = 0; l < width; l++) {
-        this.grid[`x${l}:y${i}`] = grid && grid[`x${l}:y${i}`]
-          ? grid[`x${l}:y${i}`]
+      for (let l = 0; l < grid.width; l++) {
+        grid.grid[`x${l}:y${i}`] = grid && grid.grid[`x${l}:y${i}`]
+          ? grid.grid[`x${l}:y${i}`]
           : {
             x: l,
             y: i,
             posX: l * 32,
             posY: i * 32,
-            obstacle: this.inverted ? true : false,
+            obstacle: grid.inverted ? true : false,
             id: `x${l}:y${i}`,
-            growableTileId: this.inverted ? invertedDrawableTerrainId : undefined
+            growableTileId: grid.inverted ? invertedDrawableTerrainId : undefined
           };
 
         imgIndexX++
@@ -79,42 +124,25 @@ export class GridService {
           imgIndexX = 1
           imgIndexY = 1
         }
-        this.gridDisplay[i][l] = this.grid[`x${l}:y${i}`];
+        grid.gridDisplay[i][l] = grid.grid[`x${l}:y${i}`];
       }
     }
   }
 
-  private addNeighbors(width: number, height: number) {
-    for (let i = 0; i < height; i++) {
-      for (let l = 0; l < width; l++) {
-        const cell = this.grid[`x${l}:y${i}`];
+  private addNeighbors(grid: Grid) {
+    for (let i = 0; i < grid.height; i++) {
+      for (let l = 0; l < grid.width; l++) {
+        const cell = grid.grid[`x${l}:y${i}`];
         cell.neighbors = [];
-        cell.neighbors[5] = this.grid[`x${l + 1}:y${i + 1}`];
-        cell.neighbors[0] = this.grid[`x${l}:y${i - 1}`];
-        cell.neighbors[2] = this.grid[`x${l}:y${i + 1}`];
-        cell.neighbors[4] = this.grid[`x${l + 1}:y${i - 1}`];
-        cell.neighbors[1] = this.grid[`x${l + 1}:y${i}`];
-        cell.neighbors[6] = this.grid[`x${l - 1}:y${i + 1}`];
-        cell.neighbors[3] = this.grid[`x${l - 1}:y${i}`];
-        cell.neighbors[7] = this.grid[`x${l - 1}:y${i - 1}`];
+        cell.neighbors[5] = grid.grid[`x${l + 1}:y${i + 1}`];
+        cell.neighbors[0] = grid.grid[`x${l}:y${i - 1}`];
+        cell.neighbors[2] = grid.grid[`x${l}:y${i + 1}`];
+        cell.neighbors[4] = grid.grid[`x${l + 1}:y${i - 1}`];
+        cell.neighbors[1] = grid.grid[`x${l + 1}:y${i}`];
+        cell.neighbors[6] = grid.grid[`x${l - 1}:y${i + 1}`];
+        cell.neighbors[3] = grid.grid[`x${l - 1}:y${i}`];
+        cell.neighbors[7] = grid.grid[`x${l - 1}:y${i - 1}`];
       }
     }
-  }
-
-  public mapCells(distance: number, x: number, y: number, selectedCells: { [key: string]: RelativePositionCell }, odd: boolean) {
-    if (distance < 0) { return }
-
-    for (let i = 0; i <= distance; i++) {
-      selectedCells[`x${x - i}:y${y}`] = this.grid[`x${x - i}:y${y}`] as RelativePositionCell
-      selectedCells[`x${x}:y${y - i}`] = this.grid[`x${x}:y${y - i}`] as RelativePositionCell
-      selectedCells[`x${x}:y${y + i}`] = this.grid[`x${x}:y${y + i}`] as RelativePositionCell
-      selectedCells[`x${x + i}:y${y}`] = this.grid[`x${x + i}:y${y}`] as RelativePositionCell
-    }
-
-    const newDistance = odd ? distance - 1 : distance - 2
-    this.mapCells(newDistance, x - 1, y - 1, selectedCells, !odd)
-    this.mapCells(newDistance, x + 1, y + 1, selectedCells, !odd)
-    this.mapCells(newDistance, x - 1, y + 1, selectedCells, !odd)
-    this.mapCells(newDistance, x + 1, y - 1, selectedCells, !odd)
   }
 }

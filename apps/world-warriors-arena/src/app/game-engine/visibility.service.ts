@@ -13,12 +13,12 @@ export class FogOfWarService {
     ) { }
 
   public preloadVisibility(obstacles: string[]): void {  
-    this.gridService.gridDisplay.forEach(row => {
+    this.gridService.activeGrid.gridDisplay.forEach(row => {
       row.forEach(cell => {
         if(!cell.obstacle) {
           this.visibleCell[cell.id] = []
           obstacles.forEach(id => {
-            this.traceCell(cell, this.gridService.grid[id])
+            this.traceCell(cell, this.gridService.activeGrid.grid[id])
           })
         }
       })
@@ -225,7 +225,7 @@ export class FogOfWarService {
   }
 
   private checkForObstacle(centerX: number, centerY: number, pointX: number, pointY: number, obstacle: Cell): boolean {
-    const assetCell = this.gridService.getGridCellByCoordinate(centerX, centerY)
+    const assetCell = this.gridService.activeGrid.getGridCellByCoordinate(centerX, centerY)
 
     const upLine = assetCell.x === obstacle.x && assetCell.y > obstacle.y
     const rightLine = assetCell.y === obstacle.y && assetCell.x < obstacle.x
@@ -295,7 +295,7 @@ export class FogOfWarService {
         reachedDestination = true
       } else {
         try {
-        const cell = this.gridService.getGridCellByCoordinate(checkLocationX, checkLocationY)
+        const cell = this.gridService.activeGrid.getGridCellByCoordinate(checkLocationX, checkLocationY)
         foundObstacle = cell.obstacle
         if (foundObstacle) {
           reachedDestination = true

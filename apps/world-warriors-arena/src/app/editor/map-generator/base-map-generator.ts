@@ -14,12 +14,12 @@ export class BaseMapGenerator {
   }
 
   public autoFillBackgroundTerrain(collectionId: string) {
-    for (let h = 0; h < this.gridService.height; h++) {
-      for (let w = 0; w < this.gridService.width; w++) {
+    for (let h = 0; h < this.gridService.activeGrid.height; h++) {
+      for (let w = 0; w < this.gridService.activeGrid.width; w++) {
         let spriteSheet
         let xPos = 0
         let yPos = 0
-        const cell = this.gridService.grid[`x${w}:y${h}`]
+        const cell = this.gridService.activeGrid.grid[`x${w}:y${h}`]
 
         //Randomly generates random texture
         let weight = 0
@@ -76,14 +76,14 @@ export class BaseMapGenerator {
   public createRandomizedBoarder(): void {
     const randomConsistency = 4
 
-    this.gridService.gridDisplay.forEach(row => {
+    this.gridService.activeGrid.gridDisplay.forEach(row => {
       row.forEach(cell => {
         // Outer most layer
-        if (cell.x < 2 || cell.x > this.gridService.width - 3) {
+        if (cell.x < 2 || cell.x > this.gridService.activeGrid.width - 3) {
           cell.obstacle = true
           cell.growableTileId = this.mapDetails.terrainTypeId
         }
-        if (cell.y < 3 || cell.y > this.gridService.height - 3) {
+        if (cell.y < 3 || cell.y > this.gridService.activeGrid.height - 3) {
           cell.obstacle = true
           cell.growableTileId = this.mapDetails.terrainTypeId
         }
@@ -108,28 +108,28 @@ export class BaseMapGenerator {
       })
     })
 
-    this.gridService.gridDisplay.forEach(row => {
+    this.gridService.activeGrid.gridDisplay.forEach(row => {
       row.forEach(cell => {
         // right side 2nd layers
-        if (cell.x === this.gridService.width - 3) {
+        if (cell.x === this.gridService.activeGrid.width - 3) {
           this.setEdgeLayerRandomization(cell, 2)
         }
 
         // bottom side 2nd layer
-        if (cell.y === this.gridService.height - 3) {
+        if (cell.y === this.gridService.activeGrid.height - 3) {
           this.setEdgeLayerRandomization(cell, 1)
         }
       })
     })
 
-    this.gridService.gridDisplay.forEach(row => {
+    this.gridService.activeGrid.gridDisplay.forEach(row => {
       row.forEach(cell => {
         // right side 3rd layer
-        if (cell.x === this.gridService.width - 4 && cell.neighbors[1].obstacle && cell.neighbors[2] && cell.neighbors[2].neighbors[1].obstacle) {
+        if (cell.x === this.gridService.activeGrid.width - 4 && cell.neighbors[1].obstacle && cell.neighbors[2] && cell.neighbors[2].neighbors[1].obstacle) {
           this.setEdgeLayerRandomization(cell, 2)
         }
         // bottom side 3rd layer
-        if (cell.y === this.gridService.height - 4 && cell.neighbors[2].obstacle && cell.neighbors[1] && cell.neighbors[1].neighbors[2].obstacle) {
+        if (cell.y === this.gridService.activeGrid.height - 4 && cell.neighbors[2].obstacle && cell.neighbors[1] && cell.neighbors[1].neighbors[2].obstacle) {
           this.setEdgeLayerRandomization(cell, 1)
         }
       })
@@ -150,7 +150,7 @@ export class BaseMapGenerator {
   }
 
   public randomlyPlaceLargeObstacles(): void {
-    this.gridService.gridDisplay.forEach(row => {
+    this.gridService.activeGrid.gridDisplay.forEach(row => {
       row.forEach(cell => {
         cell.obstacle = !!!Math.floor(Math.random() * 4)
       })
@@ -159,11 +159,11 @@ export class BaseMapGenerator {
 
 
   public addRandomTerrain(weight: number = 3): void {
-    for (let i = 0; i < this.gridService.width; i++) {
-      const randomY = Math.floor(Math.random() * this.gridService.height)
-      const randomX = Math.floor(Math.random() * this.gridService.height)
+    for (let i = 0; i < this.gridService.activeGrid.width; i++) {
+      const randomY = Math.floor(Math.random() * this.gridService.activeGrid.height)
+      const randomX = Math.floor(Math.random() * this.gridService.activeGrid.height)
 
-      const startCell = this.gridService.getCell(randomX, randomY)
+      const startCell = this.gridService.activeGrid.getCell(randomX, randomY)
       startCell.obstacle = true
       startCell.growableTileId = this.mapDetails.terrainTypeId
 
@@ -179,7 +179,7 @@ export class BaseMapGenerator {
   }
 
   public terrainCleanup(): void {
-    this.gridService.gridDisplay.forEach(row => {
+    this.gridService.activeGrid.gridDisplay.forEach(row => {
       row.forEach(cell => {
         if(cell.growableTileId) {          
           if((cell.neighbors[1] && !cell.neighbors[1].growableTileId) && (cell.neighbors[3] && !cell.neighbors[3].growableTileId)) {
@@ -233,7 +233,7 @@ export class BaseMapGenerator {
   }
   
   public clearObstacles(): void {
-    this.gridService.gridDisplay.forEach(row => {
+    this.gridService.activeGrid.gridDisplay.forEach(row => {
       row.forEach(cell => {
         cell.obstacle = false
       })

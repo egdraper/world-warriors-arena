@@ -13,6 +13,12 @@ export class AssetsService {
 
   constructor() { }
 
+  public removeGameComponent(): void {
+    this.gameComponents = this.gameComponents.filter(asset => asset != this.selectedGameComponent)
+    this.selectedGameComponent.cell.occupiedBy = undefined
+    this.selectedGameComponent = undefined
+  }
+
   public addInvertedMapAsset(selectedCell: Cell): void {
     selectedCell.growableTileId = undefined
     selectedCell.obstacle = false

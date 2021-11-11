@@ -7,6 +7,7 @@ export class GameSettings {
   public static scrollSensitivity: number = 96
   public static gm: boolean = false
   public static trackMovement: boolean = false
+  public static scale: number = 1
 }
 
 export class MapSettings {

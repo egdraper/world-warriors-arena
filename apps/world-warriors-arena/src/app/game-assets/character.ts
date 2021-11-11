@@ -6,6 +6,7 @@ import { ShortestPath } from "../game-engine/shortest-path";
 import { GridService } from "../game-engine/grid.service";
 import { MotionAsset } from "../models/assets.model";
 import { Cell } from "../models/cell.model";
+import { AssetsService } from "./assets.service";
 
 export class Character extends MotionAsset {
   public frameCounter = 0
@@ -20,8 +21,9 @@ export class Character extends MotionAsset {
     public grid: GridService,
     public shortestPath: ShortestPath,
     public engine: Engine,
+    public assetService: AssetsService
   ) {
-    super(grid, shortestPath, engine, drawService, canvasService);
+    super(grid, shortestPath, engine, drawService, canvasService, assetService);
     
     // sets the starting cell location
     this.positionX = cell.posX

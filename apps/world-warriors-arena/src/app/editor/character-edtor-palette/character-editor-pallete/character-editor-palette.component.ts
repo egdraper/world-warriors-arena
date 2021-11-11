@@ -33,8 +33,8 @@ export class CharacterEditorPaletteComponent implements OnInit {
   }
 
   public tileClick(image: HTMLImageElement): void {
-    const gridCell1 = this.gridService.getGridCellByCoordinate(this.canvas.centerPointX, this.canvas.centerPointY)
-    const player = new Character(image.src, this.canvas, this.drawService, gridCell1, this.gridService, this.shortestPath, this.engine)
+    const gridCell1 = this.gridService.activeGrid.getGridCellByCoordinate(this.canvas.centerPointX, this.canvas.centerPointY)
+    const player = new Character(image.src, this.canvas, this.drawService, gridCell1, this.gridService, this.shortestPath, this.engine, this.assetService)
     gridCell1.occupiedBy = player  // <--- adding the character into the occupiedBy Spot
 
     player.animationFrame = [20, 40, 60] // set to 10 for walking speed

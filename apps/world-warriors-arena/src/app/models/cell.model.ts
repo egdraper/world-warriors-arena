@@ -19,6 +19,7 @@ export interface Cell {
   growableTileOverride?: boolean
   backgroundTile?: SpriteBackgroundTile;
   backgroundGrowableTileId?: string
+  portalTo?: {gridId: string, cell: Cell}
 }
 
 export class TileAttachment {
@@ -114,7 +115,7 @@ export interface Visited {
 }
 
 export class GridDetails {
-  public name: string = ""
+  public name?: string = ""
   public width: number = 0
   public height: number = 0
   public grid?: {[cell: string]: Cell }

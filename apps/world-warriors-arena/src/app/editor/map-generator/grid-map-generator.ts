@@ -2,6 +2,7 @@ import { CanvasService } from "../../canvas/canvas.service";
 import { GridService } from "../../game-engine/grid.service";
 import { ShortestPath } from "../../game-engine/shortest-path";
 import { Cell, GridMapCell, MapDetails } from "../../models/cell.model";
+import { GameSettings } from "../../models/game-settings";
 import { EditorService } from "../editor-palette/editor.service";
 import { BaseMapGenerator } from "./base-map-generator";
 
@@ -24,7 +25,7 @@ export class GridMapGenerator extends BaseMapGenerator {
     let clearing: Cell[] = []
     gridMapCell.markers.forEach(marker => {
       try {
-        clearing.push(this.gridService.getGridCellByCoordinate(marker.x * (gridMapCell.relationX * this.canvasService.scale), marker.y * (gridMapCell.relationY * this.canvasService.scale )))
+        clearing.push(this.gridService.activeGrid.getGridCellByCoordinate(marker.x * (gridMapCell.relationX * GameSettings.scale), marker.y * (gridMapCell.relationY * GameSettings.scale )))
       } catch { }
     })
     clearing = [...new Set(clearing)]
@@ -50,7 +51,7 @@ export class GridMapGenerator extends BaseMapGenerator {
   }
 
   public addFullTerrain(): void {
-    this.gridService.gridDisplay.forEach(row => {
+    this.gridService.activeGrid.gridDisplay.forEach(row => {
       row.forEach(cell => {
         cell.growableTileId = this.mapDetails.terrainTypeId
         cell.obstacle = true

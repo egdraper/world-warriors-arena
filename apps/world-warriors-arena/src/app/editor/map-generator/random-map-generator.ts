@@ -21,7 +21,7 @@ export class RandomMapGenerator extends BaseMapGenerator {
   }
 
   public createGrid(): void {
-    this.gridService.createGrid(this.mapDetails.width, this.mapDetails.height, this.mapDetails.terrainTypeId)
+    this.gridService.createNewGrid(this.mapDetails.width, this.mapDetails.height, this.mapDetails.terrainTypeId)
   }
 
   public autoPopulateForegroundTerrain(): void {
@@ -35,7 +35,7 @@ export class RandomMapGenerator extends BaseMapGenerator {
       try {
         this.clearObstacles()
         this.randomlyPlaceLargeObstacles()
-        path = this.shortestPath.find(this.gridService.grid[`x0:y${randomLeft}`], this.gridService.grid[`x${this.gridService.width - 2}:y${randomRight}`], [])
+        path = this.shortestPath.find(this.gridService.activeGrid.grid[`x0:y${randomLeft}`], this.gridService.activeGrid.grid[`x${this.gridService.activeGrid.width - 2}:y${randomRight}`], [])
 
       } catch { }
     }
@@ -75,7 +75,7 @@ export class RandomMapGenerator extends BaseMapGenerator {
   }
 
   public randomlyPlaceLargeObstacles(): void {
-    this.gridService.gridDisplay.forEach(row => {
+    this.gridService.activeGrid.gridDisplay.forEach(row => {
       row.forEach(cell => {
         cell.obstacle = !!!Math.floor(Math.random() * 4)
       })

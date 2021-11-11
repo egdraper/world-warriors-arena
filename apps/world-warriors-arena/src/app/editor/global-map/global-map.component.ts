@@ -60,8 +60,8 @@ export class GlobalMapComponent implements OnInit {
   public onGridCellClick(gridCell: GridMapCell, mouseEvent: MouseEvent, gridCanvas: HTMLCanvasElement): void {
     gridCell.context = gridCanvas.getContext('2d');
     gridCell.gridCanvas = gridCanvas
-    gridCell.relationX = (this.gridService.width * GRID_CELL_MULTIPLIER) / 200
-    gridCell.relationY = (this.gridService.height * GRID_CELL_MULTIPLIER) / 200
+    gridCell.relationX = (this.gridService.activeGrid.width * GRID_CELL_MULTIPLIER) / 200
+    gridCell.relationY = (this.gridService.activeGrid.height * GRID_CELL_MULTIPLIER) / 200
     
     gridCanvas.height = 200
     gridCanvas.width = 200
@@ -102,8 +102,8 @@ export class GlobalMapComponent implements OnInit {
   }
 
   public generateMaps(): void {
-    this.gridService.createGrid(60, 60, "DrawableDungeon")
-    this.canvasService.setupCanvases(this.gridService.width, this.gridService.height)
+    this.gridService.createNewGrid(60, 60, "DrawableDungeon")
+    this.canvasService.setupCanvases()
 
     this.drawService.drawBackground(true)
     this.drawService.drawGridLines()

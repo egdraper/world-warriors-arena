@@ -8,6 +8,7 @@ import { SelectionIndicator } from '../game-assets/selection-indicator';
 import { GridService } from '../game-engine/grid.service';
 import { Cell } from './cell.model';
 import { GameSettings } from './game-settings';
+import { AssetsService } from '../game-assets/assets.service';
 
 export class GameComponent {
   public id: string
@@ -67,7 +68,9 @@ export abstract class MotionAsset extends Asset {
     public shortestPath: ShortestPath,
     public engineService: Engine,
     public drawService: DrawService,
-    public canvasService: CanvasService) {
+    public canvasService: CanvasService,
+    public assetService: AssetsService,
+    ) {
     super()
   }
 
@@ -136,11 +139,22 @@ export abstract class MotionAsset extends Asset {
     this.positionY += nextYMove
 
     if (!GameSettings.gm || GameSettings.trackMovement) {
-      this.canvasService.adustViewPort(-1 * (nextXMove), -1 * (nextYMove), this, this.grid.width, this.grid.height)
+      this.canvasService.trackAsset(-1 * (nextXMove), -1 * (nextYMove), this, this.grid.activeGrid)
     }
 
     if (this.positionY % (32) === 0 && this.positionX % (32) === 0) {
-      this.cell = this.grid.grid[`x${this.positionX / (32)}:y${this.positionY / (32)}`]
+      this.cell = this.grid.activeGrid.grid[`x${this.positionX / (32)}:y${this.positionY / (32)}`]
+      console.log(this.cell)
+      if(this.cell.portalTo) {
+        const newGridId = this.cell.portalTo.gridId
+        const newCell = this.cell.portalTo.cell
+        newCell.occupiedBy = this
+        this.cell = newCell
+        this.positionX = this.cell.posX
+        this.positionY = this.cell.posY
+        this.grid.switchGrid(newGridId)
+        this.canvasService.centerOverAsset(this.assetService.selectedGameComponent, this.grid.activeGrid.width, this.grid.activeGrid.height)
+      }
 
       this.nextCell = this.currentPath.length > 0
         ? this.currentPath.pop()

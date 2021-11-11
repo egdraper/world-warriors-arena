@@ -6,6 +6,7 @@ import { ShortLivedAnimation } from "../../game-assets/click-animation";
 import { growableItems } from "../../game-assets/tiles.db.ts/tile-assets.db";
 import { MotionAsset } from "../../models/assets.model";
 import { Cell } from "../../models/cell.model";
+import { GameSettings } from "../../models/game-settings";
 import { GridService } from "../grid.service";
 import { FogOfWarService } from "../visibility.service";
 
@@ -22,8 +23,8 @@ export class DrawService {
   // Draws Grid Lines  
   public drawGridLines(): void {
     if (this.editorService.backgroundDirty) {
-      for (let h = 0; h <= this.gridService.height; h++) {
-        for (let w = 0; w <= this.gridService.width; w++) {
+      for (let h = 0; h <= this.gridService.activeGrid.height; h++) {
+        for (let w = 0; w <= this.gridService.activeGrid.width; w++) {
           // Horizontal lines
           this.canvasService.backgroundCTX.beginPath()
           this.canvasService.backgroundCTX.moveTo(w * 32, h * 32)
@@ -44,14 +45,15 @@ export class DrawService {
     }
   }
 
-  // Draws baground tiles when needed
+  // Draws background tiles when needed
   public drawBackground(forceDraw: boolean = false): void {
-    if (this.gridService.gridLoaded) { return }
+    if (!this.gridService.activeGrid) { return }
+    if (!this.gridService.activeGrid.gridLoaded) { return }
 
     if (this.editorService.backgroundDirty || forceDraw) {
-      for (let h = 0; h < this.gridService.height; h++) {
-        for (let w = 0; w < this.gridService.width; w++) {
-          const cell = this.gridService.grid[`x${w}:y${h}`]
+      for (let h = 0; h < this.gridService.activeGrid.height; h++) {
+        for (let w = 0; w < this.gridService.activeGrid.width; w++) {
+          const cell = this.gridService.activeGrid.grid[`x${w}:y${h}`]
 
           try {
             if (cell.backgroundGrowableTileId) {
@@ -70,13 +72,16 @@ export class DrawService {
 
   // Paints a black box over the edges to give one cell's worth of room to have players step in and out of view
   public drawBlackOutEdges(): void {
+    if (!this.gridService.activeGrid) { return }
+    if (!this.gridService.activeGrid.gridLoaded) { return }
+
     if (this.canvasService.blackoutCTX) {
       this.canvasService.blackoutCTX.fillStyle = 'black';
       this.canvasService.blackoutCTX.fillRect(
         0,
         0,
         32,
-        this.gridService.width * 32,
+        this.gridService.activeGrid.width * 32,
       )
     }
 
@@ -84,8 +89,8 @@ export class DrawService {
       this.canvasService.blackoutCTX.fillStyle = 'black';
       this.canvasService.blackoutCTX.fillRect(
         0,
-        this.gridService.height * 32 - 64,
-        this.gridService.width * 32,
+        this.gridService.activeGrid.height * 32 - 64,
+        this.gridService.activeGrid.width * 32,
         64,
       )
 
@@ -106,14 +111,14 @@ export class DrawService {
   public drawBlackoutFog(): void {
     if (this.fogOfWarService.fogEnabled) {
       this.canvasService.blackoutCTX.globalCompositeOperation = 'destination-over'
-      this.canvasService.blackoutCTX.clearRect(0, 0, this.gridService.width * 32, this.gridService.height * 32);
+      this.canvasService.blackoutCTX.clearRect(0, 0, this.gridService.activeGrid.width * 32, this.gridService.activeGrid.height * 32);
       this.canvasService.blackoutCTX.fillStyle = 'black';
       this.canvasService.blackoutCTX.globalAlpha = 0.9;
       this.canvasService.blackoutCTX.fillRect(
         0,
         0,
-        this.gridService.width * 32,
-        this.gridService.height * 32
+        this.gridService.activeGrid.width * 32,
+        this.gridService.activeGrid.height * 32
       )
     }
     // this.addOpaqueFogLineOfSight()
@@ -123,14 +128,14 @@ export class DrawService {
   public drawFog(): void {
     if (this.fogOfWarService.fogEnabled) {
       this.canvasService.fogCTX.globalCompositeOperation = 'destination-over'
-      this.canvasService.fogCTX.clearRect(0, 0, this.gridService.width * 32, this.gridService.height * 32);
+      this.canvasService.fogCTX.clearRect(0, 0, this.gridService.activeGrid.width * 32, this.gridService.activeGrid.height * 32);
       this.canvasService.fogCTX.globalAlpha = 0.5;
       this.canvasService.fogCTX.fillStyle = 'black';
       this.canvasService.fogCTX.fillRect(
         0,
         0,
-        this.gridService.width * 32,
-        this.gridService.height * 32
+        this.gridService.activeGrid.width * 32,
+        this.gridService.activeGrid.height * 32
       )
     }
     // this.addOpaqueFogLineOfSight()
@@ -182,7 +187,7 @@ export class DrawService {
 
   // Draws animations that have a short life span
   public drawShortLivedAnimation(animation: ShortLivedAnimation): void {
-    this.canvasService.overlayCTX.clearRect(0, 0, this.gridService.width * 32 * this.canvasService.scale, this.gridService.height * 32 * this.canvasService.scale);
+    this.canvasService.overlayCTX.clearRect(0, 0, this.gridService.activeGrid.width * 32 * GameSettings.scale, this.gridService.activeGrid.height * 32 * GameSettings.scale);
 
     if (!animation.cell) { return }
     this.canvasService.foregroundCTX.imageSmoothingEnabled = false
@@ -223,53 +228,51 @@ export class DrawService {
 
   public index = 0
   public drawAnimatedAssets(): void {
-    if (!this.gridService.gridLoaded) { return }
+    if (!this.gridService.activeGrid) { return }
+    if (!this.gridService.activeGrid.gridLoaded) { return }
 
     if (this.canvasService.foregroundCTX) {
 
       // Ensure the viewport does not kick back a negative number (cells don't work with negatives)
       let topLeftPosX = -1 * this.canvasService.canvasViewPortOffsetX
       let topLeftPosY = -1 * this.canvasService.canvasViewPortOffsetY
-      let topRightPosX = topLeftPosX + this.canvasService.canvasSize + (32 * (1/this.canvasService.scale))
-      let bottomPosY = topLeftPosY + this.canvasService.canvasSize + (32 * (1/this.canvasService.scale)) 
+      let topRightPosX = topLeftPosX + this.canvasService.canvasSize + (32 * (1 / GameSettings.scale))
+      let bottomPosY = topLeftPosY + this.canvasService.canvasSize + (32 * (1 / GameSettings.scale))
 
-      const cellTopLeft = this.gridService.getGridCellByCoordinate(topLeftPosX, topLeftPosY)
-      let cellTopRight = this.gridService.getGridCellByCoordinate(topRightPosX, topLeftPosY)
-      let cellBottomLeft = this.gridService.getGridCellByCoordinate(topLeftPosX, bottomPosY)
+      const cellTopLeft = this.gridService.activeGrid.getGridCellByCoordinate(topLeftPosX, topLeftPosY)
+      let cellTopRight = this.gridService.activeGrid.getGridCellByCoordinate(topRightPosX, topLeftPosY)
+      let cellBottomLeft = this.gridService.activeGrid.getGridCellByCoordinate(topLeftPosX, bottomPosY)
 
-      if(!cellBottomLeft) {
-        cellBottomLeft = this.gridService.grid[`x0:y${this.gridService.height - 1}`]
+      if (!cellBottomLeft) {
+        cellBottomLeft = this.gridService.activeGrid.grid[`x0:y${this.gridService.activeGrid.height - 1}`]
       }
-      if(!cellTopRight) {
-        cellTopRight = this.gridService.grid[`x${this.gridService.width - 1}:y0`]
+      if (!cellTopRight) {
+        cellTopRight = this.gridService.activeGrid.grid[`x${this.gridService.activeGrid.width - 1}:y0`]
       }
 
-      this.canvasService.foregroundCTX.clearRect(0, 0, this.gridService.width * 32, this.gridService.height * 32);
-      this.canvasService.backgroundCTX.clearRect(0, 0, this.gridService.width * 32, this.gridService.height * 32);
-      this.canvasService.blackoutCTX.clearRect(0, 0, this.gridService.width * 32, this.gridService.height * 32);
+      this.canvasService.foregroundCTX.clearRect(0, 0, this.gridService.activeGrid.width * 32, this.gridService.activeGrid.height * 32);
+      this.canvasService.backgroundCTX.clearRect(0, 0, this.gridService.activeGrid.width * 32, this.gridService.activeGrid.height * 32);
+      this.canvasService.blackoutCTX.clearRect(0, 0, this.gridService.activeGrid.width * 32, this.gridService.activeGrid.height * 32);
 
       try {
-        if (this.canvasService.largeImageBackground) {
+        if (this.gridService.activeGrid.largeImage.background) {
           this.drawLargeImageBackground(topLeftPosX, topLeftPosY)
           this.assetService.gameComponents.forEach(gameComponent => {
             this.drawAroundAsset(gameComponent)
           })
         } else {
-          if (!this.canvasService.largeImageBackground) {
-            for (let y = cellTopLeft.y; y <= cellBottomLeft.y; y++) {
-              for (let x = cellTopLeft?.x; x <= cellTopRight?.x; x++) {
-                const drawableCell = this.gridService.getCell(x, y)
+          for (let y = cellTopLeft.y; y <= cellBottomLeft.y; y++) {
+            for (let x = cellTopLeft?.x; x <= cellTopRight?.x; x++) {
+              const drawableCell = this.gridService.activeGrid.getCell(x, y)
 
-                if (drawableCell.occupiedBy) {
-                  this.drawAsset(drawableCell.occupiedBy)
-                }
-
-                this.drawOnCell(drawableCell)
-                this.drawOnBackgroundCell(drawableCell)
+              if (drawableCell.occupiedBy) {
+                this.drawAsset(drawableCell.occupiedBy)
               }
+
+              this.drawOnCell(drawableCell)
+              this.drawOnBackgroundCell(drawableCell)
             }
           }
-
         }
       }
       catch (e) {
@@ -283,28 +286,28 @@ export class DrawService {
   public drawLargeImageBackground(canvasTopLeftPosX: number, canvasTopLeftPosY: number): void {
     this.canvasService.backgroundCTX.imageSmoothingEnabled = false
     this.canvasService.backgroundCTX.drawImage(
-      this.canvasService.largeImageBackground,
+      this.gridService.activeGrid.largeImage.background,
       canvasTopLeftPosX,
       canvasTopLeftPosY,
-      this.canvasService.canvasSize * (1 / this.canvasService.scale),
-      this.canvasService.canvasSize * (1 / this.canvasService.scale),
+      this.canvasService.canvasSize * (1 / GameSettings.scale),
+      this.canvasService.canvasSize * (1 / GameSettings.scale),
       canvasTopLeftPosX,
       canvasTopLeftPosY,
-      this.canvasService.canvasSize * (1 / this.canvasService.scale),
-      this.canvasService.canvasSize * (1 / this.canvasService.scale)
+      this.canvasService.canvasSize * (1 / GameSettings.scale),
+      this.canvasService.canvasSize * (1 / GameSettings.scale)
     )
 
     this.canvasService.foregroundCTX.imageSmoothingEnabled = false
     this.canvasService.foregroundCTX.drawImage(
-      this.canvasService.largeImageForeground,
+      this.gridService.activeGrid.largeImage.foreground,
       canvasTopLeftPosX,
       canvasTopLeftPosY,
-      this.canvasService.canvasSize * (1 / this.canvasService.scale),
-      this.canvasService.canvasSize * (1 / this.canvasService.scale),
+      this.canvasService.canvasSize * (1 / GameSettings.scale),
+      this.canvasService.canvasSize * (1 / GameSettings.scale),
       canvasTopLeftPosX,
       canvasTopLeftPosY,
-      this.canvasService.canvasSize * (1 / this.canvasService.scale),
-      this.canvasService.canvasSize * (1 / this.canvasService.scale)
+      this.canvasService.canvasSize * (1 / GameSettings.scale),
+      this.canvasService.canvasSize * (1 / GameSettings.scale)
     )
   }
 
@@ -321,7 +324,7 @@ export class DrawService {
           continue
         }
 
-        const paintingArea = this.gridService.getCell(x + l, y + i)
+        const paintingArea = this.gridService.activeGrid.getCell(x + l, y + i)
 
         if (paintingArea.imageTile) {
           this.drawOnCell(paintingArea, true)
@@ -380,9 +383,9 @@ export class DrawService {
 
   // draws the entire grid foreground objects
   public drawObstacles(): void {
-    if (this.canvasService.foregroundCTX && this.assetService.obstaclesDirty && !this.canvasService.largeImageBackground) {
-      // this.canvasService.foregroundCTX.clearRect(0, 0, this.gridService.width * (36 * this.canvasService.scale), this.gridService.height * (36 * this.canvasService.scale));
-      this.gridService.gridDisplay.forEach(row => {
+    if (this.canvasService.foregroundCTX && this.assetService.obstaclesDirty && !this.gridService.activeGrid.largeImage.background) {
+      // this.canvasService.foregroundCTX.clearRect(0, 0, this.gridService.width * (36 * GameSettings.scale), this.gridService.height * (36 * GameSettings.scale));
+      this.gridService.activeGrid.gridDisplay.forEach(row => {
         row.forEach((cell: Cell) => {
 
           if (cell.growableTileId && !cell.growableTileOverride) {

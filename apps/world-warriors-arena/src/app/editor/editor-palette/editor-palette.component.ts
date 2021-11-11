@@ -26,7 +26,7 @@ export class EditorpaletteComponent implements OnInit {
     public canvasService: CanvasService,
     private editorService: EditorService,
     private shortestPath: ShortestPath,
-    private grid: GridService,
+    public grid: GridService,
     private drawService: DrawService
   ) { }
 
@@ -46,12 +46,16 @@ export class EditorpaletteComponent implements OnInit {
     this.editorService.selectedAsset = tile
   }
 
+  public switchGrid(gridId: string): void {
+    this.grid.switchGrid(gridId)
+  }
+
   public changeLockState(): void {
     this.lockState = this.lockState === "Locked" ? "UnLocked" : "Locked"
 
     if(this.lockState === "Locked") {
       if(this.assetService.selectedGameComponent) {
-        this.canvasService.centerOverAsset(this.assetService.selectedGameComponent, this.grid.width, this.grid.height)
+        this.canvasService.centerOverAsset(this.assetService.selectedGameComponent, this.grid.activeGrid.width, this.grid.activeGrid.height)
       }
       GameSettings.gm = false
     } else {
@@ -69,50 +73,27 @@ export class EditorpaletteComponent implements OnInit {
     const tempViewPortX = this.canvasService.canvasViewPortOffsetX
     const tempViewPortY = this.canvasService.canvasViewPortOffsetY
 
-
     this.canvasService.resetViewport()
-    this.canvasService.scale = Number(scale.value)
-    // this.grid.gridDisplay.forEach(row => {
-    //   row.forEach(cell => {
-    //     cell.posX = cell.x * (32 * this.canvasService.scale)
-    //     cell.posY = cell.y * (32 * this.canvasService.scale)
-    //     if(cell.imageTile) {
-    //       cell.imageTile.tileOffsetX = cell.imageTile.tileOffsetX * this.canvasService.scale
-    //       cell.imageTile.tileOffsetY = cell.imageTile.tileOffsetY * this.canvasService.scale
-    //     }
-    //   })
-    // })
-    this.canvasService.setupCanvases(this.grid.width, this.grid.height)
+    GameSettings.scale = Number(scale.value)
+ 
+    this.canvasService.setupCanvases()
     this.editorService.backgroundDirty  = true
     this.assetService.obstaclesDirty = true
 
-    //TODO Move to canvas Service
     let perfectHeight = window.innerHeight
-    while (perfectHeight % (this.canvasService.scale * 32) !== 0) {
+   
+    while (perfectHeight % (GameSettings.scale * 32) !== 0) {
       perfectHeight--
     }
-    // end todo
-    this.canvasService.maxCellCountX = perfectHeight / (32 * this.canvasService.scale)
 
+    this.canvasService.maxCellCountX = perfectHeight / (32 * GameSettings.scale)
     this.canvasService.adustViewPort(tempViewPortX, tempViewPortY)
 
-    // if (this.grid.gridLoaded) {
-    //   this.canvasService.largeImageBackground = undefined
-    //   this.canvasService.largeImageForeground = undefined
-
-
-    //   setTimeout(() => { 
-    //   this.canvasService.setupCanvases(this.grid.width, this.grid.height)
-    //   // this.editorService.backgroundDirty = true
-    //   // this.assetService.obstaclesDirty = true
-
-    //     this.canvasService.createLargeImage(this.grid.width * 32, this.grid.height * 32, this.grid)
-    //   })
-    // }
+   
   }
 
   public invertedClicked(): void {
-    this.grid.inverted = !this.grid.inverted
+    this.grid.activeGrid.inverted = !this.grid.activeGrid.inverted
   }
 
 
@@ -129,7 +110,7 @@ export class EditorpaletteComponent implements OnInit {
     }
 
     mapGenerator.generateMap(mapDetails)
-    this.canvasService.setupCanvases(mapDetails.width, mapDetails.height)
+    this.canvasService.setupCanvases()
 
     // CLEANUP - Rethink the "Dirty" locations, if they should be in drawing service or where they are
     this.assetService.obstaclesDirty = true
@@ -138,9 +119,9 @@ export class EditorpaletteComponent implements OnInit {
     // CLEANUP - Needs to be moved into somewhere that re-draws
     this.drawService.drawGridLines()
 
-    const centerCell = this.grid.getGridCellByCoordinate(Math.floor(this.canvasService.canvasSize / 2), Math.floor(this.canvasService.canvasSize / 2))
-    this.canvasService.centerPointX = centerCell.posX * this.canvasService.scale
-    this.canvasService.centerPointY = centerCell.posY * this.canvasService.scale
+    const centerCell = this.grid.activeGrid.getGridCellByCoordinate(Math.floor(this.canvasService.canvasSize / 2), Math.floor(this.canvasService.canvasSize / 2))
+    this.canvasService.centerPointX = centerCell.posX * GameSettings.scale
+    this.canvasService.centerPointY = centerCell.posY * GameSettings.scale
   }
 
 
