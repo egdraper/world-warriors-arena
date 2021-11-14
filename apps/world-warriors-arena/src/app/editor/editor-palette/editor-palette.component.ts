@@ -15,7 +15,7 @@ import { GameSettings } from '../../models/game-settings';
   templateUrl: './editor-palette.component.html',
   styleUrls: ['./editor-palette.component.scss']
 })
-export class EditorpaletteComponent implements OnInit {
+export class EditorPaletteComponent implements OnInit {
   public images: any[] = []
   public imageArray: any[] = []
   public currentImageSrc: string = ""
@@ -55,7 +55,7 @@ export class EditorpaletteComponent implements OnInit {
 
     if(this.lockState === "Locked") {
       if(this.assetService.selectedGameComponent) {
-        this.canvasService.centerOverAsset(this.assetService.selectedGameComponent, this.grid.activeGrid.width, this.grid.activeGrid.height)
+        this.canvasService.centerOverAsset(this.assetService.selectedGameComponent, this.grid.activeGrid)
       }
       GameSettings.gm = false
     } else {
@@ -87,7 +87,7 @@ export class EditorpaletteComponent implements OnInit {
     }
 
     this.canvasService.maxCellCountX = perfectHeight / (32 * GameSettings.scale)
-    this.canvasService.adustViewPort(tempViewPortX, tempViewPortY)
+    // this.canvasService.adustViewPort(tempViewPortX, tempViewPortY)
 
    
   }

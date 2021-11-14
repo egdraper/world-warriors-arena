@@ -13,6 +13,7 @@ import { AssetsService } from '../game-assets/assets.service';
 export class GameComponent {
   public id: string
   public cell: Cell = null
+  public gridId: string = "0"
 
   constructor() {
     this.id = uuidv4()
@@ -109,10 +110,8 @@ export abstract class MotionAsset extends Asset {
     this.currentPath = this.shortestPath.find(startCell, endCell, charactersOnGrid)
     this.moving = true
     const currentCell = this.currentPath.pop() // removes cell the character is standing on
-    currentCell.occupiedBy = undefined
     this.nextCell = this.currentPath.pop()
-    this.nextCell.occupiedBy = this
-    this.setSpriteDirection()
+   this.setSpriteDirection()
     this.animationFrame = 8
   }
 
@@ -144,16 +143,17 @@ export abstract class MotionAsset extends Asset {
 
     if (this.positionY % (32) === 0 && this.positionX % (32) === 0) {
       this.cell = this.grid.activeGrid.grid[`x${this.positionX / (32)}:y${this.positionY / (32)}`]
-      console.log(this.cell)
+      // console.log(this.cell)
+     
       if(this.cell.portalTo) {
         const newGridId = this.cell.portalTo.gridId
         const newCell = this.cell.portalTo.cell
-        newCell.occupiedBy = this
         this.cell = newCell
+        this.gridId = newGridId
         this.positionX = this.cell.posX
         this.positionY = this.cell.posY
         this.grid.switchGrid(newGridId)
-        this.canvasService.centerOverAsset(this.assetService.selectedGameComponent, this.grid.activeGrid.width, this.grid.activeGrid.height)
+        this.canvasService.centerOverAsset(this.assetService.selectedGameComponent, this.grid.activeGrid)
       }
 
       this.nextCell = this.currentPath.length > 0
@@ -162,7 +162,6 @@ export abstract class MotionAsset extends Asset {
 
 
       if (this.redirection) {
-        this.cell.occupiedBy = undefined
         this.endMovement()
         this.startMovement(this.cell, this.redirection.end, this.redirection.charactersOnGrid)
       }
@@ -178,8 +177,6 @@ export abstract class MotionAsset extends Asset {
         //   if(this.grid.grid[cellId].obstacle) { this.drawService.clearFogLineOfSight(this.nextCell, this.grid.grid[cellId]) }
         // })
         this.drawService.clearFogLineOfSight(this.nextCell)
-        this.cell.occupiedBy = undefined
-        this.nextCell.occupiedBy = this
         this.setSpriteDirection()
       }
     }

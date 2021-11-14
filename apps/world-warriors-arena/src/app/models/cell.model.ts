@@ -13,7 +13,6 @@ export interface Cell {
   visible?: boolean;
   neighbors?: Cell[];
   destination?: boolean;
-  occupiedBy?: MotionAsset
   imageTile?: SpriteTile;
   growableTileId?: string
   growableTileOverride?: boolean

@@ -6,6 +6,7 @@ import { DrawService } from '../../../game-engine/draw-tools/draw.service';
 import { Engine } from '../../../game-engine/engine';
 import { GridService } from '../../../game-engine/grid.service';
 import { ShortestPath } from '../../../game-engine/shortest-path';
+import { CharacterEditorService } from './character-editor.service';
 
 @Component({
   selector: 'world-warriors-arena-character-editor-palette',
@@ -20,7 +21,8 @@ export class CharacterEditorPaletteComponent implements OnInit {
     private shortestPath: ShortestPath,
     private engine: Engine,
     private drawService: DrawService,
-    private canvas: CanvasService
+    private canvas: CanvasService,
+    private characterEditorService: CharacterEditorService
   ) { }
 
   public ngOnInit(): void {
@@ -33,19 +35,12 @@ export class CharacterEditorPaletteComponent implements OnInit {
   }
 
   public tileClick(image: HTMLImageElement): void {
-    const gridCell1 = this.gridService.activeGrid.getGridCellByCoordinate(this.canvas.centerPointX, this.canvas.centerPointY)
-    const player = new Character(image.src, this.canvas, this.drawService, gridCell1, this.gridService, this.shortestPath, this.engine, this.assetService)
-    gridCell1.occupiedBy = player  // <--- adding the character into the occupiedBy Spot
-
-    player.animationFrame = [20, 40, 60] // set to 10 for walking speed
-
-
-    this.engine.startAnimationTrigger(player)
-
-    this.assetService.gameComponents.push(player)
-
-    this.drawService.clearFogLineOfSight(gridCell1)
+    this.assetService.deselectAsset()
+    this.characterEditorService.selectedCharacterUrl = image
+    this.characterEditorService.selectedCharacter = 
+      new Character(image.src, this.canvas, this.drawService, null, this.gridService, this.shortestPath, this.engine, this.assetService)
   }
-
+  
+ 
 
 }

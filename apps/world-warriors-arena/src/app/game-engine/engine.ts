@@ -68,6 +68,7 @@ export class Engine {
 
     this.drawService.drawAnimatedAssets()
     this.drawService.drawObstacles()
+    this.drawService.drawEditableCharacter()
     this.drawService.drawEditableObject()
     this.drawService.drawBlackOutEdges()    
     this.onFire.next(this.frame)    

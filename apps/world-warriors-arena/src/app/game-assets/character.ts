@@ -26,8 +26,10 @@ export class Character extends MotionAsset {
     super(grid, shortestPath, engine, drawService, canvasService, assetService);
     
     // sets the starting cell location
-    this.positionX = cell.posX
-    this.positionY = cell.posY
+    if(cell) {
+      this.positionX = cell.posX
+      this.positionY = cell.posY
+    }
 
     // temp: Randomly chooses character sprites
     this.image.src = imageUrl

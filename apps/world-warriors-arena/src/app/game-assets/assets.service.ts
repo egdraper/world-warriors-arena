@@ -1,4 +1,5 @@
 import { Injectable } from "@angular/core";
+import { Grid } from "../game-engine/grid.service";
 import { MotionAsset } from "../models/assets.model";
 import { Cell, DrawableTiles, SpriteTile } from "../models/cell.model";
 import { TerrainType } from "./tiles.db.ts/tile-assets.db";
@@ -7,16 +8,20 @@ import { TerrainType } from "./tiles.db.ts/tile-assets.db";
 export class AssetsService {
   public gameComponents: MotionAsset[] = []
   public selectedGameComponent: MotionAsset
+  public selectedGameComponents: MotionAsset[] = [] 
   public obstacles: string[] = []
 
   public obstaclesDirty: boolean = false
 
   constructor() { }
-
+  
   public removeGameComponent(): void {
     this.gameComponents = this.gameComponents.filter(asset => asset != this.selectedGameComponent)
-    this.selectedGameComponent.cell.occupiedBy = undefined
     this.selectedGameComponent = undefined
+  }
+
+  public getAssetFromCell(cell: Cell, gridId: string): MotionAsset {
+    return this.gameComponents.find(asset => asset.gridId === gridId && asset.cell.id === cell.id)
   }
 
   public addInvertedMapAsset(selectedCell: Cell): void {
@@ -55,16 +60,24 @@ export class AssetsService {
 
     this.obstacles.push(selectedCell.id)
   }
-
-  public selectDeselectAsset(selectedCell: Cell): void {
-    this.gameComponents.forEach(asset => asset.selectionIndicator = undefined)
-    
-    if (selectedCell.occupiedBy && this.selectedGameComponent !== selectedCell.occupiedBy) {
-      this.selectedGameComponent = selectedCell.occupiedBy
+  
+  public selectAsset(asset: MotionAsset): void;
+  public selectAsset(selectedCell: Cell, currentGridId: string): void
+  public selectAsset(arg1: any, arg2?: any): void {
+    if(arg2) {
+      this.gameComponents.forEach(asset => asset.selectionIndicator = undefined)
+      this.selectedGameComponent = this.gameComponents.find(asset => asset.cell.id === arg1.id && asset.gridId === arg2)
       this.selectedGameComponent.addSelectionIndicator()
     } else {
-      this.selectedGameComponent = undefined
+      this.gameComponents.forEach(asset => asset.selectionIndicator = undefined)
+      this.selectedGameComponent = arg1
+      this.selectedGameComponent.addSelectionIndicator()
     }
+  }  
+  
+  public deselectAsset(): void {
+    this.gameComponents.forEach(asset => asset.selectionIndicator = undefined)    
+    this.selectedGameComponent = undefined
   }
 
   private addRequiredNeighborTiles(selectedCell: Cell, drawableItem: DrawableTiles): void {

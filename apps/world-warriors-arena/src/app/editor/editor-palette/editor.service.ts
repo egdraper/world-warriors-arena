@@ -5,7 +5,6 @@ import { Cell, SpriteBackgroundTile, SpriteTile } from "../../models/cell.model"
 @Injectable()
 export class EditorService {
   public selectedAsset: SpriteTile
-  public hoveringCell: Cell
   public selectedGrowableAsset: string = "DrawableDirtRoad"
   public layerID = 1
   public backgroundDirty = false

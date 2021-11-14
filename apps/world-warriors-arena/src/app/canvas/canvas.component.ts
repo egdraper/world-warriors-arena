@@ -1,4 +1,6 @@
 import { Component, ElementRef, EventEmitter, HostListener, Output, ViewChild } from '@angular/core';
+import { ControlContainer } from '@angular/forms';
+import { CharacterEditorService } from '../editor/character-edtor-palette/character-editor-pallete/character-editor.service';
 import { EditorService } from '../editor/editor-palette/editor.service';
 import { AssetsService } from '../game-assets/assets.service';
 import { growableItems, TerrainType } from '../game-assets/tiles.db.ts/tile-assets.db';
@@ -20,7 +22,6 @@ export class CanvasComponent {
   @ViewChild('fogCanvas') fogCanvas: ElementRef<HTMLCanvasElement>;
   @ViewChild('blackoutCanvas') blackoutCanvas: ElementRef<HTMLCanvasElement>;
   @ViewChild('drawCanvas') drawingCanvas: ElementRef<HTMLCanvasElement>;
-  @Output() gridClick = new EventEmitter<{ clickX: number, clickY: number }>()
 
   public overlayContext: CanvasRenderingContext2D;
   public foregroundContext: CanvasRenderingContext2D;
@@ -28,6 +29,7 @@ export class CanvasComponent {
   public fogContext: CanvasRenderingContext2D;
   public blackoutContext: CanvasRenderingContext2D;
   public drawingContext: CanvasRenderingContext2D;
+
   public hoveringCell: Cell
   public editMode = true
 
@@ -44,15 +46,16 @@ export class CanvasComponent {
   private bottomQuadrant = false
   private topQuadrant = false
 
-  private setPortal = false
-  private portalEntry: Cell
+  private placingPortal = false
+
 
   constructor(
     public canvasService: CanvasService,
     private gridService: GridService,
     private assetService: AssetsService,
     private editorService: EditorService,
-    private engineService: Engine
+    private engineService: Engine,
+    private characterService: CharacterEditorService,
   ) {
     this.subscribeToEngine() 
   }
@@ -85,7 +88,7 @@ export class CanvasComponent {
     this.canvasService.blackoutCTX = this.blackoutContext
     this.canvasService.blackoutCanvas = this.blackoutCanvas
 
-    // Fog
+    // Large Image Canvas
     this.drawingContext = this.drawingCanvas.nativeElement.getContext('2d');
     this.canvasService.drawingCTX = this.drawingContext
     this.canvasService.drawingCanvas = this.drawingCanvas
@@ -97,121 +100,126 @@ export class CanvasComponent {
       this.assetService.selectedGameComponent.setDirection(event)
     }
 
-    if (event.key === "Control") {
-      this.controlPressed = true
-      this.editorService.hoveringCell = this.hoveringCell
-    }
-
-    if (event.key === "Shift") {
-      this.shiftPressed = true
-    }
-
-    if (event.key === "ArrowRight") {
-      this.rightArrowDown = true
-    }
-    if (event.key === "ArrowLeft") {
-      this.leftArrowDown = true
-    }
-    if (event.key === "ArrowUp") {
-      this.upArrowDown = true
-    }
-    if (event.key === "ArrowDown") {
-      this.downArrowDown = true
-    }
-    if (event.key === "e") {
-      this.setPortal = true
+    switch (event.key) {
+      case "Control":
+        this.controlPressed = true
+        this.gridService.hoveringCell = this.hoveringCell
+        break;
+      case "Shift":
+        this.shiftPressed = true
+        break;    
+      case "ArrowRight":
+        console.log("right pressed")
+        this.rightArrowDown = true
+        break;
+      case "ArrowLeft":
+        console.log("left pressed")
+        this.leftArrowDown = true
+        break;
+        case "ArrowUp":
+        console.log("up pressed")
+        this.upArrowDown = true
+        break;
+        case "ArrowDown":
+        console.log("down pressed")
+        this.downArrowDown = true
+        break;      
+      case "e":
+        this.placingPortal = true
+        break;      
+      default:
+        break;
     }
   }
 
   @HostListener("document:keyup", ["$event"])
   public onKeyUp(event: KeyboardEvent): void {
-    if (event.key === "Control") {
-      this.controlPressed = false
-      this.editorService.hoveringCell = undefined
-    }
-
-    if (event.key === "ArrowRight") {
-      this.rightArrowDown = false
-    }
-    if (event.key === "ArrowLeft") {
-      this.leftArrowDown = false
-    }
-    if (event.key === "ArrowUp") {
-      this.upArrowDown = false
-    }
-    if (event.key === "ArrowDown") {
-      this.downArrowDown = false
-    }
-
-    if (event.key === "Delete") {
-      this.assetService.selectedGameComponent.cell.occupiedBy = undefined
-    }
-
-    if (event.key === "Shift") {
-      this.shiftPressed = false
-      this.topQuadrant = false
-      this.bottomQuadrant = false
-      this.rightQuadrant = false
-      this.leftQuadrant = false
-    }
-
-    if (event.key === "e") {
-      this.setPortal = false
-    }
-
-    if (event.key === "q") {
-      if(!this.gridService.activeGrid) { return }
-
-      this.editMode = !this.editMode
-      setTimeout(() => {
-        if (!this.editMode) {
-          this.gridService.activeGrid.largeImage.createLargeImage(this.gridService.activeGrid.width * 32, this.gridService.activeGrid.height * 32, this.gridService)
-        } else {
-          if(this.gridService.activeGrid) {
-            this.gridService.activeGrid.largeImage.background = undefined
-            this.gridService.activeGrid.largeImage.foreground = undefined
-          }
-        }
-      })
+    switch (event.key) {
+      case "Delete": 
+        this.assetService.removeGameComponent()
+        break
+      case "Control":
+        this.controlPressed = false
+        this.gridService.hoveringCell = undefined
+        break;
+      case "Shift":
+        this.shiftPressed = false
+        this.topQuadrant = false
+        this.bottomQuadrant = false
+        this.rightQuadrant = false
+        this.leftQuadrant = false
+        break;    
+      case "ArrowRight":
+        this.rightArrowDown = false
+        break;
+      case "ArrowLeft":
+        this.leftArrowDown = false
+        break;
+      case "ArrowUp":
+        this.upArrowDown = false
+        break;
+      case "ArrowDown":
+        this.downArrowDown = false
+        break;      
+      case "e":
+        this.placingPortal = false
+        break;        
+      case "q":
+        this.togglePlayMode()
+        break;
+      default:
+        break;
     }
   }
 
-
-  public onCanvasClick(event: any): void {
-
-    
+  public onCanvasClick(event: any): void {    
     this.mouseIsDown = true
+    const selectedCell = this.getCellFromMouseEvent(event)
+    const assetInCell = this.assetService.getAssetFromCell(selectedCell, this.gridService.activeGrid.id)
     
-    const clickX = event.offsetX + (-1 * this.canvasService.canvasViewPortOffsetX * GameSettings.scale)
-    const clickY = event.offsetY + (-1 * this.canvasService.canvasViewPortOffsetY * GameSettings.scale)
-
-    
-    const selectedCell = this.gridService.activeGrid.getGridCellByCoordinate(clickX, clickY)
-   
-    if(this.setPortal) {
-      this.portalEntry = selectedCell
-      console.log(this.portalEntry)
+    // select Asset
+    if(assetInCell && !this.assetService.selectedGameComponent) {
+      this.assetService.selectAsset(assetInCell)
       return
     }
 
-    if(this.portalEntry) {
-      this.portalEntry.portalTo = {gridId: this.gridService.activeGrid.id, cell: selectedCell}
-      console.log(this.portalEntry.portalTo)
-      this.portalEntry = undefined
+    // deselect Asset
+    if(assetInCell && this.assetService.selectedGameComponent && assetInCell.id === this.assetService.selectedGameComponent.id) {
+      this.assetService.deselectAsset()
       return
     }
 
-    if (selectedCell.occupiedBy) {
-      this.assetService.selectDeselectAsset(selectedCell)
+    // change/select new Asset
+    if(assetInCell && assetInCell.id !== this.assetService.selectedGameComponent.id) {
+      this.assetService.deselectAsset()
+      this.assetService.selectAsset(assetInCell)
+      this.canvasService.centerOverAsset(assetInCell, this.gridService.activeGrid)
+      return
     }
 
-    if (!selectedCell.occupiedBy && this.assetService.selectedGameComponent) {
+    // place portal
+    if(this.placingPortal) {
+      this.canvasService.portalEntry.push(selectedCell)
+      return
+    }
+
+    // place portal endpoint
+    if(this.canvasService.portalEntry.length > 0) {
+      this.canvasService.portalEntry.forEach(cell => cell.portalTo = {gridId: this.gridService.activeGrid.id, cell: selectedCell})
+      this.canvasService.portalEntry = []
+      return
+    }
+
+    // move character
+    if(!assetInCell && this.assetService.selectedGameComponent ) {
       this.assetService.selectedGameComponent.startMovement(this.assetService.selectedGameComponent.cell, selectedCell, this.assetService.gameComponents)
     }
-    else {
-      this.canvasService.centerOverAsset(this.assetService.selectedGameComponent, this.gridService.activeGrid.width, this.gridService.activeGrid.height)
-    }
 
+    // place character {
+    if(this.characterService.selectedCharacter && this.controlPressed) {
+      this.characterService.addCharacter(selectedCell, this.gridService.activeGrid.id, this.engineService)
+    }
+     
     this.onMouseMove(event)
   }
 
@@ -223,13 +231,21 @@ export class CanvasComponent {
 
     this.hoveringCell = this.gridService.activeGrid.getGridCellByCoordinate(clickX, clickY)
 
-    // Shift dow
+    // scroll with mouse movement
     if (this.shiftPressed) {
       this.rightQuadrant = clickX > (-1 * this.canvasService.canvasViewPortOffsetX + this.canvasService.canvasSize) - this.canvasService.canvasSize / 3 
       this.bottomQuadrant = clickY > (-1 * this.canvasService.canvasViewPortOffsetY + this.canvasService.canvasSize) - this.canvasService.canvasSize / 3
       this.topQuadrant = clickX < (-1 * this.canvasService.canvasViewPortOffsetX + this.canvasService.canvasSize / 3) && (this.canvasService.canvasViewPortOffsetX < 0)
       this.leftQuadrant = clickY < (-1 * this.canvasService.canvasViewPortOffsetY + this.canvasService.canvasSize / 3) && (this.canvasService.canvasViewPortOffsetY < 0)
     }
+
+    // place portal
+    if(this.placingPortal && this.mouseIsDown && !this.canvasService.portalEntry.find(cell => cell.id === this.hoveringCell.id)) {
+      this.canvasService.portalEntry.push(this.hoveringCell)
+      console.log(this.canvasService.portalEntry)
+      return
+    }
+
 
     // Control Pressed
     if (event.offsetX < 0 || event.offsetY < 0) { return }
@@ -289,5 +305,28 @@ export class CanvasComponent {
         this.canvasService.scrollViewPort(0, 1, this.gridService)
       }
     })
+  }
+
+  private togglePlayMode(): void {
+    if(!this.gridService.activeGrid) { return }
+
+    this.editMode = !this.editMode
+    setTimeout(() => {
+      if (!this.editMode) {
+        this.gridService.activeGrid.largeImage.createLargeImage(this.gridService.activeGrid.width * 32, this.gridService.activeGrid.height * 32, this.gridService)
+      } else {
+        if(this.gridService.activeGrid) {
+          this.gridService.activeGrid.largeImage.background = undefined
+          this.gridService.activeGrid.largeImage.foreground = undefined
+        }
+      }
+    })
+  }
+
+  private getCellFromMouseEvent(event: MouseEvent): Cell {
+    const clickX = event.offsetX + (-1 * this.canvasService.canvasViewPortOffsetX * GameSettings.scale)
+    const clickY = event.offsetY + (-1 * this.canvasService.canvasViewPortOffsetY * GameSettings.scale)
+   
+    return this.gridService.activeGrid.getGridCellByCoordinate(clickX, clickY)
   }
 }

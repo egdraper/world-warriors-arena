@@ -17,6 +17,7 @@ export class CanvasService {
   public maxCellCountX = 0
   public cellOffsetX = 0
   public cellOffsetY = 0
+  public portalEntry: Cell[] = []
 
   public largeImageBackground: HTMLImageElement
   public largeImageForeground: HTMLImageElement
@@ -81,6 +82,14 @@ export class CanvasService {
       this.adustViewPort(0, 32)
     }
   }
+  
+  public resetViewport(): void {
+    const xPos = -1 * this.canvasViewPortOffsetX
+    const yPos = -1 * this.canvasViewPortOffsetY
+    this.cellOffsetX = 0
+    this.cellOffsetY = 0
+    this.adustViewPort(xPos, yPos)
+  }
 
   public trackAsset(xPos: number, yPos: number, asset: Asset, grid: Grid): void {
     if (asset && grid.width && grid.height) {
@@ -97,7 +106,29 @@ export class CanvasService {
     this.adustViewPort(xPos, yPos, grid.width, grid.height)
   }
 
-  public adustViewPort(xPos: number, yPos: number, gridWidth?: number, gridHeight?: number) {
+  
+  public centerOverAsset(asset: Asset, grid: Grid): void {
+    if(!asset) {return}
+
+    // select Asset
+    this.resetViewport()
+
+    let assetXPos = asset.cell.posX <= this.centerPointX ? 0 : -1 * asset.cell.posX + this.centerPointX
+    let assetYPos = asset.cell.posY <= this.centerPointY ? 0 : -1 * asset.cell.posY + this.centerPointY
+
+    assetXPos = asset.cell.posX >= (grid.width * 32) - this.centerPointX ? -1 * ((grid.width * 32) - this.canvasSize - 32) : assetXPos
+    assetYPos = asset.cell.posY >= (grid.width * 32) - this.centerPointY ? -1 * ((grid.height * 32) - this.canvasSize - 32) : assetYPos
+
+    const topCorner = grid.getGridCellByCoordinate((-1 * assetXPos), (-1 * assetYPos))
+    this.cellOffsetX = topCorner.x
+    this.cellOffsetY = topCorner.y
+
+    this.adustViewPort((-1 * this.cellOffsetX * 32), (-1 * this.cellOffsetY * 32))
+  }
+
+
+  private adustViewPort(xPos: number, yPos: number, gridWidth?: number, gridHeight?: number) {
+    // console.log(xPos, yPos, this.canvasViewPortOffsetX, this.canvasViewPortOffsetY)
     if (yPos > 0 && this.canvasViewPortOffsetY >= 0) {
       yPos = 0
     } if (xPos > 0 && this.canvasViewPortOffsetX >= 0) {
@@ -126,12 +157,6 @@ export class CanvasService {
     this.foregroundCTX.translate(xPosAdjust, yPosAdjust)
   }
 
-  public resetViewport(): void {
-    const xPos = -1 * this.canvasViewPortOffsetX
-    const yPos = -1 * this.canvasViewPortOffsetY
-    this.adustViewPort(xPos, yPos)
-  }
-
 
   public createLargeImage(gridWidth: number, gridHeight: number, gridService: GridService) {
     this.drawingCTX.canvas.height = gridWidth
@@ -147,22 +172,6 @@ export class CanvasService {
     fimage.src = fimg
     this.largeImageBackground = bimage
     this.largeImageForeground = fimage
-  }
-
-  public centerOverAsset(asset: Asset, gridWidth: number, gridHeight: number): void {
-
-    // if (!asset || GameSettings.gm || !GameSettings.trackMovement) { return }
-
-    // select Asset
-    this.resetViewport()
-
-    let assetXPos = asset.cell.posX <= this.centerPointX ? 0 : -1 * asset.cell.posX + this.centerPointX
-    let assetYPos = asset.cell.posY <= this.centerPointY ? 0 : -1 * asset.cell.posY + this.centerPointY
-
-    assetXPos = asset.cell.posX >= (gridWidth * 32) - this.centerPointX ? -1 * ((gridWidth * 32) - this.canvasSize - 64) : assetXPos
-    assetYPos = asset.cell.posY >= (gridWidth * 32) - this.centerPointY ? -1 * ((gridHeight * 32) - this.canvasSize - 64) : assetYPos
-
-    this.adustViewPort(assetXPos, assetYPos)
   }
 
 

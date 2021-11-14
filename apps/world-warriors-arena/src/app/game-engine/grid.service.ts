@@ -52,6 +52,7 @@ export class GridService {
   public grids: {[gridId: string]: Grid} = {}
   public gridIds: string[] = []
   public activeGrid: Grid
+  public hoveringCell: Cell
 
   private index = 0
 

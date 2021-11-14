@@ -1,10 +1,11 @@
 import { Injectable } from "@angular/core";
 import { CanvasService } from "../../canvas/canvas.service";
+import { CharacterEditorService } from "../../editor/character-edtor-palette/character-editor-pallete/character-editor.service";
 import { EditorService } from "../../editor/editor-palette/editor.service";
 import { AssetsService } from "../../game-assets/assets.service";
 import { ShortLivedAnimation } from "../../game-assets/click-animation";
 import { growableItems } from "../../game-assets/tiles.db.ts/tile-assets.db";
-import { MotionAsset } from "../../models/assets.model";
+import { GameComponent, MotionAsset } from "../../models/assets.model";
 import { Cell } from "../../models/cell.model";
 import { GameSettings } from "../../models/game-settings";
 import { GridService } from "../grid.service";
@@ -17,7 +18,8 @@ export class DrawService {
     public canvasService: CanvasService,
     public fogOfWarService: FogOfWarService,
     public editorService: EditorService,
-    public assetService: AssetsService
+    public assetService: AssetsService,
+    public characterEditorService: CharacterEditorService
   ) { }
 
   // Draws Grid Lines  
@@ -249,6 +251,9 @@ export class DrawService {
       if (!cellTopRight) {
         cellTopRight = this.gridService.activeGrid.grid[`x${this.gridService.activeGrid.width - 1}:y0`]
       }
+      if (!cellTopLeft) {
+        cellTopRight = this.gridService.activeGrid.grid[`x0:y0`]
+      }
 
       this.canvasService.foregroundCTX.clearRect(0, 0, this.gridService.activeGrid.width * 32, this.gridService.activeGrid.height * 32);
       this.canvasService.backgroundCTX.clearRect(0, 0, this.gridService.activeGrid.width * 32, this.gridService.activeGrid.height * 32);
@@ -265,13 +270,29 @@ export class DrawService {
             for (let x = cellTopLeft?.x; x <= cellTopRight?.x; x++) {
               const drawableCell = this.gridService.activeGrid.getCell(x, y)
 
-              if (drawableCell.occupiedBy) {
-                this.drawAsset(drawableCell.occupiedBy)
-              }
+              this.drawAsset(this.assetService.gameComponents.find(gameComponent => gameComponent.cell.id === drawableCell.id && this.gridService.activeGrid.id === gameComponent.gridId))
 
               this.drawOnCell(drawableCell)
               this.drawOnBackgroundCell(drawableCell)
+              // console.log("CCC")
+
             }
+          }
+
+          if (this.canvasService.portalEntry) {
+            this.canvasService.backgroundCTX.globalAlpha = .5;
+            this.canvasService.portalEntry.forEach(cell => {
+              this.canvasService.backgroundCTX.fillStyle = 'blue';
+              this.canvasService.backgroundCTX.fillRect(
+                cell.posX,
+                cell.posY,
+                32,
+                32
+              )
+            })
+            this.canvasService.backgroundCTX.globalAlpha = 1;
+
+
           }
         }
       }
@@ -313,6 +334,8 @@ export class DrawService {
 
   // Draws draws around the asset so asset can stand behind objects in game mode (single image background)
   private drawAroundAsset(asset: MotionAsset): void {
+    if (asset.gridId !== this.gridService.activeGrid.id) { return }
+
     const x = asset.cell.x
     const y = asset.cell.y
 
@@ -367,18 +390,34 @@ export class DrawService {
 
   // Draws Items being placed in Edit mode
   public drawEditableObject(): void {
-    if (!this.editorService.selectedAsset || !this.editorService.hoveringCell) { return }
+    if (!this.editorService.selectedAsset || !this.gridService.hoveringCell) { return }
     this.canvasService.foregroundCTX.drawImage(
       this.editorService.selectedAsset.spriteSheet,
       this.editorService.selectedAsset.spriteGridPosX * this.editorService.selectedAsset.multiplier,
       this.editorService.selectedAsset.spriteGridPosY * this.editorService.selectedAsset.multiplier,
       this.editorService.selectedAsset.tileWidth * this.editorService.selectedAsset.multiplier,
       this.editorService.selectedAsset.tileHeight * this.editorService.selectedAsset.multiplier,
-      this.editorService.hoveringCell.posX + this.editorService.selectedAsset.tileOffsetX,
-      this.editorService.hoveringCell.posY + this.editorService.selectedAsset.tileOffsetY,
+      this.gridService.hoveringCell.posX + this.editorService.selectedAsset.tileOffsetX,
+      this.gridService.hoveringCell.posY + this.editorService.selectedAsset.tileOffsetY,
       this.editorService.selectedAsset.tileWidth * (this.editorService.selectedAsset.sizeAdjustment || this.editorService.selectedAsset.multiplier),
       this.editorService.selectedAsset.tileHeight * (this.editorService.selectedAsset.sizeAdjustment || this.editorService.selectedAsset.multiplier)
     )
+
+  }
+  public drawEditableCharacter(): void {
+    if (!this.characterEditorService.selectedCharacter || !this.gridService.hoveringCell) { return }
+    // console.log(this.gridService.hoveringCell.x, this.gridService.hoveringCell.y)
+    this.canvasService.blackoutCTX.drawImage(
+      this.characterEditorService.selectedCharacter.image,
+      this.characterEditorService.selectedCharacter.frameXPosition[1],
+      this.characterEditorService.selectedCharacter.frameYPosition,
+      25,
+      36,
+      this.gridService.hoveringCell.posX - 8,
+      this.gridService.hoveringCell.posY - 58,
+      50,
+      80
+      )
   }
 
   // draws the entire grid foreground objects
@@ -420,13 +459,14 @@ export class DrawService {
       )
       this.canvasService.foregroundCTX.globalAlpha = 1
     }
+
+
   }
 
   // draws the background item for each cell provided
   public drawOnBackgroundCell(cell: Cell): void {
     if (cell && cell.backgroundTile) {
 
-      // console.log("CCC")
       this.canvasService.backgroundCTX.imageSmoothingEnabled = false
       this.canvasService.backgroundCTX.drawImage(
         cell.backgroundTile.spriteSheet,
@@ -439,6 +479,19 @@ export class DrawService {
         32,
         32
       )
+
+      if(cell.portalTo) {
+        this.canvasService.backgroundCTX.globalAlpha = .5;
+        this.canvasService.backgroundCTX.fillStyle = 'blue';
+        this.canvasService.backgroundCTX.fillRect(
+          cell.posX,
+          cell.posY,
+          32,
+          32
+        )
+        this.canvasService.backgroundCTX.globalAlpha = 1;
+    
+      }
     }
   }
 
