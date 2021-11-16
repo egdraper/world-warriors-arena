@@ -108,8 +108,8 @@ export class EditorPaletteComponent implements OnInit {
       terrainTypeId: "DrawableTrees",
       inverted: true,
       pathTypeId: undefined,
-      width: 150,
-      height: 150
+      width: 64,
+      height: 64
     }
 
     mapGenerator.generateMap(mapDetails)

@@ -131,19 +131,19 @@ export class DrawService {
 
   // Fog Of War Complete Black Out
   public newDrawBlackoutFog(): void {
-      if(!this.canvasService.blackoutCTX || !this.gridService.activeGrid ) { return }
+    if (!this.canvasService.blackoutCTX || !this.gridService.activeGrid) { return }
 
-      this.canvasService.blackoutCTX.filter = "none";
-      this.canvasService.blackoutCTX.globalCompositeOperation = 'destination-over'
-      this.canvasService.blackoutCTX.clearRect(0, 0, this.gridService.activeGrid.width * 32, this.gridService.activeGrid.height * 32);
-      this.canvasService.blackoutCTX.fillStyle = 'black';
-      this.canvasService.blackoutCTX.globalAlpha = .9;
-      this.canvasService.blackoutCTX.fillRect(
-        0,
-        0,
-        this.gridService.activeGrid.width * 32,
-        this.gridService.activeGrid.height * 32
-      )
+    this.canvasService.blackoutCTX.filter = "none";
+    this.canvasService.blackoutCTX.globalCompositeOperation = 'destination-over'
+    this.canvasService.blackoutCTX.clearRect(0, 0, this.gridService.activeGrid.width * 32, this.gridService.activeGrid.height * 32);
+    this.canvasService.blackoutCTX.fillStyle = 'black';
+    this.canvasService.blackoutCTX.globalAlpha = .9;
+    this.canvasService.blackoutCTX.fillRect(
+      0,
+      0,
+      this.gridService.activeGrid.width * 32,
+      this.gridService.activeGrid.height * 32
+    )
 
     // this.addOpaqueFogLineOfSight()
   }
@@ -166,40 +166,39 @@ export class DrawService {
   // Fog Of War Complete Black Out
   public newRevealDrawBlackoutFog(): void {
 
-    if(this.assetService.selectedGameComponent) {
-    const visibleCells = this.newFogOfWarService.visibleCell[this.assetService.selectedGameComponent.cell.id]
-    const centerCells = this.newFogOfWarService.centerPoint[this.assetService.selectedGameComponent.cell.id]
-    this.canvasService.blackoutCTX.globalCompositeOperation = 'destination-out'
-    visibleCells.forEach(cell => {
-      this.canvasService.blackoutCTX.filter = "blur(10px)";  // "feather"
-      // this.canvasService.blackoutCTX.fillStyle = 'black';
-      //     this.canvasService.blackoutCTX.fillRect(
-      //       cell.posX,
-      //       cell.posY,
-      //       32,
-      //       32
-      //     )
-    })
-      this.canvasService.blackoutCTX.beginPath()
-      this.canvasService.blackoutCTX.lineWidth = 1;
-      // this.canvasService.backgroundCTX.strokeStyle = "rgba(255, 255 ,255,.5)"
-      this.canvasService.blackoutCTX.moveTo(centerCells[0].x, centerCells[0].y)
+    if (this.assetService.selectedGameComponent) {
+      const visibleCells = this.newFogOfWarService.visibleCell[this.assetService.selectedGameComponent.cell.id]
+      const centerCells = this.newFogOfWarService.centerPoint[this.assetService.selectedGameComponent.cell.id]
+      this.canvasService.blackoutCTX.globalCompositeOperation = 'destination-out'
+      visibleCells.forEach(cell => {
+        this.canvasService.blackoutCTX.filter = "blur(35px)";  // "feather"
+      })
 
-      centerCells.forEach((cell, index) => {
-        if(index!=0 && cell){ 
-
-          this.canvasService.blackoutCTX.lineTo(cell.x, cell.y)
-        }
-      } )
-      this.canvasService.blackoutCTX.closePath();
+      this.clearOutVisibleArea(centerCells)
+      this.clearOutVisibleArea(centerCells)
 
 
-      this.canvasService.blackoutCTX.fill();
-      
 
+    }
 
   }
 
+  private clearOutVisibleArea(centerCells: any): void {
+    this.canvasService.blackoutCTX.beginPath()
+    this.canvasService.blackoutCTX.lineWidth = 1;
+    this.canvasService.blackoutCTX.moveTo(centerCells[0].x, centerCells[0].y)
+
+    centerCells.forEach((cell: any, index: number) => {
+      if (index != 0 && cell) {
+        if (index % 1 === 0) {
+          this.canvasService.blackoutCTX.lineTo(cell.x, cell.y)
+        }
+      }
+    })
+    this.canvasService.blackoutCTX.closePath();
+
+
+    this.canvasService.blackoutCTX.fill();
   }
   // // Fog Of War Complete Black Out
   // public newRevealDrawFog(): void {
@@ -509,7 +508,7 @@ export class DrawService {
       this.gridService.hoveringCell.posY - 58,
       50,
       80
-      )
+    )
   }
 
   // draws the entire grid foreground objects
@@ -572,7 +571,7 @@ export class DrawService {
         32
       )
 
-      if(cell.portalTo) {
+      if (cell.portalTo) {
         this.canvasService.backgroundCTX.globalAlpha = .5;
         this.canvasService.backgroundCTX.fillStyle = 'blue';
         this.canvasService.backgroundCTX.fillRect(
@@ -582,7 +581,7 @@ export class DrawService {
           32
         )
         this.canvasService.backgroundCTX.globalAlpha = 1;
-    
+
       }
     }
   }

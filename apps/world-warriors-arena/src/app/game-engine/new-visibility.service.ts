@@ -145,10 +145,10 @@ export class NewFogOfWarService {
                 adjustmentY = -96
               }
               if(edgeCell.x === 0) {
-                adjustmentX = -64
+                adjustmentX = -32
               }
               if(edgeCell.x > 1) {
-                adjustmentX = 64
+                adjustmentX = 32
               }
 
               if (!this.centerPoint[assetCell.id].find(a => a && checkedCell.id === a.id)) {
@@ -171,22 +171,32 @@ export class NewFogOfWarService {
   }
 
   private traceStraitLine(assetCell: Cell, nextCell: Cell, obstacle: Cell, direction: number): void {
-  // if (!nextCell) { return }
+  if (!nextCell) { 
+    this.centerPoint[assetCell.id].push(null)
+    return
+  }
 
-  // if (!this.visibleCell[assetCell.id].find(cCell => nextCell.id === cCell.id)) {
-  //   this.visibleCell[assetCell.id].push(nextCell)
+  if (nextCell.obstacle) {
+    let adjustmentY = 0
+    let adjustmentX = 0
+    if(nextCell.y === 0) {
+      adjustmentY = -96
+    }
+    if(nextCell.x === 0) {
+      adjustmentX = -32
+    }
+    if(nextCell.x > 1) {
+      adjustmentX = 32
+    }
 
-  //   for (let i = 0; i < 8; i++) {
-  //     if (nextCell.neighbors[i] && !this.visibleCell[assetCell.id].find(cell => cell.id === nextCell.neighbors[i].id)) {
-  //       this.visibleCell[assetCell.id].push(nextCell.neighbors[i])
-  //     }
-  //   }
-  // }
-  // if (!nextCell || nextCell.obstacle) {
-  //   return
-  // } else {
-  //   this.traceStraitLine(assetCell, nextCell.neighbors[direction], obstacle, direction)
-  // }
+    if (!this.centerPoint[assetCell.id].find(a => a && nextCell.id === a.id)) {
+      this.centerPoint[assetCell.id].push({ id: nextCell.id, x: nextCell.posX + 16 + adjustmentX, y: nextCell.posY + 16 + adjustmentY })
+    }
+    return
+
+  } else {
+    this.traceStraitLine(assetCell, nextCell.neighbors[direction], obstacle, direction)
+  }
 
 }
 
