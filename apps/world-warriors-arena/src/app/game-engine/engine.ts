@@ -70,7 +70,9 @@ export class Engine {
     this.drawService.drawObstacles()
     this.drawService.drawEditableCharacter()
     this.drawService.drawEditableObject()
-    this.drawService.drawBlackOutEdges()    
+    this.drawService.newDrawBlackoutFog()
+    this.drawService.newRevealDrawBlackoutFog()
+    // this.drawService.drawBlackOutEdges()    
     this.onFire.next(this.frame)    
 
     requestAnimationFrame(this.startEngine.bind(this)); 

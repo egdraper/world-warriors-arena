@@ -2,287 +2,112 @@ import { Injectable } from "@angular/core";
 import { GridService } from "./grid.service";
 import { Cell } from "../models/cell.model";
 
-@Injectable() 
-export class FogOfWarService {
-  public visibleCell: {[id: string]: any[]} = {}
-  public visitedVisibleCell: {[id: string]: any[]} = {}
+@Injectable()
+export class NewFogOfWarService {
+  public visibleCell: { [id: string]: Cell[] } = {}
+  public visitedVisibleCell: { [id: string]: Cell[] } = {}
   public fogEnabled: boolean = false
+  public centerPoint: { [id: string]: { id: string, x: number, y: number }[] } = {}
+  public edgeCells: Cell[] = []
 
   constructor(
     private gridService: GridService
-    ) { }
+  ) { }
 
-  public preloadVisibility(obstacles: string[]): void {  
+
+  public createCellLines(): void {
+    this.findVisibleCellsEdges()
     this.gridService.activeGrid.gridDisplay.forEach(row => {
       row.forEach(cell => {
-        if(!cell.obstacle) {
+        if (!cell.obstacle) {
+          console.log(cell.id)
           this.visibleCell[cell.id] = []
-          obstacles.forEach(id => {
-            this.traceCell(cell, this.gridService.activeGrid.grid[id])
+          this.centerPoint[cell.id] = []
+          this.visibleCell[cell.id].push(cell)
+          this.edgeCells.forEach(edgeCell => {
+            this.checkForObstacle(cell, edgeCell)
           })
+
+
+          const cleanSet = new Set(this.centerPoint[cell.id])
+          this.centerPoint[cell.id] = Array.from(cleanSet)
+
         }
       })
-    })  
+    })
   }
 
-  public traceCell(cell: Cell, obstacle: Cell): void {
-    const straitDownLine = cell.posX === obstacle.posX && cell.posY < obstacle.posY
-    const straitUpLine = cell.posX === obstacle.posX && cell.posY > obstacle.posY
-    const straitLeftLine = cell.posY === obstacle.posY && cell.posX > obstacle.posX
-    const straitRightLIne = cell.posY === obstacle.posY && cell.posX < obstacle.posX
-    const bottomLeftQuadrant = cell.posX > obstacle.posX && cell.posY < obstacle.posY
-    const bottomRightQuadrant = cell.posX < obstacle.posX && cell.posY < obstacle.posY
-    const topLeftQuadrant = cell.posX > obstacle.posX && cell.posY > obstacle.posY
-    const topRightQuadrant = cell.posX < obstacle.posX && cell.posY > obstacle.posY
+  // private revealObstacle(targetCell: Cell): void {
+  //   const cells = this.visibleCell[targetCell.id]
+  //   cells.forEach(cell => { 
+  //     if(cell.obstacle) {
+  //       for(let i = 0; cell.imageTile.tileHeight
+  //       this.visibleCell[targetCell.id].push(this.gridService.activeGrid.getCell(`x${}:y${cell.obstacle.y}`))
+  //     }
 
-    let point1x
-    let point1y
+  //   })
 
-    let point2x
-    let point2y
+  // }
 
-    let point1offsetX
-    let point1offsetY
-    let point2offsetX
-    let point2offsetY
-    if (straitDownLine) {
-      point1x = obstacle.posX
-      point1y = obstacle.posY 
-      point2x = obstacle.posX + 32
-      point2y = obstacle.posY 
-      point1offsetX = point1x 
-      point1offsetY = point1y + 32
-      point2offsetX = point2x 
-      point2offsetY = point2y + 32
-    } else if (straitUpLine) {
-      point1x = obstacle.posX
-      point1y = obstacle.posY + 32
-      point2x = obstacle.posX + 32
-      point2y = obstacle.posY + 32
-      point1offsetX = point1x 
-      point1offsetY = point1y - 32
-      point2offsetX = point2x 
-      point2offsetY = point2y - 32
-    } else if (straitLeftLine) {
-      point1x = obstacle.posX + 32
-      point1y = obstacle.posY
-      point2x = obstacle.posX + 32
-      point2y = obstacle.posY + 32
-      point1offsetX = point1x - 32
-      point1offsetY = point1y 
-      point2offsetX = point2x - 32
-      point2offsetY = point2y 
-    } else if (straitRightLIne) {
-      point1x = obstacle.posX 
-      point1y = obstacle.posY 
-      point2x = obstacle.posX 
-      point2y = obstacle.posY + 32
-      point1offsetX = point1x + 32
-      point1offsetY = point1y 
-      point2offsetX = point2x + 32
-      point2offsetY = point2y 
-    } else if (bottomLeftQuadrant) {
-      if (obstacle.neighbors[0].obstacle) {
-        point1x = obstacle.posX + 32
-        point1y = obstacle.posY
-        point2x = obstacle.posX + 32
-        point2y = obstacle.posY + 32
-        point1offsetX = point1x - 32
-        point1offsetY = point1y 
-        point2offsetX = point2x - 32
-        point2offsetY = point2y
-      } else if (obstacle.neighbors[1].obstacle) {
-        point1x = obstacle.posX
-        point1y = obstacle.posY
-        point2x = obstacle.posX + 32
-        point2y = obstacle.posY
-        point1offsetX = point1x 
-        point1offsetY = point1y + 32
-        point2offsetX = point2x 
-        point2offsetY = point2y + 32
-      } else {
-        point1x = obstacle.posX
-        point1y = obstacle.posY
-        point2x = obstacle.posX + 32
-        point2y = obstacle.posY + 32
-        point1offsetX = point1x 
-        point1offsetY = point1y + 32
-        point2offsetX = point2x 
-        point2offsetY = point2y + 32
-      }
-    } else if (bottomRightQuadrant) {
-      if (obstacle.neighbors[3].obstacle) {
-        point1x = obstacle.posX
-        point1y = obstacle.posY
-        point2x = obstacle.posX + 32
-        point2y = obstacle.posY
-        point1offsetX = point1x
-        point1offsetY = point1y + 32
-        point2offsetX = point2x
-        point2offsetY = point2y + 32
-      } else if (obstacle.neighbors[0].obstacle) {
-        point1x = obstacle.posX
-        point1y = obstacle.posY
-        point2x = obstacle.posX
-        point2y = obstacle.posY + 32
-        point1offsetX = point1x + 32
-        point1offsetY = point1y 
-        point2offsetX = point2x + 32
-        point2offsetY = point2y 
-      } else {
-        point1x = obstacle.posX
-        point1y = obstacle.posY + 32
-        point2x = obstacle.posX + 32
-        point2y = obstacle.posY
-        point1offsetX = point1x + 32
-        point1offsetY = point1y 
-        point2offsetX = point2x + 32
-        point2offsetY = point2y 
-      }
-    } else if (topLeftQuadrant) {
-      if (obstacle.neighbors[1].obstacle) {
-        point1x = obstacle.posX
-        point1y = obstacle.posY + 32
-        point2x = obstacle.posX + 32
-        point2y = obstacle.posY + 32
-        point1offsetX = point1x 
-        point1offsetY = point1y - 32
-        point2offsetX = point2x 
-        point2offsetY = point2y - 32
-      } else if (obstacle.neighbors[2].obstacle) {
-        point1x = obstacle.posX + 32
-        point1y = obstacle.posY
-        point2x = obstacle.posX + 32
-        point2y = obstacle.posY + 32
-        point1offsetX = point1x - 32
-        point1offsetY = point1y 
-        point2offsetX = point2x - 32
-        point2offsetY = point2y 
-      } else {
-        point1x = obstacle.posX
-        point1y = obstacle.posY + 32
-        point2x = obstacle.posX + 32
-        point2y = obstacle.posY
-        point1offsetX = point1x - 32
-        point1offsetY = point1y 
-        point2offsetX = point2x - 32
-        point2offsetY = point2y 
-      }
-    } else if (topRightQuadrant) {
-      if (obstacle.neighbors[3].obstacle) {
-        point1x = obstacle.posX
-        point1y = obstacle.posY + 32
-        point2x = obstacle.posX + 32
-        point2y = obstacle.posY + 32
-        point1offsetX = point1x 
-        point1offsetY = point1y - 32
-        point2offsetX = point2x 
-        point2offsetY = point2y - 32
-      } else if (obstacle.neighbors[2].obstacle) {
-        point1x = obstacle.posX
-        point1y = obstacle.posY
-        point2x = obstacle.posX
-        point2y = obstacle.posY + 32
-        point1offsetX = point1x + 32
-        point1offsetY = point1y 
-        point2offsetX = point2x + 32
-        point2offsetY = point2y 
-      } else {
-        point1x = obstacle.posX
-        point1y = obstacle.posY
-        point2x = obstacle.posX + 32
-        point2y = obstacle.posY + 32
-        point1offsetX = point1x + 32
-        point1offsetY = point1y 
-        point2offsetX = point2x + 32
-        point2offsetY = point2y 
-      }
-    }
+  private checkForObstacle(assetCell: Cell, edgeCell: Cell): boolean {
+    const assetCellCenterX: number = assetCell.posX + 16
+    const assetCellCenterY: number = assetCell.posY + 16
 
-    const obstacle1 = this.checkForObstacle(cell.posX + 16, cell.posY + 16, point1x, point1y, obstacle)
-    const obstacle2 = this.checkForObstacle(cell.posX + 16, cell.posY + 16, point2x, point2y, obstacle)
+    const upLine = assetCell.x === edgeCell.x && assetCell.y > edgeCell.y
+    const rightLine = assetCell.y === edgeCell.y && assetCell.x < edgeCell.x
+    const downLine = assetCell.x === edgeCell.x && assetCell.y < edgeCell.y
+    const leftLine = assetCell.y === edgeCell.y && assetCell.x > edgeCell.x
+    const bottomRightQuadrant = assetCellCenterX < edgeCell.posX && assetCellCenterY < edgeCell.posY
+    const bottomLeftQuadrant = assetCellCenterX > edgeCell.posX && assetCellCenterY < edgeCell.posY
+    const topRightQuadrant = assetCellCenterX < edgeCell.posX && assetCellCenterY > edgeCell.posY
+    const topLeftQuadrant = assetCellCenterX > edgeCell.posX && assetCellCenterY > edgeCell.posY
 
-    if (obstacle1 && obstacle2) {
-      return
-    } else {
-      const object = {
-        playerPointX: cell.posX + 16, 
-        playerPointY: cell.posY + 16,
-        obstaclePoint1X: point1x,
-        obstaclePoint1Y: point1y,
-        obstaclePoint2X: point2x,
-        obstaclePoint2Y: point2y,
-        point1offsetX,
-        point1offsetY,
-        point2offsetX,
-        point2offsetY,
-        obstacle: obstacle
-      }
-      // console.log(object)
-
-      this.visibleCell[cell.id].push(object)
-    }
-  }
-
-  private checkForObstacle(centerX: number, centerY: number, pointX: number, pointY: number, obstacle: Cell): boolean {
-    const assetCell = this.gridService.activeGrid.getGridCellByCoordinate(centerX, centerY)
-
-    const upLine = assetCell.x === obstacle.x && assetCell.y > obstacle.y
-    const rightLine = assetCell.y === obstacle.y && assetCell.x < obstacle.x
-    const downLine = assetCell.x === obstacle.x && assetCell.y < obstacle.y
-    const leftLine = assetCell.y === obstacle.y && assetCell.x > obstacle.x
-    const bottomRightQuadrant = centerX < pointX && centerY < pointY
-    const bottomLeftQuadrant = centerX > pointX && centerY < pointY
-    const topRightQuadrant = centerX < pointX && centerY > pointY
-    const topLeftQuadrant = centerX > pointX && centerY > pointY
-    
     if (upLine) {
-      return this.traceStraitLine(assetCell, obstacle, 0)
+      this.traceStraitLine(assetCell, assetCell, edgeCell, 0)
     } else if (rightLine) {
-      return this.traceStraitLine(assetCell, obstacle, 1)
+      this.traceStraitLine(assetCell, assetCell, edgeCell, 1)
     } else if (downLine) {
-      return this.traceStraitLine(assetCell, obstacle, 2)
+      this.traceStraitLine(assetCell, assetCell, edgeCell, 2)
     } else if (leftLine) {
-      return this.traceStraitLine(assetCell, obstacle, 3)
+      this.traceStraitLine(assetCell, assetCell, edgeCell, 3)
     } else if (bottomRightQuadrant) {
       const xRatioMultiplier = 1
       const yRatioMultiplier = 1
-      const yLength = pointY - centerY
-      const xLength = pointX - centerX
+      const yLength = (edgeCell.posY + 16) - assetCellCenterY
+      const xLength = (edgeCell.posX + 16) - assetCellCenterX
 
-      return this.traceLine(xRatioMultiplier, yRatioMultiplier, yLength, xLength, centerX, centerY, pointX, pointY, obstacle)
+      return this.traceLine(assetCell, xRatioMultiplier, yRatioMultiplier, yLength, xLength, assetCellCenterX, assetCellCenterY, edgeCell)
     } else if (topRightQuadrant) {
       const xRatioMultiplier = 1
       const yRatioMultiplier = -1
-      const yLength = centerY - pointY
-      const xLength = pointX - centerX
+      const yLength = assetCellCenterY - (edgeCell.posY + 16)
+      const xLength = (edgeCell.posX + 16) - assetCellCenterX
 
-      return this.traceLine(xRatioMultiplier, yRatioMultiplier, yLength, xLength, centerX, centerY, pointX, pointY, obstacle)
+      return this.traceLine(assetCell, xRatioMultiplier, yRatioMultiplier, yLength, xLength, assetCellCenterX, assetCellCenterY, edgeCell)
     } else if (topLeftQuadrant) {
       const xRatioMultiplier = -1
       const yRatioMultiplier = -1
-      const yLength = centerY - pointY
-      const xLength = centerX - pointX
+      const yLength = assetCellCenterY - (edgeCell.posY + 16)
+      const xLength = assetCellCenterX - (edgeCell.posX + 16)
 
-      return this.traceLine(xRatioMultiplier, yRatioMultiplier, yLength, xLength, centerX, centerY, pointX, pointY, obstacle)
+      return this.traceLine(assetCell, xRatioMultiplier, yRatioMultiplier, yLength, xLength, assetCellCenterX, assetCellCenterY, edgeCell)
     } else if (bottomLeftQuadrant) {
       const xRatioMultiplier = -1
       const yRatioMultiplier = 1
-      const yLength = pointY - centerY
-      const xLength = centerX - pointX
+      const yLength = (edgeCell.posY + 16) - assetCellCenterY
+      const xLength = assetCellCenterX - (edgeCell.posX + 16)
 
-      return this.traceLine(xRatioMultiplier, yRatioMultiplier, yLength, xLength, centerX, centerY, pointX, pointY, obstacle)
-    } 
+      return this.traceLine(assetCell, xRatioMultiplier, yRatioMultiplier, yLength, xLength, assetCellCenterX, assetCellCenterY, edgeCell)
+    }
 
     return false
   }
 
-  private traceLine(xRatioMultiplier: number, yRatioMultiplier: number, yLength: number, xLength: number, centerX: number, centerY: number, pointX: number, pointY: number, obstacle: Cell): boolean {
-    const yRatio = yLength / 16
-    const xRatio = xLength / 16
-
-    let checkLocationY = centerY
-    let checkLocationX = centerX
+  private traceLine(assetCell: Cell, xRatioMultiplier: number, yRatioMultiplier: number, yLength: number, xLength: number, assetCenterX: number, assetCenterY: number, edgeCell: Cell): boolean {
+    const yRatio = Math.round(yLength / 64)
+    const xRatio = Math.round(xLength / 64)
+    let checkLocationY = assetCenterY
+    let checkLocationX = assetCenterX
 
     let reachedDestination = false
     let foundObstacle = false
@@ -291,35 +116,95 @@ export class FogOfWarService {
       checkLocationX += (xRatio * xRatioMultiplier)
       checkLocationY += (yRatio * yRatioMultiplier)
 
-      if (checkLocationX === pointX && checkLocationY === pointY) {
+
+      if (this.gridService.activeGrid.getGridCellByCoordinate(checkLocationX, checkLocationY)?.id === edgeCell.id) {
         reachedDestination = true
       } else {
         try {
-        const cell = this.gridService.activeGrid.getGridCellByCoordinate(checkLocationX, checkLocationY)
-        foundObstacle = cell.obstacle
-        if (foundObstacle) {
-          reachedDestination = true
-        }
-       } catch (e) {
-         console.log(e, checkLocationX, checkLocationY)
-       }
+          const checkedCell = this.gridService.activeGrid.getGridCellByCoordinate(checkLocationX, checkLocationY)
+          if (!checkedCell) {
+            this.centerPoint[assetCell.id].push(null)
+            reachedDestination = true
+          } else {
+            // const visibleCells = this.visibleCell[assetCell.id]
 
+            // if(!visibleCells.find(vc => vc.id === checkedCell.id)) {
+            //   this.visibleCell[assetCell.id].push(checkedCell)
+            // }           
+
+
+            // for (let i = 0; i < 8; i++) {
+            //   if (checkedCell.neighbors[i] && !this.visibleCell[assetCell.id].find(cell => cell.id === checkedCell.neighbors[i].id)) {
+            //     this.visibleCell[assetCell.id].push(checkedCell.neighbors[i])
+            //   }
+            // }
+            if (checkedCell.obstacle) {
+              let adjustmentY = 0
+              let adjustmentX = 0
+              if(edgeCell.y === 0) {
+                adjustmentY = -96
+              }
+              if(edgeCell.x === 0) {
+                adjustmentX = -64
+              }
+              if(edgeCell.x > 1) {
+                adjustmentX = 64
+              }
+
+              if (!this.centerPoint[assetCell.id].find(a => a && checkedCell.id === a.id)) {
+                this.centerPoint[assetCell.id].push({ id: checkedCell.id, x: checkedCell.posX + 16 + adjustmentX, y: checkedCell.posY + 16 + adjustmentY })
+              }
+              reachedDestination = true
+            }
+          }
+        
+
+
+        } catch (e) {
+        console.log(e, checkLocationX, checkLocationY)
       }
+
     }
+  }
 
     return foundObstacle
   }
 
-  private traceStraitLine(assetCell: Cell, obstacle: Cell, direction: number): boolean {
-    if (assetCell.neighbors[direction] && assetCell.neighbors[direction].obstacle ) { 
-      return assetCell.neighbors[direction].id !== obstacle.id
-    }
+  private traceStraitLine(assetCell: Cell, nextCell: Cell, obstacle: Cell, direction: number): void {
+  // if (!nextCell) { return }
 
-        
-    if (assetCell.id === obstacle.id) {
-      return false
-    } else {
-      return this.traceStraitLine(assetCell.neighbors[direction], obstacle, direction)
-    }
+  // if (!this.visibleCell[assetCell.id].find(cCell => nextCell.id === cCell.id)) {
+  //   this.visibleCell[assetCell.id].push(nextCell)
+
+  //   for (let i = 0; i < 8; i++) {
+  //     if (nextCell.neighbors[i] && !this.visibleCell[assetCell.id].find(cell => cell.id === nextCell.neighbors[i].id)) {
+  //       this.visibleCell[assetCell.id].push(nextCell.neighbors[i])
+  //     }
+  //   }
+  // }
+  // if (!nextCell || nextCell.obstacle) {
+  //   return
+  // } else {
+  //   this.traceStraitLine(assetCell, nextCell.neighbors[direction], obstacle, direction)
+  // }
+
+}
+
+
+  public findVisibleCellsEdges(): void {
+  this.edgeCells = []
+    for(let a = 0; a <= this.gridService.activeGrid.width; a++) {
+  this.edgeCells.push(this.gridService.activeGrid.getCell(a, 0))
+}
+for (let a = 0; a < this.gridService.activeGrid.height; a++) {
+  this.edgeCells.push(this.gridService.activeGrid.getCell(this.gridService.activeGrid.width - 1, a))
+}
+for (let a = this.gridService.activeGrid.width - 1; a >= 0; a--) {
+  this.edgeCells.push(this.gridService.activeGrid.getCell(a, this.gridService.activeGrid.height - 1))
+}
+for (let a = this.gridService.activeGrid.height; a >= 0; a--) {
+  this.edgeCells.push(this.gridService.activeGrid.getCell(0, a))
+}
+this.edgeCells = this.edgeCells.filter(a => a)
   }
 }

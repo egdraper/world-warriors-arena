@@ -3,6 +3,7 @@
 <div class="button" (click)="baseClicked()">Layer</div>
 <div class="button" (click)="canvasService.resetViewport()">Reset View Port</div>
 <div class="button" (click)="changeLockState()" [class.color]="lockState === 'Locked'? 'red' : 'blue'">{{lockState}}</div>
+<div class="button" (click)="addFogOfWar()">Fog Of War</div>
 <div class="button" *ngFor="let gridId of grid.gridIds" (click)="switchGrid(gridId)">{{gridId}}</div>
 
 <select (change)="changeScale($event.target)">
@@ -43,5 +44,7 @@
     </div>
   </div>
 </div>
+
+<h1 [style.color]="'white'"> Selected Cell (x:{{grid?.hoveringCell?.x}} - y:{{grid?.hoveringCell?.y}}) </h1>
 
 

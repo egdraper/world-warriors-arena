@@ -9,6 +9,8 @@ import { AssetsService } from '../../game-assets/assets.service';
 import { CanvasService } from '../../canvas/canvas.service';
 import { DrawService } from '../../game-engine/draw-tools/draw.service';
 import { GameSettings } from '../../models/game-settings';
+import { FogOfWarService } from '../../game-engine/visibility.service';
+import { NewFogOfWarService } from '../../game-engine/new-visibility.service';
 
 @Component({
   selector: 'world-warriors-arena-editor-palette',
@@ -27,7 +29,8 @@ export class EditorPaletteComponent implements OnInit {
     private editorService: EditorService,
     private shortestPath: ShortestPath,
     public grid: GridService,
-    private drawService: DrawService
+    private drawService: DrawService,
+    private visibilityService: NewFogOfWarService
   ) { }
 
   ngOnInit(): void {
@@ -105,8 +108,8 @@ export class EditorPaletteComponent implements OnInit {
       terrainTypeId: "DrawableTrees",
       inverted: true,
       pathTypeId: undefined,
-      width: 50,
-      height: 50
+      width: 150,
+      height: 150
     }
 
     mapGenerator.generateMap(mapDetails)
@@ -122,7 +125,19 @@ export class EditorPaletteComponent implements OnInit {
     const centerCell = this.grid.activeGrid.getGridCellByCoordinate(Math.floor(this.canvasService.canvasSize / 2), Math.floor(this.canvasService.canvasSize / 2))
     this.canvasService.centerPointX = centerCell.posX * GameSettings.scale
     this.canvasService.centerPointY = centerCell.posY * GameSettings.scale
+
+    this.drawService.newDrawBlackoutFog()
   }
 
+  
+  public addFogOfWar(): void {
+    this.visibilityService.createCellLines()
+    // this.visibilityService.fogEnabled = false
+    // if(this.visibilityService.fogEnabled) {
+    //   this.drawService.drawFog()
+    //   this.visibilityService.preloadVisibility(this.assetService.obstacles)
+    //   this.drawService.drawBlackoutFog()
+    // }
+  }
 
 }

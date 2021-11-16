@@ -9,6 +9,7 @@ import { GameComponent, MotionAsset } from "../../models/assets.model";
 import { Cell } from "../../models/cell.model";
 import { GameSettings } from "../../models/game-settings";
 import { GridService } from "../grid.service";
+import { NewFogOfWarService } from "../new-visibility.service";
 import { FogOfWarService } from "../visibility.service";
 
 @Injectable()
@@ -19,7 +20,8 @@ export class DrawService {
     public fogOfWarService: FogOfWarService,
     public editorService: EditorService,
     public assetService: AssetsService,
-    public characterEditorService: CharacterEditorService
+    public characterEditorService: CharacterEditorService,
+    public newFogOfWarService: NewFogOfWarService
   ) { }
 
   // Draws Grid Lines  
@@ -111,6 +113,7 @@ export class DrawService {
 
   // Fog Of War Complete Black Out
   public drawBlackoutFog(): void {
+    console.log("HO")
     if (this.fogOfWarService.fogEnabled) {
       this.canvasService.blackoutCTX.globalCompositeOperation = 'destination-over'
       this.canvasService.blackoutCTX.clearRect(0, 0, this.gridService.activeGrid.width * 32, this.gridService.activeGrid.height * 32);
@@ -125,6 +128,95 @@ export class DrawService {
     }
     // this.addOpaqueFogLineOfSight()
   }
+
+  // Fog Of War Complete Black Out
+  public newDrawBlackoutFog(): void {
+      if(!this.canvasService.blackoutCTX || !this.gridService.activeGrid ) { return }
+
+      this.canvasService.blackoutCTX.filter = "none";
+      this.canvasService.blackoutCTX.globalCompositeOperation = 'destination-over'
+      this.canvasService.blackoutCTX.clearRect(0, 0, this.gridService.activeGrid.width * 32, this.gridService.activeGrid.height * 32);
+      this.canvasService.blackoutCTX.fillStyle = 'black';
+      this.canvasService.blackoutCTX.globalAlpha = .9;
+      this.canvasService.blackoutCTX.fillRect(
+        0,
+        0,
+        this.gridService.activeGrid.width * 32,
+        this.gridService.activeGrid.height * 32
+      )
+
+    // this.addOpaqueFogLineOfSight()
+  }
+  // Fog Of War Complete Black Out
+  // public newDrawFog(): void {
+  //   if (this.fogOfWarService.fogEnabled) {
+  //     this.canvasService.blackoutCTX.globalCompositeOperation = 'destination-over'
+  //     this.canvasService.blackoutCTX.clearRect(0, 0, this.gridService.activeGrid.width * 32, this.gridService.activeGrid.height * 32);
+  //     this.canvasService.blackoutCTX.fillStyle = 'black';
+  //     this.canvasService.blackoutCTX.globalAlpha = 0.9;
+  //     this.canvasService.blackoutCTX.fillRect(
+  //       0,
+  //       0,
+  //       this.gridService.activeGrid.width * 32,
+  //       this.gridService.activeGrid.height * 32
+  //     )
+  //   }
+  //   // this.addOpaqueFogLineOfSight()
+  // }
+  // Fog Of War Complete Black Out
+  public newRevealDrawBlackoutFog(): void {
+
+    if(this.assetService.selectedGameComponent) {
+    const visibleCells = this.newFogOfWarService.visibleCell[this.assetService.selectedGameComponent.cell.id]
+    const centerCells = this.newFogOfWarService.centerPoint[this.assetService.selectedGameComponent.cell.id]
+    this.canvasService.blackoutCTX.globalCompositeOperation = 'destination-out'
+    visibleCells.forEach(cell => {
+      this.canvasService.blackoutCTX.filter = "blur(10px)";  // "feather"
+      // this.canvasService.blackoutCTX.fillStyle = 'black';
+      //     this.canvasService.blackoutCTX.fillRect(
+      //       cell.posX,
+      //       cell.posY,
+      //       32,
+      //       32
+      //     )
+    })
+      this.canvasService.blackoutCTX.beginPath()
+      this.canvasService.blackoutCTX.lineWidth = 1;
+      // this.canvasService.backgroundCTX.strokeStyle = "rgba(255, 255 ,255,.5)"
+      this.canvasService.blackoutCTX.moveTo(centerCells[0].x, centerCells[0].y)
+
+      centerCells.forEach((cell, index) => {
+        if(index!=0 && cell){ 
+
+          this.canvasService.blackoutCTX.lineTo(cell.x, cell.y)
+        }
+      } )
+      this.canvasService.blackoutCTX.closePath();
+
+
+      this.canvasService.blackoutCTX.fill();
+      
+
+
+  }
+
+  }
+  // // Fog Of War Complete Black Out
+  // public newRevealDrawFog(): void {
+  //   if (this.fogOfWarService.fogEnabled) {
+  //     this.canvasService.blackoutCTX.globalCompositeOperation = 'destination-out'
+  //     this.canvasService.blackoutCTX.clearRect(0, 0, this.gridService.activeGrid.width * 32, this.gridService.activeGrid.height * 32);
+  //     this.canvasService.blackoutCTX.fillStyle = 'black';
+  //     this.canvasService.blackoutCTX.globalAlpha = 0.9;
+  //     this.canvasService.blackoutCTX.fillRect(
+  //       0,
+  //       0,
+  //       this.gridService.activeGrid.width * 32,
+  //       this.gridService.activeGrid.height * 32
+  //     )
+  //   }
+  //   // this.addOpaqueFogLineOfSight()
+  // }
 
   // Fog Of War Transparent fog
   public drawFog(): void {
@@ -257,7 +349,7 @@ export class DrawService {
 
       this.canvasService.foregroundCTX.clearRect(0, 0, this.gridService.activeGrid.width * 32, this.gridService.activeGrid.height * 32);
       this.canvasService.backgroundCTX.clearRect(0, 0, this.gridService.activeGrid.width * 32, this.gridService.activeGrid.height * 32);
-      this.canvasService.blackoutCTX.clearRect(0, 0, this.gridService.activeGrid.width * 32, this.gridService.activeGrid.height * 32);
+      // this.canvasService.blackoutCTX.clearRect(0, 0, this.gridService.activeGrid.width * 32, this.gridService.activeGrid.height * 32);
 
       try {
         if (this.gridService.activeGrid.largeImage.background) {
@@ -407,7 +499,7 @@ export class DrawService {
   public drawEditableCharacter(): void {
     if (!this.characterEditorService.selectedCharacter || !this.gridService.hoveringCell) { return }
     // console.log(this.gridService.hoveringCell.x, this.gridService.hoveringCell.y)
-    this.canvasService.blackoutCTX.drawImage(
+    this.canvasService.foregroundCTX.drawImage(
       this.characterEditorService.selectedCharacter.image,
       this.characterEditorService.selectedCharacter.frameXPosition[1],
       this.characterEditorService.selectedCharacter.frameYPosition,

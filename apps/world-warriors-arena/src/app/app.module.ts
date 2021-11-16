@@ -15,6 +15,7 @@ import { CharacterEditorPaletteComponent } from './editor/character-edtor-palett
 import { EditorPaletteComponent } from './editor/editor-palette/editor-palette.component';
 import { EditorService } from './editor/editor-palette/editor.service';
 import { CharacterEditorService } from './editor/character-edtor-palette/character-editor-pallete/character-editor.service';
+import { NewFogOfWarService } from './game-engine/new-visibility.service';
 
 @NgModule({
   declarations: [AppComponent, CanvasComponent, EditorPaletteComponent, CharacterEditorPaletteComponent, GlobalMapComponent],
@@ -27,6 +28,7 @@ import { CharacterEditorService } from './editor/character-edtor-palette/charact
     GridService,
     EditorService,
     FogOfWarService,
+    NewFogOfWarService,
     Engine,
     CharacterEditorService
   ],

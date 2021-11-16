@@ -175,6 +175,7 @@ export class CanvasComponent {
   public onCanvasClick(event: any): void {    
     this.mouseIsDown = true
     const selectedCell = this.getCellFromMouseEvent(event)
+    console.log(selectedCell)
     const assetInCell = this.assetService.getAssetFromCell(selectedCell, this.gridService.activeGrid.id)
     
     // select Asset
@@ -230,6 +231,7 @@ export class CanvasComponent {
     const clickY = event.offsetY + (-1 * this.canvasService.canvasViewPortOffsetY * GameSettings.scale)
 
     this.hoveringCell = this.gridService.activeGrid.getGridCellByCoordinate(clickX, clickY)
+    this.gridService.hoveringCell = this.hoveringCell
 
     // scroll with mouse movement
     if (this.shiftPressed) {

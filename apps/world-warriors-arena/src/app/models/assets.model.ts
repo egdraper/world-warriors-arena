@@ -111,6 +111,7 @@ export abstract class MotionAsset extends Asset {
     this.moving = true
     const currentCell = this.currentPath.pop() // removes cell the character is standing on
     this.nextCell = this.currentPath.pop()
+    this.assetService.placementChanged = true
    this.setSpriteDirection()
     this.animationFrame = 8
   }
