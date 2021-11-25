@@ -136,6 +136,7 @@ export class DrawService {
     if (!this.canvasService.blackoutCTX || !this.gridService.activeGrid) { return }
 
     this.canvasService.blackoutCTX.clearRect(0, 0, this.gridService.activeGrid.width * 32, this.gridService.activeGrid.height * 32);
+    this.canvasService.backgroundCTX.imageSmoothingEnabled = false
     let topLeftPosX = -1 * this.canvasService.canvasViewPortOffsetX
     let topLeftPosY = -1 * this.canvasService.canvasViewPortOffsetY
     if (this.assetService.selectedGameComponent) {
@@ -153,7 +154,7 @@ export class DrawService {
       //     )
       //   } else {
       this.canvasService.blackoutCTX.globalCompositeOperation = 'destination-over'
-      this.canvasService.blackoutCTX.globalAlpha = .5;
+      this.canvasService.blackoutCTX.globalAlpha = .9;
       this.canvasService.blackoutCTX.fillRect(
         0,
         0,
@@ -176,7 +177,7 @@ export class DrawService {
   public newRevealBlackoutFog(): void {
     if (this.assetService.selectedGameComponent) {
 
-      const fogOfWarRim = this.newFogOfWarService.fogOfWarRimPoints[this.assetService.selectedGameComponent.cell.id]
+      const fogOfWarRim = this.newFogOfWarService.fogOfWarRimPoints[this.assetService.selectedGameComponent.cell.id].map(a => a)
 
       // if(!this.gridService.activeGrid.largeBlackoutImage.blackoutLargeImage) {
 
@@ -187,7 +188,7 @@ export class DrawService {
       this.canvasService.blackoutCTX.globalCompositeOperation = 'destination-out'
       this.canvasService.blackoutCTX.fillStyle = "black"
 
-      // this.canvasService.blackoutCTX.filter = "blur(15px)";  // "feather"
+      this.canvasService.blackoutCTX.filter = "blur(35px)";  // "feather"
 
       if (this.newFogOfWarService.blackOutRimPoints.length === 0) {
         this.newFogOfWarService.blackOutRimPoints = fogOfWarRim
@@ -280,13 +281,13 @@ export class DrawService {
       this.blaDirty = false
 
       this.newFogOfWarService.visitedCells = new Set([...this.newFogOfWarService.visitedCells, ...fogNonObstructedCells])
-      this.newFogOfWarService.visitedCells.forEach(cell => {
-        if (cell) {
-          this.canvasService.blackoutCTX.beginPath();
-          this.canvasService.blackoutCTX.fillRect(cell.x * 32, cell.y * 32, 5, 5)
-          this.canvasService.blackoutCTX.stroke();
-        }
-      })
+      // this.newFogOfWarService.visitedCells.forEach(cell => {
+      //   if (cell) {
+      //     this.canvasService.blackoutCTX.beginPath();
+      //     this.canvasService.blackoutCTX.fillRect(cell.x * 32, cell.y * 32, 5, 5)
+      //     this.canvasService.blackoutCTX.stroke();
+      //   }
+      // })
 
 
       this.clearOutVisibleArea(this.newFogOfWarService.blackOutRimPoints, this.canvasService.blackoutCTX)
@@ -334,12 +335,12 @@ export class DrawService {
   // Fog Of War Complete Black Out
   public newDrawFog(): void {
     if (!this.canvasService.fogCTX || !this.gridService.activeGrid) { return }
-
+    this.canvasService.fogCTX.imageSmoothingEnabled = false
     this.canvasService.fogCTX.filter = "none";
     this.canvasService.fogCTX.globalCompositeOperation = 'destination-over'
     this.canvasService.fogCTX.clearRect(0, 0, this.gridService.activeGrid.width * 32, this.gridService.activeGrid.height * 32);
     this.canvasService.fogCTX.fillStyle = 'black';
-    this.canvasService.fogCTX.globalAlpha = .6;
+    this.canvasService.fogCTX.globalAlpha = .8;
     this.canvasService.fogCTX.fillRect(
       0,
       0,
@@ -355,54 +356,53 @@ export class DrawService {
     if (this.assetService.selectedGameComponent) {
       const centerCells = this.newFogOfWarService.fogOfWarRimPoints[this.assetService.selectedGameComponent.cell.id]
       this.canvasService.fogCTX.globalCompositeOperation = 'destination-out'
-      // this.canvasService.fogCTX.filter = "blur(35px)";  // "feather"
+      this.canvasService.fogCTX.filter = "blur(35px)";  // "feather"
 
-
+      console.log(centerCells[0])
       this.clearOutVisibleArea(centerCells, this.canvasService.fogCTX)
       this.clearOutVisibleArea(centerCells, this.canvasService.fogCTX)
-
     }
   }
 
-  private clearOutVisibleArea(centerCells: any, ctx: CanvasRenderingContext2D): void {
+  private clearOutVisibleArea(centerCells: Cell[], ctx: CanvasRenderingContext2D): void {
     if(centerCells.length === 0) { 
       debugger
       return
     }
     ctx.beginPath()
-    ctx.lineWidth = 2;
-    ctx.strokeStyle = "red"
+    ctx.lineWidth = 1;
+    // ctx.strokeStyle = "red"
     try {
-      ctx.moveTo(centerCells[0].x * 32, centerCells[0].y * 32)
+      ctx.moveTo(centerCells[0].fogPointX, centerCells[0].fogPointY)
     } catch {
       debugger
     }
 
-    centerCells.forEach((cell: any, index: number) => {
+    centerCells.forEach((cell: Cell, index: number) => {
       if (index != 0 && cell) {
         if (index % 1 === 0) {
-          ctx.lineTo(cell.x * 32, cell.y * 32)
+          ctx.lineTo(cell.fogPointX, cell.fogPointY)
         }
       }
     })
     ctx.closePath();
-    ctx.stroke();
-    // ctx.fill();
+    // ctx.stroke();
+    ctx.fill();
 
     // ///////
-    ctx.beginPath();
-    ctx.fillRect(centerCells[0].x * 32, centerCells[0].y * 32, 5, 5)
-    ctx.stroke();
+    // ctx.beginPath();
+    // ctx.fillRect(centerCells[0].x * 32, centerCells[0].y * 32, 5, 5)
+    // ctx.stroke();
 
-    centerCells.forEach((cell: any, index: number) => {
-      if (index != 0 && cell) {
-        if (index % 1 === 0) {
-          ctx.beginPath();
-          ctx.fillRect(cell.x * 32, cell.y * 32, 5, 5)
-          ctx.stroke();
-        }
-      }
-    })
+    // centerCells.forEach((cell: any, index: number) => {
+    //   if (index != 0 && cell) {
+    //     if (index % 1 === 0) {
+    //       ctx.beginPath();
+    //       ctx.fillRect(cell.x * 32, cell.y * 32, 5, 5)
+    //       ctx.stroke();
+    //     }
+    //   }
+    // })
 
     //////
   }

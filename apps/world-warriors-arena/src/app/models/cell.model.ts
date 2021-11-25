@@ -20,6 +20,8 @@ export interface Cell {
   backgroundGrowableTileId?: string
   portalTo?: {gridId: string, cell: Cell}
   revealed?: boolean
+  fogPointX?: number
+  fogPointY?: number
   
 }
 

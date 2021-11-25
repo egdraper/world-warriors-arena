@@ -154,17 +154,19 @@ export class NewFogOfWarService {
   private addCenterPointForTracing(centerCell: Cell, obstacleCell: Cell, edgeCell: Cell): void {
     let adjustmentY = 0
     let adjustmentX = 0
-    // if (centerCell.y > obstacleCell.y) {
-    //   adjustmentY = -96
-    // }
-    // if (centerCell.x > obstacleCell.x) {
-    //   adjustmentX = -64
-    // }
-    // if (centerCell.x < obstacleCell.x) {
-    //   adjustmentX = 64
-    // }
+    if (centerCell.y > obstacleCell.y) {
+      adjustmentY = -96
+    }
+    if (centerCell.x > obstacleCell.x) {
+      adjustmentX = -64
+    }
+    if (centerCell.x < obstacleCell.x) {
+      adjustmentX = 64
+    }
 
     if (!this.fogOfWarRimPoints[centerCell.id].find(a => a && obstacleCell.id === a.id)) {
+      obstacleCell.fogPointX = obstacleCell.posX + 16 + adjustmentX
+      obstacleCell.fogPointY = obstacleCell.posY + 16 + adjustmentY
       this.fogOfWarRimPoints[centerCell.id].push(obstacleCell)
     }
   }
