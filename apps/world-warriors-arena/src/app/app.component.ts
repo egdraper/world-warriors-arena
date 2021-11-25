@@ -33,13 +33,4 @@ export class AppComponent {
 
   }
   
-  public onAddCharacterClick(): void {
-    this.visibilityService.fogEnabled = false
-    if(this.visibilityService.fogEnabled) {
-      this.drawService.drawFog()
-      this.visibilityService.preloadVisibility(this.assetService.obstacles)
-      this.drawService.drawBlackoutFog()
-    }
-  }
-
 }

@@ -157,11 +157,12 @@ export abstract class MotionAsset extends Asset {
         this.canvasService.centerOverAsset(this.assetService.selectedGameComponent, this.grid.activeGrid)
       }
 
+      this.grid.activeGrid.drawBlackoutImage = true
       this.nextCell = this.currentPath.length > 0
         ? this.currentPath.pop()
         : null
 
-
+      this.drawService.blaDirty = true
       if (this.redirection) {
         this.endMovement()
         this.startMovement(this.cell, this.redirection.end, this.redirection.charactersOnGrid)
@@ -170,14 +171,8 @@ export abstract class MotionAsset extends Asset {
       // TODO: Re-calculate path if something has moved into it
 
       if (!this.nextCell) {
-        this.drawService.clearFogLineOfSight(this.cell)
         this.endMovement()
       } else {
-
-        // this.grid.obstacles.forEach(cellId => {
-        //   if(this.grid.grid[cellId].obstacle) { this.drawService.clearFogLineOfSight(this.nextCell, this.grid.grid[cellId]) }
-        // })
-        this.drawService.clearFogLineOfSight(this.nextCell)
         this.setSpriteDirection()
       }
     }

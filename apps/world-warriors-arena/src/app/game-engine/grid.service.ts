@@ -3,6 +3,7 @@ import { CanvasService } from '../canvas/canvas.service';
 import { MotionAsset } from '../models/assets.model';
 import { Cell, GridDetails, RelativePositionCell } from '../models/cell.model';
 import { LargeCanvasImage } from './draw-tools/large-image';
+import { LargeBlackoutImage } from './draw-tools/large-image-blackout';
 
 export class Grid {
   public id? = "1"
@@ -19,6 +20,8 @@ export class Grid {
   public gridLoaded = false
   public includeGridLines = false
   public largeImage: LargeCanvasImage
+  public largeBlackoutImage: LargeBlackoutImage
+  public drawBlackoutImage = false
   public selectedGameComponent: MotionAsset
 
   constructor(gridDetails: GridDetails) {
@@ -74,6 +77,7 @@ export class GridService {
     // Grid Setup
     const newGrid = new Grid(gridDetails)
     newGrid.largeImage = new LargeCanvasImage(this.canvasService.drawingCanvas, this.canvasService.drawingCTX)
+    newGrid.largeBlackoutImage = new LargeBlackoutImage(this.canvasService.drawBlackoutCanvas, this.canvasService.drawBlackoutCTX)
     newGrid.inverted = inverted
     this.generateGrid(newGrid, invertedDrawableTerrainId)
     newGrid.gridLoaded = true

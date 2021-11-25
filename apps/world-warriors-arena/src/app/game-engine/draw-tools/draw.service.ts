@@ -9,11 +9,13 @@ import { GameComponent, MotionAsset } from "../../models/assets.model";
 import { Cell } from "../../models/cell.model";
 import { GameSettings } from "../../models/game-settings";
 import { GridService } from "../grid.service";
-import { NewFogOfWarService } from "../new-visibility.service";
+import { NewFogOfWarService, PointFinder } from "../new-visibility.service";
 import { FogOfWarService } from "../visibility.service";
 
 @Injectable()
 export class DrawService {
+
+  public blaDirty = false
   constructor(
     public gridService: GridService,
     public canvasService: CanvasService,
@@ -118,7 +120,7 @@ export class DrawService {
       this.canvasService.blackoutCTX.globalCompositeOperation = 'destination-over'
       this.canvasService.blackoutCTX.clearRect(0, 0, this.gridService.activeGrid.width * 32, this.gridService.activeGrid.height * 32);
       this.canvasService.blackoutCTX.fillStyle = 'black';
-      this.canvasService.blackoutCTX.globalAlpha = 0.9;
+      this.canvasService.blackoutCTX.globalAlpha = 1;
       this.canvasService.blackoutCTX.fillRect(
         0,
         0,
@@ -133,81 +135,288 @@ export class DrawService {
   public newDrawBlackoutFog(): void {
     if (!this.canvasService.blackoutCTX || !this.gridService.activeGrid) { return }
 
-    this.canvasService.blackoutCTX.filter = "none";
-    this.canvasService.blackoutCTX.globalCompositeOperation = 'destination-over'
     this.canvasService.blackoutCTX.clearRect(0, 0, this.gridService.activeGrid.width * 32, this.gridService.activeGrid.height * 32);
-    this.canvasService.blackoutCTX.fillStyle = 'black';
-    this.canvasService.blackoutCTX.globalAlpha = .9;
-    this.canvasService.blackoutCTX.fillRect(
+    let topLeftPosX = -1 * this.canvasService.canvasViewPortOffsetX
+    let topLeftPosY = -1 * this.canvasService.canvasViewPortOffsetY
+    if (this.assetService.selectedGameComponent) {
+      //   if (this.blackout) {
+      //     this.canvasService.blackoutCTX.drawImage(
+      //       this.blackout,
+      //       topLeftPosX,
+      //       topLeftPosY,
+      //       this.canvasService.canvasSize * (1 / GameSettings.scale),
+      //       this.canvasService.canvasSize * (1 / GameSettings.scale),
+      //       topLeftPosX,
+      //       topLeftPosY,
+      //       this.canvasService.canvasSize * (1 / GameSettings.scale),
+      //       this.canvasService.canvasSize * (1 / GameSettings.scale)
+      //     )
+      //   } else {
+      this.canvasService.blackoutCTX.globalCompositeOperation = 'destination-over'
+      this.canvasService.blackoutCTX.globalAlpha = .5;
+      this.canvasService.blackoutCTX.fillRect(
+        0,
+        0,
+        this.gridService.activeGrid.width * 32,
+        this.gridService.activeGrid.height * 32
+      )
+      //     setTimeout(() => {
+      //       this.blackoutElementSrc = this.canvasService.blackoutCanvas.nativeElement.toDataURL("image/png")
+
+      //     },2000);
+      //   }
+
+    }
+
+  }
+
+  private blackoutElementSrc: string
+  private blackout: HTMLImageElement
+  // Fog Of War Complete Black Out
+  public newRevealBlackoutFog(): void {
+    if (this.assetService.selectedGameComponent) {
+
+      const fogOfWarRim = this.newFogOfWarService.fogOfWarRimPoints[this.assetService.selectedGameComponent.cell.id]
+
+      // if(!this.gridService.activeGrid.largeBlackoutImage.blackoutLargeImage) {
+
+      //   this.canvasService.blackoutCTX.globalCompositeOperation = 'destination-out'
+      //   // this.canvasService.drawBlackoutCTX.filter = "blur(0px)";  // "feather"
+      //   this.gridService.activeGrid.largeBlackoutImage.initialize(this.gridService.activeGrid.width, this.gridService.activeGrid.height)
+      // }
+      this.canvasService.blackoutCTX.globalCompositeOperation = 'destination-out'
+      this.canvasService.blackoutCTX.fillStyle = "black"
+
+      // this.canvasService.blackoutCTX.filter = "blur(15px)";  // "feather"
+
+      if (this.newFogOfWarService.blackOutRimPoints.length === 0) {
+        this.newFogOfWarService.blackOutRimPoints = fogOfWarRim
+      }
+      let blackOutRim = this.newFogOfWarService.blackOutRimPoints
+
+      const fogNonObstructedCells = this.newFogOfWarService.nonObstructedCells[this.assetService.selectedGameComponent.cell.id]
+
+
+      // let skipInnerIndex = -1
+      // let skipOuterIndex = -1
+
+      if (this.blaDirty) {
+        const tempBlackOutRim: Cell[] = []
+        // let blackRimIndex = 0;
+        // let fogRimIndex = 0
+        // let inside = false
+        // let open = false
+        // // let traceIndex = 0
+        // // let tracing = "fog"
+        // const blackCell = blackOutRim[blackRimIndex]
+        // const fogCell = fogOfWarRim[fogRimIndex]
+        // let uneven = false
+        // let fogIndex = 0
+        // let blackIndex = 0
+
+        for (let cell of fogOfWarRim) {
+          const _index = blackOutRim.findIndex(_cell => cell.id === _cell.id)
+
+          if (_index === -1) {
+            continue
+          }
+
+          for (let i = 0; i < _index; i++) {
+            const bCell = blackOutRim.shift();
+            blackOutRim.push(bCell)
+          }
+          break
+
+        }
+
+        const dBlack = blackOutRim
+        const dFog = fogOfWarRim
+
+        while (dBlack.length > 0 && dFog.length > 0) {
+          const blackCell = dBlack[0]
+          const fogCell = dFog[0]
+
+          if (blackCell.id === fogCell.id) {
+            tempBlackOutRim.push(dBlack.shift())
+            dFog.shift()
+            continue
+          }
+
+          const blackHasFogsMatch = dBlack.find(dbo => fogCell.id === dbo.id)
+          const fogHasBlacksMatch = dFog.find(df => df.id === blackCell.id)
+
+          if (blackHasFogsMatch) {
+            let index = dBlack.indexOf(blackHasFogsMatch)
+            for (let i = 0; i <= index; i++) {
+              tempBlackOutRim.push(dBlack.shift())
+            }
+            dFog.shift()
+            continue
+          }
+
+          if (fogHasBlacksMatch) {
+            let index = dFog.indexOf(fogHasBlacksMatch)
+            for (let i = 0; i <= index; i++) {
+              tempBlackOutRim.push(dFog.shift())
+            }
+            dBlack.shift()
+            continue
+          }
+
+          tempBlackOutRim.push(dFog.shift())
+          dBlack.shift()
+        }
+
+        dBlack.forEach((cell) => {
+          tempBlackOutRim.push(cell)
+        })
+
+        dFog.forEach((cell) => {
+          tempBlackOutRim.push(cell)
+        })
+
+        this.newFogOfWarService.blackOutRimPoints = tempBlackOutRim
+      }
+      this.blaDirty = false
+
+      this.newFogOfWarService.visitedCells = new Set([...this.newFogOfWarService.visitedCells, ...fogNonObstructedCells])
+      this.newFogOfWarService.visitedCells.forEach(cell => {
+        if (cell) {
+          this.canvasService.blackoutCTX.beginPath();
+          this.canvasService.blackoutCTX.fillRect(cell.x * 32, cell.y * 32, 5, 5)
+          this.canvasService.blackoutCTX.stroke();
+        }
+      })
+
+
+      this.clearOutVisibleArea(this.newFogOfWarService.blackOutRimPoints, this.canvasService.blackoutCTX)
+      // if(this.gridService.activeGrid.drawBlackoutImage) {
+
+      //   this.clearOutVisibleArea(centerCells, this.canvasService.drawBlackoutCTX)
+      // this.gridService.activeGrid.largeBlackoutImage.createLargeBlackoutImage()
+
+      // setTimeout(() => {
+      //   let topLeftPosX = -1 * this.canvasService.canvasViewPortOffsetX
+      //   let topLeftPosY = -1 * this.canvasService.canvasViewPortOffsetY
+      //   this.canvasService.blackoutCTX.imageSmoothingEnabled = false
+      //   this.canvasService.blackoutCTX.drawImage(
+      //     this.gridService.activeGrid.largeBlackoutImage.blackoutLargeImage,
+      //     topLeftPosX,
+      //     topLeftPosY,
+      //     this.canvasService.canvasSize * (1 / GameSettings.scale),
+      //     this.canvasService.canvasSize * (1 / GameSettings.scale),
+      //     topLeftPosX,
+      //     topLeftPosY,
+      //     this.canvasService.canvasSize * (1 / GameSettings.scale),
+      //     this.canvasService.canvasSize * (1 / GameSettings.scale)
+      //   )
+      // }, );
+
+      //   this.gridService.activeGrid.drawBlackoutImage = false
+      // }
+
+
+      // this.createBlackoutFogOfWar()
+
+
+
+    }
+  }
+
+  // private createBlackoutFogOfWar(): void {
+  //   if (this.blackoutElementSrc) {
+  //     const blackoutImage = new Image()
+  //     blackoutImage.src = this.blackoutElementSrc
+  //     this.blackout = blackoutImage
+  //   }
+  // }
+
+  // Fog Of War Complete Black Out
+  public newDrawFog(): void {
+    if (!this.canvasService.fogCTX || !this.gridService.activeGrid) { return }
+
+    this.canvasService.fogCTX.filter = "none";
+    this.canvasService.fogCTX.globalCompositeOperation = 'destination-over'
+    this.canvasService.fogCTX.clearRect(0, 0, this.gridService.activeGrid.width * 32, this.gridService.activeGrid.height * 32);
+    this.canvasService.fogCTX.fillStyle = 'black';
+    this.canvasService.fogCTX.globalAlpha = .6;
+    this.canvasService.fogCTX.fillRect(
       0,
       0,
       this.gridService.activeGrid.width * 32,
       this.gridService.activeGrid.height * 32
     )
 
-    // this.addOpaqueFogLineOfSight()
   }
-  // Fog Of War Complete Black Out
-  // public newDrawFog(): void {
-  //   if (this.fogOfWarService.fogEnabled) {
-  //     this.canvasService.blackoutCTX.globalCompositeOperation = 'destination-over'
-  //     this.canvasService.blackoutCTX.clearRect(0, 0, this.gridService.activeGrid.width * 32, this.gridService.activeGrid.height * 32);
-  //     this.canvasService.blackoutCTX.fillStyle = 'black';
-  //     this.canvasService.blackoutCTX.globalAlpha = 0.9;
-  //     this.canvasService.blackoutCTX.fillRect(
-  //       0,
-  //       0,
-  //       this.gridService.activeGrid.width * 32,
-  //       this.gridService.activeGrid.height * 32
-  //     )
-  //   }
-  //   // this.addOpaqueFogLineOfSight()
-  // }
-  // Fog Of War Complete Black Out
-  public newRevealDrawBlackoutFog(): void {
 
+
+  // Fog Of War Complete Black Out
+  public newRevealFog(): void {
     if (this.assetService.selectedGameComponent) {
-      const visibleCells = this.newFogOfWarService.visibleCell[this.assetService.selectedGameComponent.cell.id]
-      const centerCells = this.newFogOfWarService.centerPoint[this.assetService.selectedGameComponent.cell.id]
-      this.canvasService.blackoutCTX.globalCompositeOperation = 'destination-out'
-      visibleCells.forEach(cell => {
-        this.canvasService.blackoutCTX.filter = "blur(35px)";  // "feather"
-      })
-
-      this.clearOutVisibleArea(centerCells)
-      this.clearOutVisibleArea(centerCells)
+      const centerCells = this.newFogOfWarService.fogOfWarRimPoints[this.assetService.selectedGameComponent.cell.id]
+      this.canvasService.fogCTX.globalCompositeOperation = 'destination-out'
+      // this.canvasService.fogCTX.filter = "blur(35px)";  // "feather"
 
 
+      this.clearOutVisibleArea(centerCells, this.canvasService.fogCTX)
+      this.clearOutVisibleArea(centerCells, this.canvasService.fogCTX)
 
     }
-
   }
 
-  private clearOutVisibleArea(centerCells: any): void {
-    this.canvasService.blackoutCTX.beginPath()
-    this.canvasService.blackoutCTX.lineWidth = 1;
-    this.canvasService.blackoutCTX.moveTo(centerCells[0].x, centerCells[0].y)
+  private clearOutVisibleArea(centerCells: any, ctx: CanvasRenderingContext2D): void {
+    if(centerCells.length === 0) { 
+      debugger
+      return
+    }
+    ctx.beginPath()
+    ctx.lineWidth = 2;
+    ctx.strokeStyle = "red"
+    try {
+      ctx.moveTo(centerCells[0].x * 32, centerCells[0].y * 32)
+    } catch {
+      debugger
+    }
 
     centerCells.forEach((cell: any, index: number) => {
       if (index != 0 && cell) {
         if (index % 1 === 0) {
-          this.canvasService.blackoutCTX.lineTo(cell.x, cell.y)
+          ctx.lineTo(cell.x * 32, cell.y * 32)
         }
       }
     })
-    this.canvasService.blackoutCTX.closePath();
+    ctx.closePath();
+    ctx.stroke();
+    // ctx.fill();
 
+    // ///////
+    ctx.beginPath();
+    ctx.fillRect(centerCells[0].x * 32, centerCells[0].y * 32, 5, 5)
+    ctx.stroke();
 
-    this.canvasService.blackoutCTX.fill();
+    centerCells.forEach((cell: any, index: number) => {
+      if (index != 0 && cell) {
+        if (index % 1 === 0) {
+          ctx.beginPath();
+          ctx.fillRect(cell.x * 32, cell.y * 32, 5, 5)
+          ctx.stroke();
+        }
+      }
+    })
+
+    //////
   }
-  // // Fog Of War Complete Black Out
-  // public newRevealDrawFog(): void {
+
+
+
+  // // Fog Of War Transparent fog
+  // public drawFog(): void {
   //   if (this.fogOfWarService.fogEnabled) {
-  //     this.canvasService.blackoutCTX.globalCompositeOperation = 'destination-out'
-  //     this.canvasService.blackoutCTX.clearRect(0, 0, this.gridService.activeGrid.width * 32, this.gridService.activeGrid.height * 32);
-  //     this.canvasService.blackoutCTX.fillStyle = 'black';
-  //     this.canvasService.blackoutCTX.globalAlpha = 0.9;
-  //     this.canvasService.blackoutCTX.fillRect(
+  //     this.canvasService.fogCTX.globalCompositeOperation = 'destination-over'
+  //     this.canvasService.fogCTX.clearRect(0, 0, this.gridService.activeGrid.width * 32, this.gridService.activeGrid.height * 32);
+  //     this.canvasService.fogCTX.globalAlpha = 0.5;
+  //     this.canvasService.fogCTX.fillStyle = 'black';
+  //     this.canvasService.fogCTX.fillRect(
   //       0,
   //       0,
   //       this.gridService.activeGrid.width * 32,
@@ -217,66 +426,49 @@ export class DrawService {
   //   // this.addOpaqueFogLineOfSight()
   // }
 
-  // Fog Of War Transparent fog
-  public drawFog(): void {
-    if (this.fogOfWarService.fogEnabled) {
-      this.canvasService.fogCTX.globalCompositeOperation = 'destination-over'
-      this.canvasService.fogCTX.clearRect(0, 0, this.gridService.activeGrid.width * 32, this.gridService.activeGrid.height * 32);
-      this.canvasService.fogCTX.globalAlpha = 0.5;
-      this.canvasService.fogCTX.fillStyle = 'black';
-      this.canvasService.fogCTX.fillRect(
-        0,
-        0,
-        this.gridService.activeGrid.width * 32,
-        this.gridService.activeGrid.height * 32
-      )
-    }
-    // this.addOpaqueFogLineOfSight()
-  }
-
   // Fog of War, preps and draws the seeable area
-  public clearFogLineOfSight(cell: Cell): void {
-    if (this.fogOfWarService.fogEnabled) {
-      this.drawFog()
-      const ctx = this.canvasService.fogCTX
-      const ctxBlackout = this.canvasService.blackoutCTX
-      ctx.globalCompositeOperation = 'destination-out'
-      ctxBlackout.globalCompositeOperation = 'destination-out'
+  // public clearFogLineOfSight(cell: Cell): void {
+  //   if (this.fogOfWarService.fogEnabled) {
+  //     this.drawFog()
+  //     const ctx = this.canvasService.fogCTX
+  //     const ctxBlackout = this.canvasService.blackoutCTX
+  //     ctx.globalCompositeOperation = 'destination-out'
+  //     ctxBlackout.globalCompositeOperation = 'destination-out'
 
-      if (!this.fogOfWarService.visitedVisibleCell[cell.id]) {
-        this.fogOfWarService.visitedVisibleCell[cell.id] = this.fogOfWarService.visibleCell[cell.id]
-        this.drawLineOfSight(ctxBlackout, cell)
-      }
-      this.drawLineOfSight(ctx, cell)
-      this.drawLineOfSight(ctx, cell)
-      this.drawLineOfSight(ctx, cell)
-      this.drawLineOfSight(ctx, cell)
-      this.drawLineOfSight(ctx, cell)
-      this.drawLineOfSight(ctx, cell)
-      this.drawLineOfSight(ctx, cell)
-      this.drawLineOfSight(ctx, cell)
-    }
-  }
+  //     if (!this.fogOfWarService.visitedVisibleCell[cell.id]) {
+  //       this.fogOfWarService.visitedVisibleCell[cell.id] = this.fogOfWarService.visibleCell[cell.id]
+  //       this.drawLineOfSight(ctxBlackout, cell)
+  //     }
+  //     this.drawLineOfSight(ctx, cell)
+  //     this.drawLineOfSight(ctx, cell)
+  //     this.drawLineOfSight(ctx, cell)
+  //     this.drawLineOfSight(ctx, cell)
+  //     this.drawLineOfSight(ctx, cell)
+  //     this.drawLineOfSight(ctx, cell)
+  //     this.drawLineOfSight(ctx, cell)
+  //     this.drawLineOfSight(ctx, cell)
+  //   }
+  // }
 
   // Fog of War clears Line of Sight
-  public drawLineOfSight(ctx: any, cell: Cell): void {
-    if (this.fogOfWarService.fogEnabled) {
-      this.fogOfWarService.visibleCell[cell.id].forEach(points => {
-        ctx.beginPath();
-        ctx.moveTo(points.playerPointX, points.playerPointY);
-        // ctx.filter = "blur(15px)";  // "feather"
-        ctx.lineTo(points.obstaclePoint1X, points.obstaclePoint1Y);
-        ctx.lineTo(points.point1offsetX, points.point1offsetY)
-        ctx.lineTo(points.point2offsetX, points.point2offsetY)
-        ctx.lineTo(points.obstaclePoint2X, points.obstaclePoint2Y);
-        ctx.lineTo(points.playerPointX, points.playerPointY);
-        ctx.closePath();
+  // public drawLineOfSight(ctx: any, cell: Cell): void {
+  //   if (this.fogOfWarService.fogEnabled) {
+  //     this.fogOfWarService.visibleCell[cell.id].forEach(points => {
+  //       ctx.beginPath();
+  //       ctx.moveTo(points.playerPointX, points.playerPointY);
+  //       // ctx.filter = "blur(15px)";  // "feather"
+  //       ctx.lineTo(points.obstaclePoint1X, points.obstaclePoint1Y);
+  //       ctx.lineTo(points.point1offsetX, points.point1offsetY)
+  //       ctx.lineTo(points.point2offsetX, points.point2offsetY)
+  //       ctx.lineTo(points.obstaclePoint2X, points.obstaclePoint2Y);
+  //       ctx.lineTo(points.playerPointX, points.playerPointY);
+  //       ctx.closePath();
 
-        ctx.fillStyle = "black";
-        ctx.fill();
-      })
-    }
-  }
+  //       ctx.fillStyle = "black";
+  //       ctx.fill();
+  //     })
+  //   }
+  // }
 
   // Draws animations that have a short life span
   public drawShortLivedAnimation(animation: ShortLivedAnimation): void {
@@ -348,7 +540,6 @@ export class DrawService {
 
       this.canvasService.foregroundCTX.clearRect(0, 0, this.gridService.activeGrid.width * 32, this.gridService.activeGrid.height * 32);
       this.canvasService.backgroundCTX.clearRect(0, 0, this.gridService.activeGrid.width * 32, this.gridService.activeGrid.height * 32);
-      // this.canvasService.blackoutCTX.clearRect(0, 0, this.gridService.activeGrid.width * 32, this.gridService.activeGrid.height * 32);
 
       try {
         if (this.gridService.activeGrid.largeImage.background) {

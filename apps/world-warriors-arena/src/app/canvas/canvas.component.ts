@@ -19,6 +19,7 @@ export class CanvasComponent {
   @ViewChild('overlayCanvas') overlayCanvas: ElementRef<HTMLCanvasElement>;
   @ViewChild('foregroundCanvas') foregroundCanvas: ElementRef<HTMLCanvasElement>;
   @ViewChild('backgroundCanvas') backgroundCanvas: ElementRef<HTMLCanvasElement>;
+  @ViewChild('drawBlackoutCanvas') drawBlackoutCanvas: ElementRef<HTMLCanvasElement>;
   @ViewChild('fogCanvas') fogCanvas: ElementRef<HTMLCanvasElement>;
   @ViewChild('blackoutCanvas') blackoutCanvas: ElementRef<HTMLCanvasElement>;
   @ViewChild('drawCanvas') drawingCanvas: ElementRef<HTMLCanvasElement>;
@@ -29,9 +30,9 @@ export class CanvasComponent {
   public fogContext: CanvasRenderingContext2D;
   public blackoutContext: CanvasRenderingContext2D;
   public drawingContext: CanvasRenderingContext2D;
+  public drawBlackoutContext: CanvasRenderingContext2D;
 
   public hoveringCell: Cell
-  public editMode = true
 
   private mouseIsDown = false
   private controlPressed = false
@@ -62,6 +63,10 @@ export class CanvasComponent {
 
   // this needs to be put in a public function so we can pass in grid information 
   public ngAfterViewInit(): void {
+    // Background
+    this.drawBlackoutContext = this.drawBlackoutCanvas.nativeElement.getContext('2d');
+    this.canvasService.drawBlackoutCTX = this.drawBlackoutContext
+    this.canvasService.drawBlackoutCanvas = this.drawBlackoutCanvas
     // Background
     this.backgroundContext = this.backgroundCanvas.nativeElement.getContext('2d');
     this.canvasService.backgroundCTX = this.backgroundContext
@@ -312,9 +317,9 @@ export class CanvasComponent {
   private togglePlayMode(): void {
     if(!this.gridService.activeGrid) { return }
 
-    this.editMode = !this.editMode
+    this.canvasService.editMode = !this.canvasService.editMode
     setTimeout(() => {
-      if (!this.editMode) {
+      if (!this.canvasService.editMode) {
         this.gridService.activeGrid.largeImage.createLargeImage(this.gridService.activeGrid.width * 32, this.gridService.activeGrid.height * 32, this.gridService)
       } else {
         if(this.gridService.activeGrid) {

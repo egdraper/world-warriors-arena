@@ -1,6 +1,8 @@
 <!-- <h1>X{{hoveringCell?.x}}:Y{{hoveringCell?.y}}<h1> -->
-<div class="game-canvas">
-  <canvas #backgroundCanvas id="backgroundCanvas"></canvas>
+  <div class="game-canvas">
+    <canvas #drawBlackoutCanvas id="drawBlackoutCanvas">
+    </canvas> 
+    <canvas #backgroundCanvas id="backgroundCanvas"></canvas>
   <canvas #overlayCanvas id="overlayCanvas"></canvas>
   
   <canvas #foregroundCanvas id="foregroundCanvas"></canvas>
@@ -25,5 +27,5 @@
 </div>
 
 
-<canvas #drawCanvas *ngIf="editMode" id="drawCanvas">
+<canvas #drawCanvas *ngIf="canvasService.editMode" id="drawCanvas">
 </canvas> 

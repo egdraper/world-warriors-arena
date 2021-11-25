@@ -19,6 +19,8 @@ export interface Cell {
   backgroundTile?: SpriteBackgroundTile;
   backgroundGrowableTileId?: string
   portalTo?: {gridId: string, cell: Cell}
+  revealed?: boolean
+  
 }
 
 export class TileAttachment {
@@ -41,6 +43,15 @@ export class SpriteBackgroundTile {
   lowWeight?: number
   highWeight?: number
   rarity?: number // express on a random placement how often it should be seen 1 being once in 20 on average
+}
+
+export class Point {
+  constructor(
+    public id: string,
+    public edgeId: string,
+    public x: number,
+    public y: number
+  ) { }
 }
 
 export enum GrowablePanelPosition {
@@ -78,11 +89,6 @@ export class SpriteTile {
   default?: boolean
   obstacleSide?: "right" | "left" | "top" | "bottom"
   allowForPassThrough?: boolean
-  leftEndTileName?: string
-  rightEndTileName?: string
-  centerTileName?: string
-  topEndTileName?: EndTile
-  attachments?: TileAttachment[]
   drawWhen?: {
     topNeighbor: boolean,
     topRightNeighbor: boolean,

@@ -131,6 +131,8 @@ export class EditorPaletteComponent implements OnInit {
 
   
   public addFogOfWar(): void {
+    // this.canvasService.blackoutCTX.canvas.height = this.grid.activeGrid.height * 32
+    // this.canvasService.blackoutCTX.canvas.width = this.grid.activeGrid.width * 32
     this.visibilityService.createCellLines()
     // this.visibilityService.fogEnabled = false
     // if(this.visibilityService.fogEnabled) {

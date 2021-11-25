@@ -16,16 +16,19 @@
   display: flex;
 
   .left-toolbar {
+    z-index: 1;
     flex: 1;
     max-width: 144px;
   }
   
   .game-view {
+    z-index: 0;
     max-height: calc(100vh);
     flex: 2;
   }
   
-  .right-toolbar{    
+  .right-toolbar{  
+    z-index: 1;  
     max-height: calc(100vh);
     flex: 1;
     max-width: 75px;

@@ -18,6 +18,7 @@ export class CanvasService {
   public cellOffsetX = 0
   public cellOffsetY = 0
   public portalEntry: Cell[] = []
+  public editMode: boolean = true
 
   public largeImageBackground: HTMLImageElement
   public largeImageForeground: HTMLImageElement
@@ -30,6 +31,9 @@ export class CanvasService {
 
   public backgroundCanvas: ElementRef<HTMLCanvasElement>;
   public backgroundCTX: CanvasRenderingContext2D;
+ 
+  public drawBlackoutCanvas: ElementRef<HTMLCanvasElement>;
+  public drawBlackoutCTX: CanvasRenderingContext2D;
 
   public fogCanvas: ElementRef<HTMLCanvasElement>;
   public fogCTX: CanvasRenderingContext2D;

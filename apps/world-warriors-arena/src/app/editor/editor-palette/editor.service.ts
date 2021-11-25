@@ -8,7 +8,7 @@ export class EditorService {
   public selectedGrowableAsset: string = "DrawableDirtRoad"
   public layerID = 1
   public backgroundDirty = false
-  
+ 
 
   public findBackgroundCollection(category: string): SpriteBackgroundTile[] {
     return getBackgroundCollection(category)
