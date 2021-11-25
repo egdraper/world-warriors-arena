@@ -281,7 +281,7 @@ export class CanvasComponent {
   }
 
   public subscribeToEngine(): void {
-    this.engineService.onFire.subscribe((frame) => {
+    Engine.onFire.subscribe((frame) => {
       if (this.rightArrowDown) {
         this.canvasService.scrollViewPort(1, 0, this.gridService)
       }

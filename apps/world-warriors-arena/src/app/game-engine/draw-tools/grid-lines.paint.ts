@@ -5,16 +5,12 @@ import { Engine } from "../engine";
 import { GridService } from "../grid.service";
 import { Painter } from "./painter";
 
-@Injectable()
 export class GridLinePainter extends Painter {
   constructor(
     public canvasService: CanvasService,
     public gridService: GridService,
     public editorService: EditorService,
-    public engine: Engine
-  ) {
-    super(engine)
-  }
+  ) { super() }
 
   // Draws Grid Lines  
   public paint(): void {

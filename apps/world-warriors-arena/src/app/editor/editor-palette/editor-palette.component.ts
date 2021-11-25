@@ -120,8 +120,6 @@ export class EditorPaletteComponent implements OnInit {
     this.editorService.backgroundDirty = true
 
     // CLEANUP - Needs to be moved into somewhere that re-draws
-    this.drawService.drawGridLines()
-
     const centerCell = this.grid.activeGrid.getGridCellByCoordinate(Math.floor(this.canvasService.canvasSize / 2), Math.floor(this.canvasService.canvasSize / 2))
     this.canvasService.centerPointX = centerCell.posX * GameSettings.scale
     this.canvasService.centerPointY = centerCell.posY * GameSettings.scale

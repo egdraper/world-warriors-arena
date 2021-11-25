@@ -105,8 +105,7 @@ export class GlobalMapComponent implements OnInit {
     this.gridService.createNewGrid(60, 60, "DrawableDungeon")
     this.canvasService.setupCanvases()
 
-    this.drawService.drawBackground(true)
-    this.drawService.drawGridLines()
+    this.drawService.backgroundPainter.paint()
     const generator = new GridMapGenerator(this.gridService, this.shortestPath, this.editorService, this.canvasService)
     generator.autoFillBackgroundTerrain("caveDirt")
 

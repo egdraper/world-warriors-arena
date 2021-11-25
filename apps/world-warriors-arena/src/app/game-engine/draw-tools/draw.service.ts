@@ -5,15 +5,20 @@ import { EditorService } from "../../editor/editor-palette/editor.service";
 import { AssetsService } from "../../game-assets/assets.service";
 import { ShortLivedAnimation } from "../../game-assets/click-animation";
 import { growableItems } from "../../game-assets/tiles.db.ts/tile-assets.db";
-import { GameComponent, MotionAsset } from "../../models/assets.model";
+import { MotionAsset } from "../../models/assets.model";
 import { Cell } from "../../models/cell.model";
-import { GameSettings } from "../../models/game-settings";
+import { DebugSettings, GameSettings } from "../../models/game-settings";
 import { GridService } from "../grid.service";
-import { NewFogOfWarService, PointFinder } from "../new-visibility.service";
+import { NewFogOfWarService } from "../new-visibility.service";
 import { FogOfWarService } from "../visibility.service";
+import { BackgroundPainter } from "./background.paint";
+import { GridLinePainter } from "./grid-lines.paint";
 
 @Injectable()
 export class DrawService {
+  public gridLinePainter: GridLinePainter
+  public backgroundPainter: BackgroundPainter
+
 
   public blaDirty = false
   constructor(
@@ -24,57 +29,60 @@ export class DrawService {
     public assetService: AssetsService,
     public characterEditorService: CharacterEditorService,
     public newFogOfWarService: NewFogOfWarService
-  ) { }
-
-  // Draws Grid Lines  
-  public drawGridLines(): void {
-    if (this.editorService.backgroundDirty) {
-      for (let h = 0; h <= this.gridService.activeGrid.height; h++) {
-        for (let w = 0; w <= this.gridService.activeGrid.width; w++) {
-          // Horizontal lines
-          this.canvasService.backgroundCTX.beginPath()
-          this.canvasService.backgroundCTX.moveTo(w * 32, h * 32)
-          this.canvasService.backgroundCTX.lineTo(w * 32, (h * 32) + 32)
-          this.canvasService.backgroundCTX.lineWidth = 1;
-          this.canvasService.backgroundCTX.strokeStyle = "rgba(255, 255 ,255,.5)"
-          this.canvasService.backgroundCTX.stroke()
-
-          // Vertical Lines
-          this.canvasService.backgroundCTX.beginPath()
-          this.canvasService.backgroundCTX.moveTo(w * 32, h * 32)
-          this.canvasService.backgroundCTX.lineTo((w * 32) + 32, h * 32)
-          this.canvasService.backgroundCTX.strokeStyle = "rgba(255,255,0,.5)"
-          this.canvasService.backgroundCTX.lineWidth = 1;
-          this.canvasService.backgroundCTX.stroke()
-        }
-      }
-    }
+  ) { 
+    this.gridLinePainter = new GridLinePainter(canvasService, gridService, editorService)
+    this.backgroundPainter = new BackgroundPainter(canvasService, gridService, editorService)
   }
+
+  // // Draws Grid Lines  
+  // public drawGridLines(): void {
+  //   if (this.editorService.backgroundDirty) {
+  //     for (let h = 0; h <= this.gridService.activeGrid.height; h++) {
+  //       for (let w = 0; w <= this.gridService.activeGrid.width; w++) {
+  //         // Horizontal lines
+  //         this.canvasService.backgroundCTX.beginPath()
+  //         this.canvasService.backgroundCTX.moveTo(w * 32, h * 32)
+  //         this.canvasService.backgroundCTX.lineTo(w * 32, (h * 32) + 32)
+  //         this.canvasService.backgroundCTX.lineWidth = 1;
+  //         this.canvasService.backgroundCTX.strokeStyle = "rgba(255, 255 ,255,.5)"
+  //         this.canvasService.backgroundCTX.stroke()
+
+  //         // Vertical Lines
+  //         this.canvasService.backgroundCTX.beginPath()
+  //         this.canvasService.backgroundCTX.moveTo(w * 32, h * 32)
+  //         this.canvasService.backgroundCTX.lineTo((w * 32) + 32, h * 32)
+  //         this.canvasService.backgroundCTX.strokeStyle = "rgba(255,255,0,.5)"
+  //         this.canvasService.backgroundCTX.lineWidth = 1;
+  //         this.canvasService.backgroundCTX.stroke()
+  //       }
+  //     }
+  //   }
+  // }
 
   // Draws background tiles when needed
-  public drawBackground(forceDraw: boolean = false): void {
-    if (!this.gridService.activeGrid) { return }
-    if (!this.gridService.activeGrid.gridLoaded) { return }
+  // public drawBackground(forceDraw: boolean = false): void {
+  //   if (!this.gridService.activeGrid) { return }
+  //   if (!this.gridService.activeGrid.gridLoaded) { return }
 
-    if (this.editorService.backgroundDirty || forceDraw) {
-      for (let h = 0; h < this.gridService.activeGrid.height; h++) {
-        for (let w = 0; w < this.gridService.activeGrid.width; w++) {
-          const cell = this.gridService.activeGrid.grid[`x${w}:y${h}`]
+  //   if (this.editorService.backgroundDirty || forceDraw) {
+  //     for (let h = 0; h < this.gridService.activeGrid.height; h++) {
+  //       for (let w = 0; w < this.gridService.activeGrid.width; w++) {
+  //         const cell = this.gridService.activeGrid.grid[`x${w}:y${h}`]
 
-          try {
-            if (cell.backgroundGrowableTileId) {
-              this.calculateGrowableBackgroundTerrain(cell)
-            }
-            this.drawOnBackgroundCell(cell)
-          } catch {
-            debugger
-          }
-        }
-      }
+  //         try {
+  //           if (cell.backgroundGrowableTileId) {
+  //             this.calculateGrowableBackgroundTerrain(cell)
+  //           }
+  //           this.drawOnBackgroundCell(cell)
+  //         } catch {
+  //           debugger
+  //         }
+  //       }
+  //     }
 
-      this.editorService.backgroundDirty = false
-    }
-  }
+  //     this.editorService.backgroundDirty = false
+  //   }
+  // }
 
   // Paints a black box over the edges to give one cell's worth of room to have players step in and out of view
   public drawBlackOutEdges(): void {
@@ -101,16 +109,6 @@ export class DrawService {
       )
 
     }
-
-    // if (this.canvasService.blackoutCTX) {
-    //   this.canvasService.blackoutCTX.fillStyle = 'black';
-    //   this.canvasService.blackoutCTX.fillRect(
-    //     this.gridService.width * 32 - 32,
-    //     0,
-    //     0,
-    //     this.gridService.height * 32,
-    //   )
-    // }
   }
 
   // Fog Of War Complete Black Out
@@ -128,7 +126,6 @@ export class DrawService {
         this.gridService.activeGrid.height * 32
       )
     }
-    // this.addOpaqueFogLineOfSight()
   }
 
   // Fog Of War Complete Black Out
@@ -137,22 +134,8 @@ export class DrawService {
 
     this.canvasService.blackoutCTX.clearRect(0, 0, this.gridService.activeGrid.width * 32, this.gridService.activeGrid.height * 32);
     this.canvasService.backgroundCTX.imageSmoothingEnabled = false
-    let topLeftPosX = -1 * this.canvasService.canvasViewPortOffsetX
-    let topLeftPosY = -1 * this.canvasService.canvasViewPortOffsetY
+
     if (this.assetService.selectedGameComponent) {
-      //   if (this.blackout) {
-      //     this.canvasService.blackoutCTX.drawImage(
-      //       this.blackout,
-      //       topLeftPosX,
-      //       topLeftPosY,
-      //       this.canvasService.canvasSize * (1 / GameSettings.scale),
-      //       this.canvasService.canvasSize * (1 / GameSettings.scale),
-      //       topLeftPosX,
-      //       topLeftPosY,
-      //       this.canvasService.canvasSize * (1 / GameSettings.scale),
-      //       this.canvasService.canvasSize * (1 / GameSettings.scale)
-      //     )
-      //   } else {
       this.canvasService.blackoutCTX.globalCompositeOperation = 'destination-over'
       this.canvasService.blackoutCTX.globalAlpha = .9;
       this.canvasService.blackoutCTX.fillRect(
@@ -161,34 +144,21 @@ export class DrawService {
         this.gridService.activeGrid.width * 32,
         this.gridService.activeGrid.height * 32
       )
-      //     setTimeout(() => {
-      //       this.blackoutElementSrc = this.canvasService.blackoutCanvas.nativeElement.toDataURL("image/png")
-
-      //     },2000);
-      //   }
-
     }
 
   }
 
-  private blackoutElementSrc: string
-  private blackout: HTMLImageElement
   // Fog Of War Complete Black Out
   public newRevealBlackoutFog(): void {
     if (this.assetService.selectedGameComponent) {
-
       const fogOfWarRim = this.newFogOfWarService.fogOfWarRimPoints[this.assetService.selectedGameComponent.cell.id].map(a => a)
 
-      // if(!this.gridService.activeGrid.largeBlackoutImage.blackoutLargeImage) {
-
-      //   this.canvasService.blackoutCTX.globalCompositeOperation = 'destination-out'
-      //   // this.canvasService.drawBlackoutCTX.filter = "blur(0px)";  // "feather"
-      //   this.gridService.activeGrid.largeBlackoutImage.initialize(this.gridService.activeGrid.width, this.gridService.activeGrid.height)
-      // }
       this.canvasService.blackoutCTX.globalCompositeOperation = 'destination-out'
       this.canvasService.blackoutCTX.fillStyle = "black"
 
-      this.canvasService.blackoutCTX.filter = "blur(35px)";  // "feather"
+      if(!DebugSettings.fogDebug && DebugSettings.fogFeather) {
+        this.canvasService.blackoutCTX.filter = "blur(35px)";  // "feather"
+      }
 
       if (this.newFogOfWarService.blackOutRimPoints.length === 0) {
         this.newFogOfWarService.blackOutRimPoints = fogOfWarRim
@@ -197,23 +167,9 @@ export class DrawService {
 
       const fogNonObstructedCells = this.newFogOfWarService.nonObstructedCells[this.assetService.selectedGameComponent.cell.id]
 
-
-      // let skipInnerIndex = -1
-      // let skipOuterIndex = -1
-
       if (this.blaDirty) {
         const tempBlackOutRim: Cell[] = []
-        // let blackRimIndex = 0;
-        // let fogRimIndex = 0
-        // let inside = false
-        // let open = false
-        // // let traceIndex = 0
-        // // let tracing = "fog"
-        // const blackCell = blackOutRim[blackRimIndex]
-        // const fogCell = fogOfWarRim[fogRimIndex]
-        // let uneven = false
-        // let fogIndex = 0
-        // let blackIndex = 0
+
 
         for (let cell of fogOfWarRim) {
           const _index = blackOutRim.findIndex(_cell => cell.id === _cell.id)
@@ -243,8 +199,15 @@ export class DrawService {
             continue
           }
 
-          const blackHasFogsMatch = dBlack.find(dbo => fogCell.id === dbo.id)
-          const fogHasBlacksMatch = dFog.find(df => df.id === blackCell.id)
+          let blackHasFogsMatch
+          let fogHasBlacksMatch
+          try {
+            blackHasFogsMatch = dBlack.find(dbo => fogCell.id === dbo.id)
+            fogHasBlacksMatch = dFog.find(df => df.id === blackCell.id)
+          } catch (e) {
+            console.log(e)
+            debugger
+          }
 
           if (blackHasFogsMatch) {
             let index = dBlack.indexOf(blackHasFogsMatch)
@@ -281,56 +244,21 @@ export class DrawService {
       this.blaDirty = false
 
       this.newFogOfWarService.visitedCells = new Set([...this.newFogOfWarService.visitedCells, ...fogNonObstructedCells])
-      // this.newFogOfWarService.visitedCells.forEach(cell => {
-      //   if (cell) {
-      //     this.canvasService.blackoutCTX.beginPath();
-      //     this.canvasService.blackoutCTX.fillRect(cell.x * 32, cell.y * 32, 5, 5)
-      //     this.canvasService.blackoutCTX.stroke();
-      //   }
-      // })
 
-
+      if (DebugSettings.fogDebug) {
+        this.newFogOfWarService.visitedCells.forEach(cell => {
+          if (cell) {
+            this.canvasService.blackoutCTX.beginPath();
+            this.canvasService.blackoutCTX.fillRect(cell.x * 32, cell.y * 32, 5, 5)
+            this.canvasService.blackoutCTX.stroke();
+          }
+        })
+      }
+      
       this.clearOutVisibleArea(this.newFogOfWarService.blackOutRimPoints, this.canvasService.blackoutCTX)
-      // if(this.gridService.activeGrid.drawBlackoutImage) {
-
-      //   this.clearOutVisibleArea(centerCells, this.canvasService.drawBlackoutCTX)
-      // this.gridService.activeGrid.largeBlackoutImage.createLargeBlackoutImage()
-
-      // setTimeout(() => {
-      //   let topLeftPosX = -1 * this.canvasService.canvasViewPortOffsetX
-      //   let topLeftPosY = -1 * this.canvasService.canvasViewPortOffsetY
-      //   this.canvasService.blackoutCTX.imageSmoothingEnabled = false
-      //   this.canvasService.blackoutCTX.drawImage(
-      //     this.gridService.activeGrid.largeBlackoutImage.blackoutLargeImage,
-      //     topLeftPosX,
-      //     topLeftPosY,
-      //     this.canvasService.canvasSize * (1 / GameSettings.scale),
-      //     this.canvasService.canvasSize * (1 / GameSettings.scale),
-      //     topLeftPosX,
-      //     topLeftPosY,
-      //     this.canvasService.canvasSize * (1 / GameSettings.scale),
-      //     this.canvasService.canvasSize * (1 / GameSettings.scale)
-      //   )
-      // }, );
-
-      //   this.gridService.activeGrid.drawBlackoutImage = false
-      // }
-
-
-      // this.createBlackoutFogOfWar()
-
-
-
     }
   }
 
-  // private createBlackoutFogOfWar(): void {
-  //   if (this.blackoutElementSrc) {
-  //     const blackoutImage = new Image()
-  //     blackoutImage.src = this.blackoutElementSrc
-  //     this.blackout = blackoutImage
-  //   }
-  // }
 
   // Fog Of War Complete Black Out
   public newDrawFog(): void {
@@ -347,7 +275,6 @@ export class DrawService {
       this.gridService.activeGrid.width * 32,
       this.gridService.activeGrid.height * 32
     )
-
   }
 
 
@@ -356,22 +283,23 @@ export class DrawService {
     if (this.assetService.selectedGameComponent) {
       const centerCells = this.newFogOfWarService.fogOfWarRimPoints[this.assetService.selectedGameComponent.cell.id]
       this.canvasService.fogCTX.globalCompositeOperation = 'destination-out'
-      this.canvasService.fogCTX.filter = "blur(35px)";  // "feather"
+      
+      if(!DebugSettings.fogDebug && DebugSettings.fogFeather) {
+        this.canvasService.fogCTX.filter = "blur(35px)";  // "feather"
+      }
 
       console.log(centerCells[0])
-      this.clearOutVisibleArea(centerCells, this.canvasService.fogCTX)
       this.clearOutVisibleArea(centerCells, this.canvasService.fogCTX)
     }
   }
 
   private clearOutVisibleArea(centerCells: Cell[], ctx: CanvasRenderingContext2D): void {
-    if(centerCells.length === 0) { 
+    if (centerCells.length === 0) {
       debugger
       return
     }
     ctx.beginPath()
     ctx.lineWidth = 1;
-    // ctx.strokeStyle = "red"
     try {
       ctx.moveTo(centerCells[0].fogPointX, centerCells[0].fogPointY)
     } catch {
@@ -386,25 +314,30 @@ export class DrawService {
       }
     })
     ctx.closePath();
-    // ctx.stroke();
-    ctx.fill();
+    if (DebugSettings.fogDebug) {
+      ctx.stroke();
+      ctx.globalAlpha = .8;
+      ctx.fill()
+    } else {
+      ctx.fill();
+    }
+    
 
-    // ///////
-    // ctx.beginPath();
-    // ctx.fillRect(centerCells[0].x * 32, centerCells[0].y * 32, 5, 5)
-    // ctx.stroke();
+    if (DebugSettings.fogDebug) {
+      ctx.beginPath();
+      ctx.fillRect(centerCells[0].fogPointX, centerCells[0].fogPointY, 5, 5)
+      ctx.stroke();
 
-    // centerCells.forEach((cell: any, index: number) => {
-    //   if (index != 0 && cell) {
-    //     if (index % 1 === 0) {
-    //       ctx.beginPath();
-    //       ctx.fillRect(cell.x * 32, cell.y * 32, 5, 5)
-    //       ctx.stroke();
-    //     }
-    //   }
-    // })
-
-    //////
+      centerCells.forEach((cell: Cell, index: number) => {
+        if (index != 0 && cell) {
+          if (index % 1 === 0) {
+            ctx.beginPath();
+            ctx.fillRect(cell.fogPointX, cell.fogPointY, 5, 5)
+            ctx.stroke();
+          }
+        }
+      })
+    }
   }
 
 
@@ -555,7 +488,7 @@ export class DrawService {
               this.drawAsset(this.assetService.gameComponents.find(gameComponent => gameComponent.cell.id === drawableCell.id && this.gridService.activeGrid.id === gameComponent.gridId))
 
               this.drawOnCell(drawableCell)
-              this.drawOnBackgroundCell(drawableCell)
+              this.backgroundPainter.drawOnBackgroundCell(drawableCell)
               // console.log("CCC")
 
             }
@@ -745,37 +678,37 @@ export class DrawService {
 
   }
 
-  // draws the background item for each cell provided
-  public drawOnBackgroundCell(cell: Cell): void {
-    if (cell && cell.backgroundTile) {
+  // // draws the background item for each cell provided
+  // public drawOnBackgroundCell(cell: Cell): void {
+  //   if (cell && cell.backgroundTile) {
 
-      this.canvasService.backgroundCTX.imageSmoothingEnabled = false
-      this.canvasService.backgroundCTX.drawImage(
-        cell.backgroundTile.spriteSheet,
-        cell.backgroundTile.spriteGridPosX[0] * 32,
-        cell.backgroundTile.spriteGridPosY[0] * 32,
-        32,
-        32,
-        cell.posX,
-        cell.posY,
-        32,
-        32
-      )
+  //     this.canvasService.backgroundCTX.imageSmoothingEnabled = false
+  //     this.canvasService.backgroundCTX.drawImage(
+  //       cell.backgroundTile.spriteSheet,
+  //       cell.backgroundTile.spriteGridPosX[0] * 32,
+  //       cell.backgroundTile.spriteGridPosY[0] * 32,
+  //       32,
+  //       32,
+  //       cell.posX,
+  //       cell.posY,
+  //       32,
+  //       32
+  //     )
 
-      if (cell.portalTo) {
-        this.canvasService.backgroundCTX.globalAlpha = .5;
-        this.canvasService.backgroundCTX.fillStyle = 'blue';
-        this.canvasService.backgroundCTX.fillRect(
-          cell.posX,
-          cell.posY,
-          32,
-          32
-        )
-        this.canvasService.backgroundCTX.globalAlpha = 1;
+  //     if (cell.portalTo) {
+  //       this.canvasService.backgroundCTX.globalAlpha = .5;
+  //       this.canvasService.backgroundCTX.fillStyle = 'blue';
+  //       this.canvasService.backgroundCTX.fillRect(
+  //         cell.posX,
+  //         cell.posY,
+  //         32,
+  //         32
+  //       )
+  //       this.canvasService.backgroundCTX.globalAlpha = 1;
 
-      }
-    }
-  }
+  //     }
+  //   }
+  // }
 
   // Helper functions
 
@@ -834,62 +767,62 @@ export class DrawService {
     selectedCell.visible = true
   }
 
-  private calculateGrowableBackgroundTerrain(selectedCell: Cell): void {
-    if (!this.editorService.backgroundDirty) { return }
+  // private calculateGrowableBackgroundTerrain(selectedCell: Cell): void {
+  //   if (!this.editorService.backgroundDirty) { return }
 
-    const growableItem = growableItems.find(item => {
-      return selectedCell.backgroundGrowableTileId.includes(item.id)
-    })
-    const topNeighbor = selectedCell.neighbors[0]
-    const topRightNeighbor = selectedCell.neighbors[4]
-    const rightNeighbor = selectedCell.neighbors[1]
-    const bottomRightNeighbor = selectedCell.neighbors[5]
-    const bottomNeighbor = selectedCell.neighbors[2]
-    const bottomLeftNeighbor = selectedCell.neighbors[6]
-    const leftNeighbor = selectedCell.neighbors[3]
-    const topLeftNeighbor = selectedCell.neighbors[7]
+  //   const growableItem = growableItems.find(item => {
+  //     return selectedCell.backgroundGrowableTileId.includes(item.id)
+  //   })
+  //   const topNeighbor = selectedCell.neighbors[0]
+  //   const topRightNeighbor = selectedCell.neighbors[4]
+  //   const rightNeighbor = selectedCell.neighbors[1]
+  //   const bottomRightNeighbor = selectedCell.neighbors[5]
+  //   const bottomNeighbor = selectedCell.neighbors[2]
+  //   const bottomLeftNeighbor = selectedCell.neighbors[6]
+  //   const leftNeighbor = selectedCell.neighbors[3]
+  //   const topLeftNeighbor = selectedCell.neighbors[7]
 
-    const neighbors = {
-      topLeftMatch: topLeftNeighbor?.backgroundGrowableTileId === selectedCell.backgroundGrowableTileId,
-      topCenterMatch: topNeighbor?.backgroundGrowableTileId === selectedCell.backgroundGrowableTileId,
-      topRightMatch: topRightNeighbor?.backgroundGrowableTileId === selectedCell.backgroundGrowableTileId,
-      centerLeftMatch: leftNeighbor?.backgroundGrowableTileId === selectedCell.backgroundGrowableTileId,
-      centerRightMatch: rightNeighbor?.backgroundGrowableTileId === selectedCell.backgroundGrowableTileId,
-      bottomLeftMatch: bottomLeftNeighbor?.backgroundGrowableTileId === selectedCell.backgroundGrowableTileId,
-      bottomCenterMatch: bottomNeighbor?.backgroundGrowableTileId === selectedCell.backgroundGrowableTileId,
-      bottomRightMatch: bottomRightNeighbor?.backgroundGrowableTileId === selectedCell.backgroundGrowableTileId
-    }
+  //   const neighbors = {
+  //     topLeftMatch: topLeftNeighbor?.backgroundGrowableTileId === selectedCell.backgroundGrowableTileId,
+  //     topCenterMatch: topNeighbor?.backgroundGrowableTileId === selectedCell.backgroundGrowableTileId,
+  //     topRightMatch: topRightNeighbor?.backgroundGrowableTileId === selectedCell.backgroundGrowableTileId,
+  //     centerLeftMatch: leftNeighbor?.backgroundGrowableTileId === selectedCell.backgroundGrowableTileId,
+  //     centerRightMatch: rightNeighbor?.backgroundGrowableTileId === selectedCell.backgroundGrowableTileId,
+  //     bottomLeftMatch: bottomLeftNeighbor?.backgroundGrowableTileId === selectedCell.backgroundGrowableTileId,
+  //     bottomCenterMatch: bottomNeighbor?.backgroundGrowableTileId === selectedCell.backgroundGrowableTileId,
+  //     bottomRightMatch: bottomRightNeighbor?.backgroundGrowableTileId === selectedCell.backgroundGrowableTileId
+  //   }
 
-    let tile = growableItem.spritesTiles.find(spriteTile => {
-      const topMatch = neighbors.topCenterMatch === spriteTile.drawWhen.topNeighbor || spriteTile.drawWhen.topNeighbor === null
-      const topRightMatch = neighbors.topRightMatch === spriteTile.drawWhen.topRightNeighbor || spriteTile.drawWhen.topRightNeighbor === null
-      const rightMatch = neighbors.centerRightMatch === spriteTile.drawWhen.rightNeighbor || spriteTile.drawWhen.rightNeighbor === null
-      const bottomRightMatch = neighbors.bottomRightMatch === spriteTile.drawWhen.bottomRightNeighbor || spriteTile.drawWhen.bottomRightNeighbor === null
-      const bottomMatch = neighbors.bottomCenterMatch === spriteTile.drawWhen.bottomNeighbor || spriteTile.drawWhen.bottomNeighbor === null
-      const bottomLeftNeighborMatch = neighbors.bottomLeftMatch === spriteTile.drawWhen.bottomLeftNeighbor || spriteTile.drawWhen.bottomLeftNeighbor === null
-      const leftNeighborMatch = neighbors.centerLeftMatch === spriteTile.drawWhen.leftNeighbor || spriteTile.drawWhen.leftNeighbor === null
-      const topLeftNeighborMatch = neighbors.topLeftMatch === spriteTile.drawWhen.topLeftNeighbor || spriteTile.drawWhen.topLeftNeighbor === null
+  //   let tile = growableItem.spritesTiles.find(spriteTile => {
+  //     const topMatch = neighbors.topCenterMatch === spriteTile.drawWhen.topNeighbor || spriteTile.drawWhen.topNeighbor === null
+  //     const topRightMatch = neighbors.topRightMatch === spriteTile.drawWhen.topRightNeighbor || spriteTile.drawWhen.topRightNeighbor === null
+  //     const rightMatch = neighbors.centerRightMatch === spriteTile.drawWhen.rightNeighbor || spriteTile.drawWhen.rightNeighbor === null
+  //     const bottomRightMatch = neighbors.bottomRightMatch === spriteTile.drawWhen.bottomRightNeighbor || spriteTile.drawWhen.bottomRightNeighbor === null
+  //     const bottomMatch = neighbors.bottomCenterMatch === spriteTile.drawWhen.bottomNeighbor || spriteTile.drawWhen.bottomNeighbor === null
+  //     const bottomLeftNeighborMatch = neighbors.bottomLeftMatch === spriteTile.drawWhen.bottomLeftNeighbor || spriteTile.drawWhen.bottomLeftNeighbor === null
+  //     const leftNeighborMatch = neighbors.centerLeftMatch === spriteTile.drawWhen.leftNeighbor || spriteTile.drawWhen.leftNeighbor === null
+  //     const topLeftNeighborMatch = neighbors.topLeftMatch === spriteTile.drawWhen.topLeftNeighbor || spriteTile.drawWhen.topLeftNeighbor === null
 
-      return topMatch &&
-        topRightMatch &&
-        rightMatch &&
-        bottomRightMatch &&
-        bottomMatch &&
-        bottomLeftNeighborMatch &&
-        leftNeighborMatch &&
-        topLeftNeighbor &&
-        topLeftNeighborMatch
-    })
+  //     return topMatch &&
+  //       topRightMatch &&
+  //       rightMatch &&
+  //       bottomRightMatch &&
+  //       bottomMatch &&
+  //       bottomLeftNeighborMatch &&
+  //       leftNeighborMatch &&
+  //       topLeftNeighbor &&
+  //       topLeftNeighborMatch
+  //   })
 
-    if (!tile) {
-      tile = growableItem.spritesTiles.find(cliff => cliff.default)
-    }
+  //   if (!tile) {
+  //     tile = growableItem.spritesTiles.find(cliff => cliff.default)
+  //   }
 
-    selectedCell.backgroundTile = {
-      spriteSheet: tile.spriteSheet,
-      spriteGridPosX: [tile.spriteGridPosX],
-      spriteGridPosY: [tile.spriteGridPosY],
-      id: tile.id + tile.spriteGridPosX + tile.spriteGridPosY
-    }
-  }
+  //   selectedCell.backgroundTile = {
+  //     spriteSheet: tile.spriteSheet,
+  //     spriteGridPosX: [tile.spriteGridPosX],
+  //     spriteGridPosY: [tile.spriteGridPosY],
+  //     id: tile.id + tile.spriteGridPosX + tile.spriteGridPosY
+  //   }
+  // }
 }

@@ -8,7 +8,7 @@ import { DrawService } from "./draw-tools/draw.service";
 
 @Injectable()
 export class Engine {
-  public onFire = new Subject<number>()
+  public static onFire = new Subject<number>()
   public assets: AnimationComponent[] = []
   public shortLivedAnimations: ShortLivedAnimation[] = []
   public frame: number = 1
@@ -75,7 +75,7 @@ export class Engine {
     this.drawService.newRevealFog()
     this.drawService.newRevealBlackoutFog()
     // this.drawService.drawBlackOutEdges()    
-    this.onFire.next(this.frame)    
+    Engine.onFire.next(this.frame)    
 
     requestAnimationFrame(this.startEngine.bind(this)); 
     this.frame >= 64 ? this.frame = 1 : this.frame += 1
