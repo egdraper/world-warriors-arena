@@ -1,8 +1,8 @@
 import { Injectable } from "@angular/core";
-import { CanvasService } from "../../canvas/canvas.service";
-import { EditorService } from "../../editor/editor-palette/editor.service";
-import { Engine } from "../engine";
-import { GridService } from "../grid.service";
+import { CanvasService } from "../../../canvas/canvas.service";
+import { EditorService } from "../../../editor/editor-palette/editor.service";
+import { Engine } from "../../engine";
+import { GridService } from "../../grid.service";
 import { Painter } from "./painter";
 
 export class GridLinePainter extends Painter {

@@ -162,7 +162,7 @@ export abstract class MotionAsset extends Asset {
         ? this.currentPath.pop()
         : null
 
-      this.drawService.blaDirty = true
+      this.drawService.blackOutFogPainter.movementComplete = true
       if (this.redirection) {
         this.endMovement()
         this.startMovement(this.cell, this.redirection.end, this.redirection.charactersOnGrid)

@@ -1,10 +1,13 @@
 import { Injectable } from "@angular/core";
 import { interval, Subject } from "rxjs";
+import { CanvasService } from "../canvas/canvas.service";
 
 import { removeFromArray } from "../common/functions";
 import { ShortLivedAnimation } from "../game-assets/click-animation";
 import { AnimationComponent } from "../models/assets.model";
 import { DrawService } from "./draw-tools/draw.service";
+import { ShortLivedAnimationPainter } from "./draw-tools/painters/short-lived-animation.paint";
+import { GridService } from "./grid.service";
 
 @Injectable()
 export class Engine {
@@ -13,7 +16,15 @@ export class Engine {
   public shortLivedAnimations: ShortLivedAnimation[] = []
   public frame: number = 1
 
-  constructor(private drawService: DrawService) { }
+  private shortLivedAnimation: ShortLivedAnimationPainter
+
+  constructor(
+    private drawService: DrawService,
+    private canvasService: CanvasService,
+    private gridService: GridService
+    ) { 
+    this.shortLivedAnimation = new ShortLivedAnimationPainter(this.canvasService, this.gridService)
+  }
 
   public startShortLiveAnimation(animation: ShortLivedAnimation): void {
     this.shortLivedAnimations.push(animation)
@@ -61,19 +72,17 @@ export class Engine {
       this.shortLivedAnimations.forEach(animation => {
         if (this.frame % animation.animationFrame === 0) { 
           animation.update() 
-          this.drawService.drawShortLivedAnimation(animation)
+          this.shortLivedAnimation.paint()
         }
       })
     }
 
-    this.drawService.drawAnimatedAssets()
-    this.drawService.drawObstacles()
-    this.drawService.drawEditableCharacter()
-    this.drawService.drawEditableObject()
-    this.drawService.newDrawFog()
-    this.drawService.newDrawBlackoutFog()
-    this.drawService.newRevealFog()
-    this.drawService.newRevealBlackoutFog()
+    this.drawService.assetPainter.drawAnimatedAssets()
+    this.drawService.assetPainter.drawObstacles()
+    this.drawService.assetPainter.drawEditableCharacter()
+    this.drawService.assetPainter.drawEditableObject()
+    this.drawService.fogOfWarPainter.paint()
+    this.drawService.blackOutFogPainter.paint()
     // this.drawService.drawBlackOutEdges()    
     Engine.onFire.next(this.frame)    
 

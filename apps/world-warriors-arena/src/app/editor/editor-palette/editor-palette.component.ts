@@ -124,7 +124,7 @@ export class EditorPaletteComponent implements OnInit {
     this.canvasService.centerPointX = centerCell.posX * GameSettings.scale
     this.canvasService.centerPointY = centerCell.posY * GameSettings.scale
 
-    this.drawService.newDrawBlackoutFog()
+    this.drawService.blackOutFogPainter.paint()
   }
 
   

@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { CanvasService } from '../canvas/canvas.service';
 import { MotionAsset } from '../models/assets.model';
 import { Cell, GridDetails, RelativePositionCell } from '../models/cell.model';
-import { LargeCanvasImage } from './draw-tools/large-image';
+import { LargeCanvasImage } from './draw-tools/painters/large-image.paint';
 
 export class Grid {
   public id? = "1"

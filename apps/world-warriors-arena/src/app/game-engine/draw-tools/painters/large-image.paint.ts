@@ -1,7 +1,7 @@
 import { ElementRef } from "@angular/core"
-import { Cell } from "../../models/cell.model"
-import { GameSettings } from "../../models/game-settings"
-import { GridService } from "../grid.service"
+import { Cell } from "../../../models/cell.model"
+import { GameSettings } from "../../../models/game-settings"
+import { GridService } from "../../grid.service"
 
 export class LargeCanvasImage {
   public background: HTMLImageElement

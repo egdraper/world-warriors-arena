@@ -1,17 +1,17 @@
 import { Injectable } from "@angular/core";
-import { CanvasService } from "../../canvas/canvas.service";
-import { EditorService } from "../../editor/editor-palette/editor.service";
-import { growableItems } from "../../game-assets/tiles.db.ts/tile-assets.db";
-import { Cell } from "../../models/cell.model";
-import { GridService } from "../grid.service";
-import { Painter } from "./painter";
+import { CanvasService } from "../../../canvas/canvas.service";
+import { EditorService } from "../../../editor/editor-palette/editor.service";
+import { growableItems } from "../../../game-assets/tiles.db.ts/tile-assets.db";
+import { Cell } from "../../../models/cell.model";
+import { GridService } from "../../grid.service";
+import { LayerPainter, Painter } from "./painter";
 
-export class BackgroundPainter extends Painter {
+export class BackgroundPainter extends LayerPainter {
   constructor(
     public canvasService: CanvasService,
     public gridService: GridService,
     public editorService: EditorService,
-  ) { super() }
+  ) { super(canvasService) }
 
   // Draws Grid Lines  
   public paint(): void {
@@ -38,37 +38,7 @@ export class BackgroundPainter extends Painter {
     }    
   }
 
-   // draws the background item for each cell provided
-   public drawOnBackgroundCell(cell: Cell): void {
-    if (cell && cell.backgroundTile) {
-
-      this.canvasService.backgroundCTX.imageSmoothingEnabled = false
-      this.canvasService.backgroundCTX.drawImage(
-        cell.backgroundTile.spriteSheet,
-        cell.backgroundTile.spriteGridPosX[0] * 32,
-        cell.backgroundTile.spriteGridPosY[0] * 32,
-        32,
-        32,
-        cell.posX,
-        cell.posY,
-        32,
-        32
-      )
-
-      if (cell.portalTo) {
-        this.canvasService.backgroundCTX.globalAlpha = .5;
-        this.canvasService.backgroundCTX.fillStyle = 'blue';
-        this.canvasService.backgroundCTX.fillRect(
-          cell.posX,
-          cell.posY,
-          32,
-          32
-        )
-        this.canvasService.backgroundCTX.globalAlpha = 1;
-
-      }
-    }
-  }
+   
 
   private calculateGrowableBackgroundTerrain(selectedCell: Cell): void {
     if (!this.editorService.backgroundDirty) { return }
