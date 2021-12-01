@@ -6,7 +6,7 @@ import { Engine } from "../../engine";
 export abstract class Painter {
   private engineSubscription: Subscription
 
-  public abstract paint(): void
+  public abstract paint(frame?: number): void
 
   public start(): void {
     this.engineSubscription = Engine.onFire.subscribe(() => {

@@ -1,4 +1,3 @@
-import { Injectable } from "@angular/core";
 import { CanvasService } from "../../../canvas/canvas.service";
 import { CharacterEditorService } from "../../../editor/character-edtor-palette/character-editor-pallete/character-editor.service";
 import { EditorService } from "../../../editor/editor-palette/editor.service";
@@ -9,7 +8,7 @@ import { Cell } from "../../../models/cell.model";
 import { GameSettings } from "../../../models/game-settings";
 import { Engine } from "../../engine";
 import { GridService } from "../../grid.service";
-import { LayerPainter, Painter } from "./painter";
+import { LayerPainter } from "./painter";
 
 export class AssetPainter extends LayerPainter {
   constructor(
@@ -18,11 +17,17 @@ export class AssetPainter extends LayerPainter {
     public assetService: AssetsService,
     public editorService: EditorService,
     public characterEditorService: CharacterEditorService
-  ) { super(canvasService) }
+  ) { super(canvasService)
+  
+    Engine.onFire.subscribe(this.paint.bind(this))
+  }
 
+  public frame: number = 0
   // Draws Grid Lines  
-  public paint(): void {
+  public paint(frame: number): void {
+    this.frame = frame
     this.drawAnimatedAssets()
+  
   }
 
   public drawAnimatedAssets(): void {
@@ -34,8 +39,8 @@ export class AssetPainter extends LayerPainter {
       // Ensure the viewport does not kick back a negative number (cells don't work with negatives)
       let topLeftPosX = -1 * this.canvasService.canvasViewPortOffsetX
       let topLeftPosY = -1 * this.canvasService.canvasViewPortOffsetY
-      let topRightPosX = topLeftPosX + this.canvasService.canvasSize + (32 * (1 / GameSettings.scale))
-      let bottomPosY = topLeftPosY + this.canvasService.canvasSize + (32 * (1 / GameSettings.scale))
+      let topRightPosX = topLeftPosX + this.canvasService.canvasSizeX + (32 * (1 / GameSettings.scale))
+      let bottomPosY = topLeftPosY + this.canvasService.canvasSizeY + (32 * (1 / GameSettings.scale))
 
       const cellTopLeft = this.gridService.activeGrid.getGridCellByCoordinate(topLeftPosX, topLeftPosY)
       let cellTopRight = this.gridService.activeGrid.getGridCellByCoordinate(topRightPosX, topLeftPosY)
@@ -51,16 +56,24 @@ export class AssetPainter extends LayerPainter {
         cellTopRight = this.gridService.activeGrid.grid[`x0:y0`]
       }
 
-      this.canvasService.foregroundCTX.clearRect(0, 0, this.gridService.activeGrid.width * 32, this.gridService.activeGrid.height * 32);
-      this.canvasService.backgroundCTX.clearRect(0, 0, this.gridService.activeGrid.width * 32, this.gridService.activeGrid.height * 32);
-
+      
       try {
         if (this.gridService.activeGrid.largeImage.background) {
-          this.drawLargeImageBackground(topLeftPosX, topLeftPosY)
-          this.assetService.gameComponents.forEach(gameComponent => {
-            this.drawAroundAsset(gameComponent)
-          })
+          if((this.frame - 1) % 2 === 0 ) {
+            // this.canvasService.backgroundCTX.clearRect(0, 0, this.gridService.activeGrid.width * 32, this.gridService.activeGrid.height * 32);
+            this.drawLargeImageBackground(topLeftPosX, topLeftPosY)
+          }
+          
+          if(this.frame % 2 === 0) {
+            this.canvasService.foregroundCTX.clearRect(0, 0, this.gridService.activeGrid.width * 32, this.gridService.activeGrid.height * 32);
+            this.assetService.gameComponents.forEach(gameComponent => {
+              this.drawAroundAsset(gameComponent)
+            })
+          }
+          
         } else {
+          this.canvasService.foregroundCTX.clearRect(0, 0, this.gridService.activeGrid.width * 32, this.gridService.activeGrid.height * 32);
+          this.canvasService.backgroundCTX.clearRect(0, 0, this.gridService.activeGrid.width * 32, this.gridService.activeGrid.height * 32);
           for (let y = cellTopLeft.y; y <= cellBottomLeft.y; y++) {
             for (let x = cellTopLeft?.x; x <= cellTopRight?.x; x++) {
               const drawableCell = this.gridService.activeGrid.getCell(x, y)
@@ -105,25 +118,12 @@ export class AssetPainter extends LayerPainter {
       this.gridService.activeGrid.largeImage.background,
       canvasTopLeftPosX,
       canvasTopLeftPosY,
-      this.canvasService.canvasSize * (1 / GameSettings.scale),
-      this.canvasService.canvasSize * (1 / GameSettings.scale),
+      this.canvasService.canvasSizeX * (1 / GameSettings.scale),
+      this.canvasService.canvasSizeY * (1 / GameSettings.scale),
       canvasTopLeftPosX,
       canvasTopLeftPosY,
-      this.canvasService.canvasSize * (1 / GameSettings.scale),
-      this.canvasService.canvasSize * (1 / GameSettings.scale)
-    )
-
-    this.canvasService.foregroundCTX.imageSmoothingEnabled = false
-    this.canvasService.foregroundCTX.drawImage(
-      this.gridService.activeGrid.largeImage.foreground,
-      canvasTopLeftPosX,
-      canvasTopLeftPosY,
-      this.canvasService.canvasSize * (1 / GameSettings.scale),
-      this.canvasService.canvasSize * (1 / GameSettings.scale),
-      canvasTopLeftPosX,
-      canvasTopLeftPosY,
-      this.canvasService.canvasSize * (1 / GameSettings.scale),
-      this.canvasService.canvasSize * (1 / GameSettings.scale)
+      this.canvasService.canvasSizeX * (1 / GameSettings.scale),
+      this.canvasService.canvasSizeY * (1 / GameSettings.scale)
     )
   }
 
@@ -284,6 +284,7 @@ export class AssetPainter extends LayerPainter {
  
   // draws asset
   public drawAsset(gameComponent: MotionAsset): void {
+    this.canvasService.foregroundCTX.imageSmoothingEnabled = false
     if (gameComponent && gameComponent.assetDirty) {
       this.canvasService.foregroundCTX.drawImage(
         gameComponent.image,

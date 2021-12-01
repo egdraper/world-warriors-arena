@@ -10,7 +10,7 @@ export class Grid {
   public height = 15
   public width = 15
   public grid: { [cell: string]: Cell } = {}
-  public gridDisplayLite: GridDetails
+  public gridDetails: GridDetails
   public gridDisplay: Cell[][] = [];
   public widthPx = 0
   public heightPx = 0
@@ -22,9 +22,13 @@ export class Grid {
   public drawBlackoutImage = false
   public selectedGameComponent: MotionAsset
 
-  constructor(gridDetails: GridDetails) {
+  constructor(gridDetails: GridDetails, defaultTerrainId: string, inverted?: boolean) {
     this.height = gridDetails.height
     this.width = gridDetails.width
+
+    this.inverted = inverted
+    this.generateGrid(defaultTerrainId)
+    this.gridLoaded = true
   }
   
   public getGridCellByCoordinate(x: number, y: number): Cell {
@@ -46,6 +50,62 @@ export class Grid {
   public getCell(x: number, y: number): Cell {
     return this.grid[`x${x}:y${y}`]
   }
+
+  
+  public generateGrid(defaultTerrainId?: string, name: string = "No Name") {
+    this.createDisplayArray(defaultTerrainId)
+    this.addNeighbors()
+  }
+
+  private createDisplayArray(invertedDrawableTerrainId?: string) {
+    let imgIndexX = 1
+    let imgIndexY = 1
+
+    for (let i = 0; i < this.height; i++) {
+      this.gridDisplay[i] = [];
+
+      for (let l = 0; l < this.width; l++) {
+        this.grid[`x${l}:y${i}`] = this.grid[`x${l}:y${i}`]
+          || {
+            x: l,
+            y: i,
+            posX: l * 32,
+            posY: i * 32,
+            obstacle: this.inverted ? true : false,
+            id: `x${l}:y${i}`,
+            growableTileId: this.inverted ? invertedDrawableTerrainId : undefined
+          };
+
+        imgIndexX++
+
+        if (imgIndexX > 3 && imgIndexY < 3) {
+          imgIndexX = 1
+          imgIndexY++
+        } else if (imgIndexX > 3 && imgIndexY >= 3) {
+          imgIndexX = 1
+          imgIndexY = 1
+        }
+        this.gridDisplay[i][l] = this.grid[`x${l}:y${i}`];
+      }
+    }
+  }
+
+  private addNeighbors() {
+    for (let i = 0; i < this.height; i++) {
+      for (let l = 0; l < this.width; l++) {
+        const cell = this.grid[`x${l}:y${i}`];
+        cell.neighbors = [];
+        cell.neighbors[5] = this.grid[`x${l + 1}:y${i + 1}`];
+        cell.neighbors[0] = this.grid[`x${l}:y${i - 1}`];
+        cell.neighbors[2] = this.grid[`x${l}:y${i + 1}`];
+        cell.neighbors[4] = this.grid[`x${l + 1}:y${i - 1}`];
+        cell.neighbors[1] = this.grid[`x${l + 1}:y${i}`];
+        cell.neighbors[6] = this.grid[`x${l - 1}:y${i + 1}`];
+        cell.neighbors[3] = this.grid[`x${l - 1}:y${i}`];
+        cell.neighbors[7] = this.grid[`x${l - 1}:y${i - 1}`];
+      }
+    }
+  }
 }
 
 @Injectable()
@@ -66,85 +126,22 @@ export class GridService {
     return this.activeGrid
   }
 
-  public createNewGrid(width: number, height: number, invertedDrawableTerrainId?: string, inverted: boolean = false) {
+  public createNewGrid(width: number, height: number, defaultTerrainId?: string, inverted: boolean = false): void {
     const gridDetails: GridDetails = {
       width,
       height,
     }
 
     // Grid Setup
-    const newGrid = new Grid(gridDetails)
+    const newGrid = new Grid(gridDetails, defaultTerrainId, inverted)
+    
     newGrid.largeImage = new LargeCanvasImage(this.canvasService.drawingCanvas, this.canvasService.drawingCTX)
-    newGrid.inverted = inverted
-    this.generateGrid(newGrid, invertedDrawableTerrainId)
-    newGrid.gridLoaded = true
     newGrid.id = this.index.toString()
+   
     // Set Grid
-    this.gridIds.push(this.index.toString())
-    this.grids[(this.index++).toString()] = newGrid
+    this.gridIds.push(newGrid.id)
+    this.grids[newGrid.id] = newGrid
     this.activeGrid = newGrid
     this.canvasService.resetViewport()
-    
-  }
-  
-  private generateGrid(grid: Grid, invertedDrawableTerrainId?: string, name: string = "No Name") {
-    grid.gridDisplayLite = {
-      height: grid.height,
-      width: grid.width,
-      name
-    }
-    this.createDisplayArray(grid, invertedDrawableTerrainId)
-    this.addNeighbors(grid)
-  }
-
-  private createDisplayArray(grid: Grid, invertedDrawableTerrainId?: string) {
-    let imgIndexX = 1
-    let imgIndexY = 1
-
-    for (let i = 0; i < grid.height; i++) {
-      grid.gridDisplay[i] = [];
-
-      for (let l = 0; l < grid.width; l++) {
-        grid.grid[`x${l}:y${i}`] = grid && grid.grid[`x${l}:y${i}`]
-          ? grid.grid[`x${l}:y${i}`]
-          : {
-            x: l,
-            y: i,
-            posX: l * 32,
-            posY: i * 32,
-            obstacle: grid.inverted ? true : false,
-            id: `x${l}:y${i}`,
-            growableTileId: grid.inverted ? invertedDrawableTerrainId : undefined
-          };
-
-        imgIndexX++
-
-        if (imgIndexX > 3 && imgIndexY < 3) {
-          imgIndexX = 1
-          imgIndexY++
-        } else if (imgIndexX > 3 && imgIndexY >= 3) {
-          imgIndexX = 1
-          imgIndexY = 1
-        }
-        grid.gridDisplay[i][l] = grid.grid[`x${l}:y${i}`];
-      }
-    }
-  }
-
-  private addNeighbors(grid: Grid) {
-    for (let i = 0; i < grid.height; i++) {
-      for (let l = 0; l < grid.width; l++) {
-        const cell = grid.grid[`x${l}:y${i}`];
-        cell.neighbors = [];
-        cell.neighbors[5] = grid.grid[`x${l + 1}:y${i + 1}`];
-        cell.neighbors[0] = grid.grid[`x${l}:y${i - 1}`];
-        cell.neighbors[2] = grid.grid[`x${l}:y${i + 1}`];
-        cell.neighbors[4] = grid.grid[`x${l + 1}:y${i - 1}`];
-        cell.neighbors[1] = grid.grid[`x${l + 1}:y${i}`];
-        cell.neighbors[6] = grid.grid[`x${l - 1}:y${i + 1}`];
-        cell.neighbors[3] = grid.grid[`x${l - 1}:y${i}`];
-        cell.neighbors[7] = grid.grid[`x${l - 1}:y${i - 1}`];
-      }
-    }
-  }
+  }  
 }

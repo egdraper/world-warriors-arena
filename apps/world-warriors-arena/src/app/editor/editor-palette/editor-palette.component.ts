@@ -97,8 +97,7 @@ export class EditorPaletteComponent implements OnInit {
 
   public invertedClicked(): void {
     this.grid.activeGrid.inverted = !this.grid.activeGrid.inverted
-  }
-
+  } 
 
   public generateRandomMap(): void {
     const mapGenerator = new RandomMapGenerator(this.editorService, this.shortestPath, this.grid)
@@ -108,8 +107,8 @@ export class EditorPaletteComponent implements OnInit {
       terrainTypeId: "DrawableTrees",
       inverted: true,
       pathTypeId: undefined,
-      width: 64,
-      height: 64
+      width: 96,
+      height: 96,
     }
 
     mapGenerator.generateMap(mapDetails)
@@ -120,24 +119,11 @@ export class EditorPaletteComponent implements OnInit {
     this.editorService.backgroundDirty = true
 
     // CLEANUP - Needs to be moved into somewhere that re-draws
-    const centerCell = this.grid.activeGrid.getGridCellByCoordinate(Math.floor(this.canvasService.canvasSize / 2), Math.floor(this.canvasService.canvasSize / 2))
+    const centerCell = this.grid.activeGrid.getGridCellByCoordinate(Math.floor(this.canvasService.canvasSizeX / 2), Math.floor(this.canvasService.canvasSizeY / 2))
     this.canvasService.centerPointX = centerCell.posX * GameSettings.scale
     this.canvasService.centerPointY = centerCell.posY * GameSettings.scale
 
     this.drawService.blackOutFogPainter.paint()
-  }
-
-  
-  public addFogOfWar(): void {
-    // this.canvasService.blackoutCTX.canvas.height = this.grid.activeGrid.height * 32
-    // this.canvasService.blackoutCTX.canvas.width = this.grid.activeGrid.width * 32
     this.visibilityService.createCellLines()
-    // this.visibilityService.fogEnabled = false
-    // if(this.visibilityService.fogEnabled) {
-    //   this.drawService.drawFog()
-    //   this.visibilityService.preloadVisibility(this.assetService.obstacles)
-    //   this.drawService.drawBlackoutFog()
-    // }
   }
-
 }

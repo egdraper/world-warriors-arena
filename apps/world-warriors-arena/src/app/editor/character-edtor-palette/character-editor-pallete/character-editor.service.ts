@@ -2,7 +2,6 @@ import { Injectable } from "@angular/core"
 import { AssetsService } from "../../../game-assets/assets.service"
 import { Character } from "../../../game-assets/character"
 import { Engine } from "../../../game-engine/engine"
-import { GridService } from "../../../game-engine/grid.service"
 import { MotionAsset } from "../../../models/assets.model"
 import { Cell } from "../../../models/cell.model"
 

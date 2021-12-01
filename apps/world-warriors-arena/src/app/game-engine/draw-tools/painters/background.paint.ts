@@ -1,10 +1,9 @@
-import { Injectable } from "@angular/core";
 import { CanvasService } from "../../../canvas/canvas.service";
 import { EditorService } from "../../../editor/editor-palette/editor.service";
 import { growableItems } from "../../../game-assets/tiles.db.ts/tile-assets.db";
 import { Cell } from "../../../models/cell.model";
 import { GridService } from "../../grid.service";
-import { LayerPainter, Painter } from "./painter";
+import { LayerPainter } from "./painter";
 
 export class BackgroundPainter extends LayerPainter {
   constructor(

@@ -77,12 +77,14 @@ export class Engine {
       })
     }
 
-    this.drawService.assetPainter.drawAnimatedAssets()
+    // if(this.frame % 2 === 0) {
+    // // this.drawService.assetPainter.drawAnimatedAssets()
+    // // }
     this.drawService.assetPainter.drawObstacles()
     this.drawService.assetPainter.drawEditableCharacter()
     this.drawService.assetPainter.drawEditableObject()
-    this.drawService.fogOfWarPainter.paint()
-    this.drawService.blackOutFogPainter.paint()
+    // this.drawService.fogOfWarPainter.paint()
+    // this.drawService.blackOutFogPainter.paint()
     // this.drawService.drawBlackOutEdges()    
     Engine.onFire.next(this.frame)    
 

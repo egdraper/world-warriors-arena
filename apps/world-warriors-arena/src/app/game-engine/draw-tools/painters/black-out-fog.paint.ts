@@ -1,5 +1,4 @@
 import { CanvasService } from "../../../canvas/canvas.service";
-import { EditorService } from "../../../editor/editor-palette/editor.service";
 import { AssetsService } from "../../../game-assets/assets.service";
 import { Cell } from "../../../models/cell.model";
 import { DebugSettings } from "../../../models/game-settings";
@@ -148,7 +147,7 @@ export class BlackOutFogPainter extends Painter {
         })
       }
       
-      this.clearOutVisibleArea(this.newFogOfWarService.blackOutRimPoints, this.canvasService.blackoutCTX)
+      // this.clearOutVisibleArea(this.newFogOfWarService.blackOutRimPoints, this.canvasService.blackoutCTX)
     }
   }
 

@@ -128,7 +128,6 @@ export class GridDetails {
   public grid?: {[cell: string]: Cell }
 }
 
-
 export class DrawableTiles {
   public id: string
   public terrainType: TerrainType
@@ -149,6 +148,14 @@ export class GridMapCell {
   markers?: {x: number, y: number}[]
 }
 
+export enum MapPosition {
+  left = "left",
+  right = "right",
+  top = "top",
+  bottom = "bottom",
+  start = "start"
+}
+
 export class MapDetails {
   terrainTypeId: string
   backgroundTypeId: string
@@ -156,4 +163,6 @@ export class MapDetails {
   inverted: boolean
   width: number
   height: number
+  placement?: MapPosition
+  entryPointTop?: Cell
 }

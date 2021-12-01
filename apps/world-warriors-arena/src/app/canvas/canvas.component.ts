@@ -1,5 +1,4 @@
-import { Component, ElementRef, EventEmitter, HostListener, Output, ViewChild } from '@angular/core';
-import { ControlContainer } from '@angular/forms';
+import { Component, ElementRef, HostListener, ViewChild } from '@angular/core';
 import { CharacterEditorService } from '../editor/character-edtor-palette/character-editor-pallete/character-editor.service';
 import { EditorService } from '../editor/editor-palette/editor.service';
 import { AssetsService } from '../game-assets/assets.service';
@@ -30,7 +29,6 @@ export class CanvasComponent {
   public fogContext: CanvasRenderingContext2D;
   public blackoutContext: CanvasRenderingContext2D;
   public drawingContext: CanvasRenderingContext2D;
-  public drawBlackoutContext: CanvasRenderingContext2D;
 
   public hoveringCell: Cell
 
@@ -64,11 +62,7 @@ export class CanvasComponent {
   // this needs to be put in a public function so we can pass in grid information 
   public ngAfterViewInit(): void {
     // Background
-    this.drawBlackoutContext = this.drawBlackoutCanvas.nativeElement.getContext('2d');
-    this.canvasService.drawBlackoutCTX = this.drawBlackoutContext
-    this.canvasService.drawBlackoutCanvas = this.drawBlackoutCanvas
-    // Background
-    this.backgroundContext = this.backgroundCanvas.nativeElement.getContext('2d');
+    this.backgroundContext = this.backgroundCanvas.nativeElement.getContext('2d', {alpha: false});
     this.canvasService.backgroundCTX = this.backgroundContext
     this.canvasService.backgroundCanvas = this.backgroundCanvas
 
@@ -240,10 +234,10 @@ export class CanvasComponent {
 
     // scroll with mouse movement
     if (this.shiftPressed) {
-      this.rightQuadrant = clickX > (-1 * this.canvasService.canvasViewPortOffsetX + this.canvasService.canvasSize) - this.canvasService.canvasSize / 3 
-      this.bottomQuadrant = clickY > (-1 * this.canvasService.canvasViewPortOffsetY + this.canvasService.canvasSize) - this.canvasService.canvasSize / 3
-      this.topQuadrant = clickX < (-1 * this.canvasService.canvasViewPortOffsetX + this.canvasService.canvasSize / 3) && (this.canvasService.canvasViewPortOffsetX < 0)
-      this.leftQuadrant = clickY < (-1 * this.canvasService.canvasViewPortOffsetY + this.canvasService.canvasSize / 3) && (this.canvasService.canvasViewPortOffsetY < 0)
+      this.rightQuadrant = clickX > (-1 * this.canvasService.canvasViewPortOffsetX + this.canvasService.canvasSizeX) - this.canvasService.canvasSizeX / 3 
+      this.bottomQuadrant = clickY > (-1 * this.canvasService.canvasViewPortOffsetY + this.canvasService.canvasSizeY) - this.canvasService.canvasSizeY / 3
+      this.topQuadrant = clickX < (-1 * this.canvasService.canvasViewPortOffsetX + this.canvasService.canvasSizeX / 3) && (this.canvasService.canvasViewPortOffsetX < 0)
+      this.leftQuadrant = clickY < (-1 * this.canvasService.canvasViewPortOffsetY + this.canvasService.canvasSizeY / 3) && (this.canvasService.canvasViewPortOffsetY < 0)
     }
 
     // place portal
@@ -258,8 +252,8 @@ export class CanvasComponent {
     if (event.offsetX < 0 || event.offsetY < 0) { return }
     if (!this.mouseIsDown || !this.controlPressed) { return }
 
-    this.rightQuadrant = clickX > (-1 * this.canvasService.canvasViewPortOffsetX + this.canvasService.canvasSize) - 96
-    this.bottomQuadrant = clickY > (-1 * this.canvasService.canvasViewPortOffsetY + this.canvasService.canvasSize) - 96
+    this.rightQuadrant = clickX > (-1 * this.canvasService.canvasViewPortOffsetX + this.canvasService.canvasSizeX) - 96
+    this.bottomQuadrant = clickY > (-1 * this.canvasService.canvasViewPortOffsetY + this.canvasService.canvasSizeY) - 96
     this.topQuadrant = clickX < (-1 * this.canvasService.canvasViewPortOffsetX + 96) && (this.canvasService.canvasViewPortOffsetX < 0)
     this.leftQuadrant = clickY < (-1 * this.canvasService.canvasViewPortOffsetY + 96) && (this.canvasService.canvasViewPortOffsetY < 0)
 
@@ -324,7 +318,6 @@ export class CanvasComponent {
       } else {
         if(this.gridService.activeGrid) {
           this.gridService.activeGrid.largeImage.background = undefined
-          this.gridService.activeGrid.largeImage.foreground = undefined
         }
       }
     })

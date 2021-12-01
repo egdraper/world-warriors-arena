@@ -13,7 +13,7 @@ export class GameSettings {
 }
 
 export class DebugSettings {
-  public static fogDebug = true
+  public static fogDebug = false
 
   public static fogFeather = true
   public static fogOffset = true

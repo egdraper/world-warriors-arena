@@ -1,24 +1,17 @@
 <!-- <h1>X{{hoveringCell?.x}}:Y{{hoveringCell?.y}}<h1> -->
-  <div class="game-canvas">
-    <canvas #drawBlackoutCanvas id="drawBlackoutCanvas">
-    </canvas> 
-    <canvas #backgroundCanvas id="backgroundCanvas"></canvas>
+<div class="game-canvas">
+  <canvas #backgroundCanvas id="backgroundCanvas"></canvas>
   <canvas #overlayCanvas id="overlayCanvas"></canvas>
-  
+
   <canvas #foregroundCanvas id="foregroundCanvas"></canvas>
-  
-  
+
+
   <canvas #fogCanvas id="fogCanvas">
   </canvas>
-  
-  
-  <canvas #blackoutCanvas 
-    id="blackoutCanvas"
-    (mousedown)="onCanvasClick($event)"
-    (mousemove)="onMouseMove($event)"
-    (mouseup)="onMouseUp($event)"
-    (keydown)="onKeyDown($event)"
-    (keyup)="onKeyUp($event)">
+
+
+  <canvas #blackoutCanvas id="blackoutCanvas" (mousedown)="onCanvasClick($event)" (mousemove)="onMouseMove($event)"
+    (mouseup)="onMouseUp($event)" (keydown)="onKeyDown($event)" (keyup)="onKeyUp($event)">
   </canvas>
   <div class="character-hover">
     <!-- <h1>{{hoveringCell?.occupiedBy?.image?.src}}
@@ -28,4 +21,4 @@
 
 
 <canvas #drawCanvas *ngIf="canvasService.editMode" id="drawCanvas">
-</canvas> 
+</canvas>

@@ -5,7 +5,7 @@ import { GridService } from "../../grid.service"
 
 export class LargeCanvasImage {
   public background: HTMLImageElement
-  public foreground: HTMLImageElement
+  // public foreground: HTMLImageElement
 
   constructor(  
     public drawingCanvas: ElementRef<HTMLCanvasElement>,
@@ -19,13 +19,9 @@ export class LargeCanvasImage {
     this.drawLargeImageObstacles(this.drawingCTX, gridService)
 
     const bimg = this.drawingCanvas.nativeElement.toDataURL("image/png")
-    const fimg = this.drawingCanvas.nativeElement.toDataURL("image/png")
     const bimage = new Image()
-    const fimage = new Image()
     bimage.src = bimg
-    fimage.src = fimg
     this.background = bimage
-    this.foreground = fimage
   }
 
 
@@ -35,7 +31,7 @@ export class LargeCanvasImage {
         this.drawLargeImageBackgroundCell(cell, ctx)
       })
     })
-    this.drawGridLines(gridService, ctx)
+    // this.drawGridLines(gridService, ctx)
     gridService.activeGrid.gridDisplay.forEach(row => {
       row.forEach((cell: Cell) => {
         this.drawLargeImageCells(cell, ctx)
