@@ -1,11 +1,18 @@
-<div class="button" (click)="generateRandomCoreMap()">
+<div class="button" (click)="onGenerateCoreMapClick()">
   G
 </div>
 <div class="button" (click)="invertedClicked()">Invert</div>
 <div class="button" (click)="baseClicked()">Layer</div>
 <div class="button" (click)="canvasService.resetViewport()">Reset View Port</div>
 <div class="button" (click)="changeLockState()" [class.color]="lockState === 'Locked'? 'red' : 'blue'">{{lockState}}</div>
-<div class="button" *ngFor="let mapId of mapService.mapIds" (click)="switchGrid(mapId)">{{mapId}}</div>
+<div 
+  *ngFor="let mapId of mapService.mapIds"
+  class="button" 
+  [class.selected]="mapId === mapService?.activeGrid?.id"
+  (click)="switchGrid(mapId)">
+    {{mapId}}
+</div>
+<h2 [style.color]="'white'">{{mapService?.activeGrid?.id}}</h2>
 
 <!-- 
 <select (change)="changeScale($event.target)">

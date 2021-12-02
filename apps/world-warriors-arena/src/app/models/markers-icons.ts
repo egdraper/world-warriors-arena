@@ -27,7 +27,9 @@ export class PageTransitionMarker extends MarkerIcon {
 
   public onClick(): void {
     if(this.gridConnection) {
-      GSM.Map.activeGrid = GSM.Map.maps[this.mapId]
+      GSM.Map.switchGrid(this.gridConnection.mapId)
+    } else {
+      GSM.Editor.generateRandomAttachmentMap(this)
     }
 
   }

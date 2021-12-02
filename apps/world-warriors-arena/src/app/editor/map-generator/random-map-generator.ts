@@ -7,8 +7,8 @@ import { BaseMapGenerator } from "./base-map-generator";
 export class RandomMapGenerator extends BaseMapGenerator {
   public generateMap(width: number, height: number, mapDetails: DefaultMapSettings): GameMap {
     const map = GSM.Map.createNewGrid(width, height, mapDetails)
-    const randomLeft = Math.floor(Math.random() * (height - 3) + 3)
-    const randomRight = Math.floor(Math.random() * (height - 3) + 3)
+    const randomLeft = Math.floor(Math.random() * (height - 10) + 10)
+    const randomRight = Math.floor(Math.random() * (height - 10) + 10)
 
     this.addPortalMarkerIcons(map, randomLeft, randomRight)
     this.autoFillBackgroundTerrain(mapDetails.backgroundTypeId)
@@ -17,20 +17,22 @@ export class RandomMapGenerator extends BaseMapGenerator {
     return map
   }
 
-  public generateAttachmentMap(transitionFromMap: GameMap, mapDetails: DefaultMapSettings, attachmentSettings: PageTransitionMarker): GameMap {
-    const attachedMap = this.generateMap(transitionFromMap.width, transitionFromMap.height, mapDetails)
-    const randomLeft = Math.floor(Math.random() * (transitionFromMap.height - 3) + 3)
-    const randomRight = Math.floor(Math.random() * (transitionFromMap.height - 3) + 3)
-    if (attachmentSettings.position === MapPosition.left) {
-      this.addPortalMarkerIcons(attachedMap, randomLeft, randomRight, null, attachmentSettings)
+  public generateAttachmentMap(transitionFromMap: GameMap, mapDetails: DefaultMapSettings, pageTransitionMarker: PageTransitionMarker): GameMap {
+    const map = GSM.Map.createNewGrid(transitionFromMap.width, transitionFromMap.height, mapDetails)
+    const randomLeft = Math.floor(Math.random() * (transitionFromMap.width - 3) + 3)
+    const randomRight = Math.floor(Math.random() * (transitionFromMap.width - 3) + 3)
+    
+    if (pageTransitionMarker.position === MapPosition.left) {
+      this.addPortalMarkerIcons(map, randomLeft, randomRight, pageTransitionMarker, null)
     }
-    if (attachmentSettings.position === MapPosition.right) {
-      this.addPortalMarkerIcons(attachedMap, randomLeft, randomRight, attachmentSettings, null)
+    if (pageTransitionMarker.position === MapPosition.right) {
+      this.addPortalMarkerIcons(map, randomLeft, randomRight, null, pageTransitionMarker)
     }
+    
     this.autoFillBackgroundTerrain(mapDetails.backgroundTypeId)
     this.autoPopulateForegroundTerrain(mapDetails, randomLeft, randomRight)
-    attachedMap.defaultSettings = mapDetails
-    return attachedMap
+    map.defaultSettings = mapDetails
+    return map
   }
 
   public autoPopulateForegroundTerrain(defaultMapSettings: DefaultMapSettings, randomLeft: number, randomRight: number): void {
@@ -110,6 +112,10 @@ export class RandomMapGenerator extends BaseMapGenerator {
     pageMarkerLeft.gridConnection = rightTransitionMarker || null
     GSM.GameMarker.addMarkerIcon(pageMarkerLeft)
 
+    if(rightTransitionMarker) {
+      rightTransitionMarker.gridConnection = pageMarkerLeft
+    }
+
     const pageMarkerRight = new PageTransitionMarker()
     pageMarkerRight.id = Math.floor(Math.random() * 100000).toString()
     pageMarkerRight.type = MarkerIconType.mapTransition
@@ -126,5 +132,9 @@ export class RandomMapGenerator extends BaseMapGenerator {
     pageMarkerRight.image = tokenImage
     pageMarkerRight.gridConnection = leftTransitionMarker || null
     GSM.GameMarker.addMarkerIcon(pageMarkerRight)
+
+    if(leftTransitionMarker) {
+      leftTransitionMarker.gridConnection = pageMarkerRight
+    }
   }
 }

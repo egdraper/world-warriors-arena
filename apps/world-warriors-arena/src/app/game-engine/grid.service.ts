@@ -123,6 +123,7 @@ export class GridService {
     
     newMap.largeImage = new LargeCanvasImage(GSM.Canvas.drawingCanvas, GSM.Canvas.drawingCTX)
     newMap.id = this.index.toString()
+    this.index++
    
     // Set Grid
     this.mapIds.push(newMap.id)
