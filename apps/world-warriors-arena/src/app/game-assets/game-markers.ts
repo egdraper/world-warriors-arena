@@ -1,6 +1,7 @@
 
 import { Injectable } from "@angular/core";
 import { Subject } from "rxjs";
+import { GSM } from "../app.service.manager";
 import { MarkerIcon } from "../models/markers-icons";
 
 @Injectable()
@@ -23,7 +24,8 @@ export class GameMarkersService {
       icon.hovering = this.mouseX >= icon.displayPosX 
         && this.mouseY >= icon.displayPosY 
         && this.mouseX <= icon.displayPosX + icon.width 
-        && this.mouseY <= icon.displayPosY + icon.height 
+        && this.mouseY <= icon.displayPosY + icon.height
+        && GSM.Map.activeGrid.id === icon.mapId
     })
   }
 
