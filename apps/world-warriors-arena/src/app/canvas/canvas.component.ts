@@ -2,6 +2,7 @@ import { Component, ElementRef, HostListener, ViewChild } from '@angular/core';
 import { CharacterEditorService } from '../editor/character-edtor-palette/character-editor-pallete/character-editor.service';
 import { EditorService } from '../editor/editor-palette/editor.service';
 import { AssetsService } from '../game-assets/assets.service';
+import { GameMarkersService } from '../game-assets/game-markers';
 import { growableItems, TerrainType } from '../game-assets/tiles.db.ts/tile-assets.db';
 import { Engine } from '../game-engine/engine';
 import { GridService } from '../game-engine/grid.service';
@@ -55,6 +56,7 @@ export class CanvasComponent {
     private editorService: EditorService,
     private engineService: Engine,
     private characterService: CharacterEditorService,
+    private gameMarkersService: GameMarkersService
   ) {
     this.subscribeToEngine() 
   }
@@ -176,6 +178,12 @@ export class CanvasComponent {
     const selectedCell = this.getCellFromMouseEvent(event)
     console.log(selectedCell)
     const assetInCell = this.assetService.getAssetFromCell(selectedCell, this.gridService.activeGrid.id)
+
+
+    const markerIcon = this.gameMarkersService.getHoveringIcon()
+    if(markerIcon) {
+      markerIcon.onClick()
+    }
     
     // select Asset
     if(assetInCell && !this.assetService.selectedGameComponent) {
@@ -226,8 +234,13 @@ export class CanvasComponent {
   public onMouseMove(event: any): void {
     if(!this.gridService.activeGrid) { return }
 
+
+    
     const clickX = event.offsetX + (-1 * this.canvasService.canvasViewPortOffsetX * GameSettings.scale)
     const clickY = event.offsetY + (-1 * this.canvasService.canvasViewPortOffsetY * GameSettings.scale)
+    this.gameMarkersService.checkForHover()
+    this.gameMarkersService.mouseX = clickX
+    this.gameMarkersService.mouseY = clickY
 
     this.hoveringCell = this.gridService.activeGrid.getGridCellByCoordinate(clickX, clickY)
     this.gridService.hoveringCell = this.hoveringCell
@@ -257,7 +270,7 @@ export class CanvasComponent {
     this.topQuadrant = clickX < (-1 * this.canvasService.canvasViewPortOffsetX + 96) && (this.canvasService.canvasViewPortOffsetX < 0)
     this.leftQuadrant = clickY < (-1 * this.canvasService.canvasViewPortOffsetY + 96) && (this.canvasService.canvasViewPortOffsetY < 0)
 
-    if (this.gridService.activeGrid.inverted) { // Rename to this.gridService.removing or something
+    if (this.gridService.activeGrid.defaultSettings.inverted) { // Rename to this.gridService.removing or something
       this.assetService.addInvertedMapAsset(this.hoveringCell)
       this.editorService.backgroundDirty = true
     } else if (this.mouseIsDown && this.controlPressed) {

@@ -3,6 +3,7 @@ import { CanvasService } from "../../canvas/canvas.service";
 import { CharacterEditorService } from "../../editor/character-edtor-palette/character-editor-pallete/character-editor.service";
 import { EditorService } from "../../editor/editor-palette/editor.service";
 import { AssetsService } from "../../game-assets/assets.service";
+import { GameMarkersService } from "../../game-assets/game-markers";
 import { GridService } from "../grid.service";
 import { NewFogOfWarService } from "../new-visibility.service";
 import { FogOfWarService } from "../visibility.service";
@@ -12,6 +13,7 @@ import { BlackOutEdgesPainter } from "./painters/black-out-edges.paint";
 import { BlackOutFogPainter } from "./painters/black-out-fog.paint";
 import { FogOfWarPainter } from "./painters/fog-of-war.paint";
 import { GridLinePainter } from "./painters/grid-lines.paint";
+import { GameMarkerPainter } from "./painters/portal-tokens.paint";
 
 @Injectable()
 export class DrawService {
@@ -21,6 +23,7 @@ export class DrawService {
   public blackOutFogPainter: BlackOutFogPainter
   public fogOfWarPainter: FogOfWarPainter
   public assetPainter: AssetPainter
+  public gameMarkerPainter: GameMarkerPainter
 
   constructor(
     public gridService: GridService,
@@ -29,7 +32,8 @@ export class DrawService {
     public editorService: EditorService,
     public assetService: AssetsService,
     public characterEditorService: CharacterEditorService,
-    public newFogOfWarService: NewFogOfWarService
+    public newFogOfWarService: NewFogOfWarService,
+    public gameMarkerService: GameMarkersService
   ) { 
     this.gridLinePainter = new GridLinePainter(canvasService, gridService, editorService)
     this.backgroundPainter = new BackgroundPainter(canvasService, gridService, editorService)
@@ -37,5 +41,6 @@ export class DrawService {
     this.blackOutFogPainter = new BlackOutFogPainter(canvasService, gridService, assetService, newFogOfWarService)
     this.fogOfWarPainter = new FogOfWarPainter(canvasService, gridService, assetService, newFogOfWarService)
     this.assetPainter = new AssetPainter(canvasService, gridService, assetService, editorService, characterEditorService)
+    this.gameMarkerPainter = new GameMarkerPainter(canvasService, gridService, gameMarkerService)
   }
 }

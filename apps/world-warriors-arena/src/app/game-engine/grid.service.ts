@@ -1,20 +1,20 @@
 import { Injectable } from '@angular/core';
 import { CanvasService } from '../canvas/canvas.service';
+import { GameMarkersService } from '../game-assets/game-markers';
 import { MotionAsset } from '../models/assets.model';
-import { Cell, GridDetails, RelativePositionCell } from '../models/cell.model';
+import { Cell, GridDetails, DefaultMapSettings, RelativePositionCell } from '../models/cell.model';
 import { LargeCanvasImage } from './draw-tools/painters/large-image.paint';
 
-export class Grid {
+export class GameMap {
   public id? = "1"
   public name? = "newGrid"
   public height = 15
   public width = 15
   public grid: { [cell: string]: Cell } = {}
-  public gridDetails: GridDetails
+  public defaultSettings: DefaultMapSettings
   public gridDisplay: Cell[][] = [];
   public widthPx = 0
   public heightPx = 0
-  public inverted = true
   public gridDirty = false
   public gridLoaded = false
   public includeGridLines = false
@@ -22,22 +22,15 @@ export class Grid {
   public drawBlackoutImage = false
   public selectedGameComponent: MotionAsset
 
-  constructor(gridDetails: GridDetails, defaultTerrainId: string, inverted?: boolean) {
-    this.height = gridDetails.height
-    this.width = gridDetails.width
-
-    this.inverted = inverted
-    this.generateGrid(defaultTerrainId)
+  constructor(width: number, height: number, defaultMapSettings: DefaultMapSettings) {
+    this.width = width
+    this.height = height
+    this.defaultSettings = defaultMapSettings
+    this.generateGridFeatures()
     this.gridLoaded = true
   }
   
   public getGridCellByCoordinate(x: number, y: number): Cell {
-    // while (x % (32 * GameSettings.scale) !== 0) {
-    //   x--
-    // }
-    // while (y % (32 * GameSettings.scale) !== 0) {
-    //   y--
-    // }
     while (x % (32 * 1) !== 0) {
       x--
     }
@@ -50,14 +43,13 @@ export class Grid {
   public getCell(x: number, y: number): Cell {
     return this.grid[`x${x}:y${y}`]
   }
-
   
-  public generateGrid(defaultTerrainId?: string, name: string = "No Name") {
-    this.createDisplayArray(defaultTerrainId)
+  private generateGridFeatures() {
+    this.createDisplayArray()
     this.addNeighbors()
   }
 
-  private createDisplayArray(invertedDrawableTerrainId?: string) {
+  private createDisplayArray() {
     let imgIndexX = 1
     let imgIndexY = 1
 
@@ -71,9 +63,9 @@ export class Grid {
             y: i,
             posX: l * 32,
             posY: i * 32,
-            obstacle: this.inverted ? true : false,
+            obstacle: this.defaultSettings.inverted ? true : false,
             id: `x${l}:y${i}`,
-            growableTileId: this.inverted ? invertedDrawableTerrainId : undefined
+            growableTileId: this.defaultSettings.inverted ? this.defaultSettings.terrainTypeId : undefined
           };
 
         imgIndexX++
@@ -110,38 +102,35 @@ export class Grid {
 
 @Injectable()
 export class GridService {
-  public grids: {[gridId: string]: Grid} = {}
-  public gridIds: string[] = []
-  public activeGrid: Grid
+  public maps: {[gridId: string]: GameMap} = {}
+  public mapIds: string[] = []
+  public activeGrid: GameMap
   public hoveringCell: Cell
 
   private index = 0
 
-  constructor(private canvasService: CanvasService) { }
+  constructor(
+    private canvasService: CanvasService) { }
 
-  public switchGrid(gridId: string): Grid {
-    this.activeGrid = this.grids[gridId]
+  public switchGrid(gridId: string): GameMap {
+    this.activeGrid = this.maps[gridId]
     this.canvasService.resetViewport()
     
     return this.activeGrid
   }
 
-  public createNewGrid(width: number, height: number, defaultTerrainId?: string, inverted: boolean = false): void {
-    const gridDetails: GridDetails = {
-      width,
-      height,
-    }
-
-    // Grid Setup
-    const newGrid = new Grid(gridDetails, defaultTerrainId, inverted)
+  public createNewGrid(width: number, height: number, defaultMapSettings: DefaultMapSettings): GameMap {
+     // Grid Setup
+    const newMap = new GameMap(width, height, defaultMapSettings)
     
-    newGrid.largeImage = new LargeCanvasImage(this.canvasService.drawingCanvas, this.canvasService.drawingCTX)
-    newGrid.id = this.index.toString()
+    newMap.largeImage = new LargeCanvasImage(this.canvasService.drawingCanvas, this.canvasService.drawingCTX)
+    newMap.id = this.index.toString()
    
     // Set Grid
-    this.gridIds.push(newGrid.id)
-    this.grids[newGrid.id] = newGrid
-    this.activeGrid = newGrid
+    this.mapIds.push(newMap.id)
+    this.maps[newMap.id] = newMap
+    this.activeGrid = newMap
     this.canvasService.resetViewport()
+    return newMap
   }  
 }

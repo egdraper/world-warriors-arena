@@ -16,6 +16,7 @@ import { EditorPaletteComponent } from './editor/editor-palette/editor-palette.c
 import { EditorService } from './editor/editor-palette/editor.service';
 import { CharacterEditorService } from './editor/character-edtor-palette/character-editor-pallete/character-editor.service';
 import { NewFogOfWarService } from './game-engine/new-visibility.service';
+import { GameMarkersService } from './game-assets/game-markers';
 
 @NgModule({
   declarations: [AppComponent, CanvasComponent, EditorPaletteComponent, CharacterEditorPaletteComponent, GlobalMapComponent],
@@ -30,7 +31,8 @@ import { NewFogOfWarService } from './game-engine/new-visibility.service';
     FogOfWarService,
     NewFogOfWarService,
     Engine,
-    CharacterEditorService
+    CharacterEditorService,
+    GameMarkersService
   ],
   bootstrap: [AppComponent],
 })

@@ -1,11 +1,9 @@
 import { GridService } from "../../game-engine/grid.service"
 import { ShortestPath } from "../../game-engine/shortest-path"
-import { Cell, MapDetails } from "../../models/cell.model"
+import { Cell, DefaultMapSettings } from "../../models/cell.model"
 import { EditorService } from "../editor-palette/editor.service"
 
 export class BaseMapGenerator {
-  protected mapDetails: MapDetails
-
   constructor(
     public editorService: EditorService,
     public shortestPath: ShortestPath,
@@ -73,7 +71,7 @@ export class BaseMapGenerator {
     })
   }
 
-  public createRandomizedBoarder(): void {
+  public createRandomizedBoarder(defaultMapSettings: DefaultMapSettings): void {
     const randomConsistency = 4
 
     this.gridService.activeGrid.gridDisplay.forEach(row => {
@@ -81,29 +79,29 @@ export class BaseMapGenerator {
         // Outer most layer
         if (cell.x < 2 || cell.x > this.gridService.activeGrid.width - 3) {
           cell.obstacle = true
-          cell.growableTileId = this.mapDetails.terrainTypeId
+          cell.growableTileId = defaultMapSettings.terrainTypeId
         }
         if (cell.y < 3 || cell.y > this.gridService.activeGrid.height - 3) {
           cell.obstacle = true
-          cell.growableTileId = this.mapDetails.terrainTypeId
+          cell.growableTileId = defaultMapSettings.terrainTypeId
         }
 
         // left side 2nd layer
         if (cell.x === 2) {
-          this.setEdgeLayerRandomization(cell, 0)
+          this.setEdgeLayerRandomization(cell, 0, defaultMapSettings)
         }
         // left side 3rd layer
         if (cell.x === 3 && cell.neighbors[3].obstacle && cell.neighbors[0] && cell.neighbors[0].neighbors[3].obstacle) {
-          this.setEdgeLayerRandomization(cell, 0)
+          this.setEdgeLayerRandomization(cell, 0, defaultMapSettings)
         }
 
         // top side 2nd layer
         if (cell.y === 3) {
-          this.setEdgeLayerRandomization(cell, 1)
+          this.setEdgeLayerRandomization(cell, 1, defaultMapSettings)
         }
         // Top side 3rd Layer
         if (cell.y === 4 && cell.neighbors[0].obstacle && cell.neighbors[1] && cell.neighbors[1].neighbors[0].obstacle) {
-          this.setEdgeLayerRandomization(cell, 1)
+          this.setEdgeLayerRandomization(cell, 1, defaultMapSettings)
         }
       })
     })
@@ -112,12 +110,12 @@ export class BaseMapGenerator {
       row.forEach(cell => {
         // right side 2nd layers
         if (cell.x === this.gridService.activeGrid.width - 3) {
-          this.setEdgeLayerRandomization(cell, 2)
+          this.setEdgeLayerRandomization(cell, 2, defaultMapSettings)
         }
 
         // bottom side 2nd layer
         if (cell.y === this.gridService.activeGrid.height - 3) {
-          this.setEdgeLayerRandomization(cell, 1)
+          this.setEdgeLayerRandomization(cell, 1, defaultMapSettings)
         }
       })
     })
@@ -126,30 +124,30 @@ export class BaseMapGenerator {
       row.forEach(cell => {
         // right side 3rd layer
         if (cell.x === this.gridService.activeGrid.width - 4 && cell.neighbors[1].obstacle && cell.neighbors[2] && cell.neighbors[2].neighbors[1].obstacle) {
-          this.setEdgeLayerRandomization(cell, 2)
+          this.setEdgeLayerRandomization(cell, 2, defaultMapSettings)
         }
         // bottom side 3rd layer
         if (cell.y === this.gridService.activeGrid.height - 4 && cell.neighbors[2].obstacle && cell.neighbors[1] && cell.neighbors[1].neighbors[2].obstacle) {
-          this.setEdgeLayerRandomization(cell, 1)
+          this.setEdgeLayerRandomization(cell, 1, defaultMapSettings)
         }
       })
     })
   }
 
-  public setEdgeLayerRandomization(cell: Cell, neighborIndex: number): void {
+  public setEdgeLayerRandomization(cell: Cell, neighborIndex: number, defaultMapSettings: DefaultMapSettings): void {
     const random = !!!Math.floor(Math.random() * 2)
     if (random) {
       if (cell.neighbors[neighborIndex]) {
         cell.neighbors[neighborIndex].obstacle = true
-        cell.neighbors[neighborIndex].growableTileId = this.mapDetails.terrainTypeId
+        cell.neighbors[neighborIndex].growableTileId = defaultMapSettings.terrainTypeId
       }
 
       cell.obstacle = true
-      cell.growableTileId = this.mapDetails.terrainTypeId
+      cell.growableTileId = defaultMapSettings.terrainTypeId
     }
   }
 
-  public randomlyPlaceLargeObstacles(): void {
+  public randomlyPlaceInvisibleObstacles(): void {
     this.gridService.activeGrid.gridDisplay.forEach(row => {
       row.forEach(cell => {
         cell.obstacle = !!!Math.floor(Math.random() * 4)
@@ -158,21 +156,21 @@ export class BaseMapGenerator {
   }
 
 
-  public addRandomTerrain(weight: number = 3): void {
+  public addRandomTerrain(defaultMapSettings: DefaultMapSettings, weight: number = 3): void {
     for (let i = 0; i < this.gridService.activeGrid.width; i++) {
       const randomY = Math.floor(Math.random() * this.gridService.activeGrid.height)
       const randomX = Math.floor(Math.random() * this.gridService.activeGrid.height)
 
       const startCell = this.gridService.activeGrid.getCell(randomX, randomY)
       startCell.obstacle = true
-      startCell.growableTileId = this.mapDetails.terrainTypeId
+      startCell.growableTileId = defaultMapSettings.terrainTypeId
 
       for (let i = 0; i < 8; i++) {
         if (startCell.neighbors[i]) {
           startCell.neighbors[i].obstacle = true
-          startCell.neighbors[i].growableTileId = this.mapDetails.terrainTypeId
+          startCell.neighbors[i].growableTileId = defaultMapSettings.terrainTypeId
 
-          this.populateCell(startCell, i, weight)
+          this.populateCell(startCell, i, weight, defaultMapSettings)
         }
       }
     }
@@ -196,7 +194,7 @@ export class BaseMapGenerator {
     })
   }
 
-  private populateCell(cell: Cell, neighborIndex: number, weight: number): void {
+  private populateCell(cell: Cell, neighborIndex: number, weight: number, defaultMapSettings: DefaultMapSettings): void {
     const isPlaced = !!!Math.floor(Math.random() * weight)
     if (!cell) { return }
     if (cell.neighbors[neighborIndex] && neighborIndex < 8 && isPlaced) {
@@ -205,26 +203,26 @@ export class BaseMapGenerator {
       for (let i = 0; i < 8; i++) {
         if (neighbor.neighbors[i]) {
           neighbor.neighbors[i].obstacle = true
-          neighbor.neighbors[i].growableTileId = this.mapDetails.terrainTypeId
+          neighbor.neighbors[i].growableTileId = defaultMapSettings.terrainTypeId
 
 
           if (neighbor.neighbors[i].neighbors[0]) {
             neighbor.neighbors[i].neighbors[0].obstacle = true
-            neighbor.neighbors[i].neighbors[0].growableTileId = this.mapDetails.terrainTypeId
+            neighbor.neighbors[i].neighbors[0].growableTileId = defaultMapSettings.terrainTypeId
           }
 
           if (neighbor.neighbors[i].neighbors[1]) {
             neighbor.neighbors[i].neighbors[1].obstacle = true
-            neighbor.neighbors[i].neighbors[1].growableTileId = this.mapDetails.terrainTypeId
+            neighbor.neighbors[i].neighbors[1].growableTileId = defaultMapSettings.terrainTypeId
           }
 
           if (neighbor.neighbors[i].neighbors[4]) {
             neighbor.neighbors[i].neighbors[4].obstacle = true
-            neighbor.neighbors[i].neighbors[4].growableTileId = this.mapDetails.terrainTypeId
+            neighbor.neighbors[i].neighbors[4].growableTileId = defaultMapSettings.terrainTypeId
           }
         }
 
-        this.populateCell(neighbor.neighbors[i], neighborIndex++, weight)
+        this.populateCell(neighbor.neighbors[i], neighborIndex++, weight, defaultMapSettings)
       }
 
     } else {

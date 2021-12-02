@@ -1,5 +1,5 @@
 import { ElementRef, Injectable } from "@angular/core";
-import { Grid, GridService } from "../game-engine/grid.service";
+import { GameMap, GridService } from "../game-engine/grid.service";
 import { Asset } from "../models/assets.model";
 import { Cell } from "../models/cell.model";
 import { GameSettings } from "../models/game-settings";
@@ -97,7 +97,7 @@ export class CanvasService {
     this.adustViewPort(xPos, yPos)
   }
 
-  public trackAsset(xPos: number, yPos: number, asset: Asset, grid: Grid): void {
+  public trackAsset(xPos: number, yPos: number, asset: Asset, grid: GameMap): void {
     if (asset && grid.width && grid.height) {
       if (!grid.height || !grid.height) {
         throw new Error("Passing in asset requires gridWidth and grid height")
@@ -112,7 +112,7 @@ export class CanvasService {
     this.adustViewPort(xPos, yPos, grid.width, grid.height)
   }
   
-  public centerOverAsset(asset: Asset, grid: Grid): void {
+  public centerOverAsset(asset: Asset, grid: GameMap): void {
     if(!asset) {return}
 
     // select Asset

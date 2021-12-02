@@ -1,7 +1,7 @@
 import { CanvasService } from "../../canvas/canvas.service";
 import { GridService } from "../../game-engine/grid.service";
 import { ShortestPath } from "../../game-engine/shortest-path";
-import { Cell, GridMapCell, MapDetails } from "../../models/cell.model";
+import { Cell, GridMapCell, DefaultMapSettings } from "../../models/cell.model";
 import { GameSettings } from "../../models/game-settings";
 import { EditorService } from "../editor-palette/editor.service";
 import { BaseMapGenerator } from "./base-map-generator";
@@ -11,17 +11,15 @@ export class GridMapGenerator extends BaseMapGenerator {
     public gridService: GridService,
     public shortestPath: ShortestPath,
     public editorService: EditorService,
-    private canvasService: CanvasService,
   ) {
     super(editorService,shortestPath, gridService)
    }
 
-  public generateMap(gridMapCell: GridMapCell, mapDetails: MapDetails) {
-    this.mapDetails = mapDetails
-    this.createNonObstructedPaths(gridMapCell)
+  public generateMap(gridMapCell: GridMapCell, defaultMapSettings: DefaultMapSettings) {
+    this.createNonObstructedPaths(gridMapCell, defaultMapSettings)
   }
 
-  public createNonObstructedPaths(gridMapCell: GridMapCell): void {
+  public createNonObstructedPaths(gridMapCell: GridMapCell, defaultMapSettings: DefaultMapSettings): void {
     let clearing: Cell[] = []
     gridMapCell.markers.forEach(marker => {
       try {
@@ -31,29 +29,29 @@ export class GridMapGenerator extends BaseMapGenerator {
     clearing = [...new Set(clearing)]
     clearing = clearing.filter(cell => cell)
 
-    if (this.mapDetails.pathTypeId) {
+    if (defaultMapSettings.pathTypeId) {
       clearing.forEach(cell => {
-        if (cell.neighbors[0]) { cell.neighbors[0].backgroundGrowableTileId = this.mapDetails.pathTypeId }
-        if (cell.neighbors[1]) { cell.neighbors[1].backgroundGrowableTileId = this.mapDetails.pathTypeId }
-        if (cell.neighbors[4]) { cell.neighbors[4].backgroundGrowableTileId = this.mapDetails.pathTypeId }
-        cell.backgroundGrowableTileId = this.mapDetails.pathTypeId
+        if (cell.neighbors[0]) { cell.neighbors[0].backgroundGrowableTileId = defaultMapSettings.pathTypeId }
+        if (cell.neighbors[1]) { cell.neighbors[1].backgroundGrowableTileId = defaultMapSettings.pathTypeId }
+        if (cell.neighbors[4]) { cell.neighbors[4].backgroundGrowableTileId = defaultMapSettings.pathTypeId }
+        cell.backgroundGrowableTileId = defaultMapSettings.pathTypeId
       })
     }
 
-    if (this.mapDetails.inverted) {
-      this.addFullTerrain()
+    if (defaultMapSettings.inverted) {
+      this.addFullTerrain(defaultMapSettings)
     } else {
-      this.addRandomTerrain()
-      this.createRandomizedBoarder()
+      this.addRandomTerrain(defaultMapSettings)
+      this.createRandomizedBoarder(defaultMapSettings)
     }
 
     this.clearOpening(clearing)
   }
 
-  public addFullTerrain(): void {
+  public addFullTerrain(defaultMapSettings: DefaultMapSettings): void {
     this.gridService.activeGrid.gridDisplay.forEach(row => {
       row.forEach(cell => {
-        cell.growableTileId = this.mapDetails.terrainTypeId
+        cell.growableTileId = defaultMapSettings.terrainTypeId
         cell.obstacle = true
       })
     })
