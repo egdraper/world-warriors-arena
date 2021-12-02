@@ -1,0 +1,25 @@
+canvas {
+  // border: 25px solid rgb(107, 70, 35, .5);
+  position: absolute;
+}
+
+.drawBlackoutCanvas {
+  position: fixed;
+}
+
+.character-hover {
+  color: wheat;
+  height: 25px;
+  width: 100%;
+  position: absolute;
+}
+
+.game-canvas {
+  display: flex;
+  width: 100%;
+
+}
+
+h1 {
+  color: white;
+}

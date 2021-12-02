@@ -1,17 +1,15 @@
 import { v4 as uuidv4 } from 'uuid';
-import { CanvasService } from '../canvas/canvas.service';
-import { DrawService } from '../game-engine/draw-tools/draw.service';
-import { Engine } from '../game-engine/engine';
-import { ShortestPath } from '../game-engine/shortest-path';
-import { ClickAnimation } from '../game-assets/click-animation';
-import { SelectionIndicator } from '../game-assets/selection-indicator';
-import { GridService } from '../game-engine/grid.service';
+import { GSM } from '../app.service.manager';
+import { ClickAnimation } from './click-animation';
+import { SelectionIndicator } from './selection-indicator';
 import { Cell } from './cell.model';
 import { GameSettings } from './game-settings';
+import { ShortestPath } from '../utils/shortest-path';
 
 export class GameComponent {
   public id: string
   public cell: Cell = null
+  public gridId: string = "0"
 
   constructor() {
     this.id = uuidv4()
@@ -62,17 +60,12 @@ export abstract class MotionAsset extends Asset {
     if (value === "right") { this.frameYPosition = 72 }
   }
 
-  constructor(
-    public grid: GridService,
-    public shortestPath: ShortestPath,
-    public engineService: Engine,
-    public drawService: DrawService,
-    public canvasService: CanvasService) {
+  constructor() {
     super()
   }
 
   public addSelectionIndicator(): void {
-    this.selectionIndicator = new SelectionIndicator(6, this.engineService, `../../../assets/images/ExplosionClick1.png`)
+    this.selectionIndicator = new SelectionIndicator(6, `../../../assets/images/ExplosionClick1.png`)
   }
 
   public setDirection(keyEvent: KeyboardEvent): void {
@@ -94,7 +87,7 @@ export abstract class MotionAsset extends Asset {
   }
 
   public startMovement(startCell: Cell, endCell: Cell, charactersOnGrid: MotionAsset[]): void {
-    this.destinationIndicator = new ClickAnimation(350, this.engineService, `../../../assets/images/DestinationX.png`, endCell)
+    this.destinationIndicator = new ClickAnimation(350, `../../../assets/images/DestinationX.png`, endCell)
 
     if (this.moving) {
       this.redirection = { start: undefined, end: endCell, charactersOnGrid: charactersOnGrid }
@@ -103,12 +96,11 @@ export abstract class MotionAsset extends Asset {
       this.redirection = undefined
     }
 
-    this.currentPath = this.shortestPath.find(startCell, endCell, charactersOnGrid)
+    this.currentPath = ShortestPath.find(startCell, endCell, charactersOnGrid)
     this.moving = true
     const currentCell = this.currentPath.pop() // removes cell the character is standing on
-    currentCell.occupiedBy = undefined
     this.nextCell = this.currentPath.pop()
-    this.nextCell.occupiedBy = this
+    GSM.Assets.placementChanged = true
     this.setSpriteDirection()
     this.animationFrame = 8
   }
@@ -136,36 +128,37 @@ export abstract class MotionAsset extends Asset {
     this.positionY += nextYMove
 
     if (!GameSettings.gm || GameSettings.trackMovement) {
-      this.canvasService.adustViewPort(-1 * (nextXMove), -1 * (nextYMove), this, this.grid.width, this.grid.height)
+      GSM.Canvas.trackAsset(-1 * (nextXMove), -1 * (nextYMove), this, GSM.Map.activeGrid)
     }
 
     if (this.positionY % (32) === 0 && this.positionX % (32) === 0) {
-      this.cell = this.grid.grid[`x${this.positionX / (32)}:y${this.positionY / (32)}`]
+      this.cell = GSM.Map.activeGrid.grid[`x${this.positionX / (32)}:y${this.positionY / (32)}`]
 
+      if (this.cell.portalTo) {
+        const newGridId = this.cell.portalTo.gridId
+        const newCell = this.cell.portalTo.cell
+        this.cell = newCell
+        this.gridId = newGridId
+        this.positionX = this.cell.posX
+        this.positionY = this.cell.posY
+        GSM.Map.switchGrid(newGridId)
+        GSM.Canvas.centerOverAsset(GSM.Assets.selectedGameComponent, GSM.Map.activeGrid)
+      }
+
+      GSM.Map.activeGrid.drawBlackoutImage = true
       this.nextCell = this.currentPath.length > 0
         ? this.currentPath.pop()
         : null
 
-
+      GSM.Draw.blackOutFogPainter.movementComplete = true
       if (this.redirection) {
-        this.cell.occupiedBy = undefined
         this.endMovement()
         this.startMovement(this.cell, this.redirection.end, this.redirection.charactersOnGrid)
       }
 
-      // TODO: Re-calculate path if something has moved into it
-
       if (!this.nextCell) {
-        this.drawService.clearFogLineOfSight(this.cell)
         this.endMovement()
       } else {
-
-        // this.grid.obstacles.forEach(cellId => {
-        //   if(this.grid.grid[cellId].obstacle) { this.drawService.clearFogLineOfSight(this.nextCell, this.grid.grid[cellId]) }
-        // })
-        this.drawService.clearFogLineOfSight(this.nextCell)
-        this.cell.occupiedBy = undefined
-        this.nextCell.occupiedBy = this
         this.setSpriteDirection()
       }
     }

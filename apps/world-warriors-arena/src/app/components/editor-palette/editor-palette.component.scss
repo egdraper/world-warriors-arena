@@ -1,0 +1,39 @@
+.pallet-container {
+  display: flex;
+  flex-wrap: wrap;
+}
+
+.image-container {
+  margin: 2px;
+  border: solid 1px slategrey;
+  color: white;
+
+  :hover {
+    filter: blur(1px);
+  }
+}
+
+.button {
+  height: 50px;
+  width: 50px;
+  background-color:#666666;
+  margin: auto;
+  color: #aaaaaa;
+  margin: 3px;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+
+  &:hover {
+    background-color: #444444;
+  }
+
+}
+
+.selected {
+  background-color:#222222;
+}
+
+select {
+  width: 100%;
+}

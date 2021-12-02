@@ -7,6 +7,16 @@ export class GameSettings {
   public static scrollSensitivity: number = 96
   public static gm: boolean = false
   public static trackMovement: boolean = false
+  public static scale: number = 1
+  public static fog: boolean = true
+  public static blackout: boolean = true
+}
+
+export class DebugSettings {
+  public static fogDebug = false
+
+  public static fogFeather = true
+  public static fogOffset = true
 }
 
 export class MapSettings {

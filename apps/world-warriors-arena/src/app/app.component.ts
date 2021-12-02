@@ -1,11 +1,15 @@
 import { Component } from '@angular/core';
-import { Engine } from './game-engine/engine';
-import { AssetsService } from './game-assets/assets.service';
+import { Engine } from './services/engine.service';
+import { AssetsService } from './services/assets.service';
 import { Cell } from './models/cell.model';
-import { GridService } from './game-engine/grid.service';
-import { DrawService } from './game-engine/draw-tools/draw.service';
-import { FogOfWarService } from './game-engine/visibility.service';
-import { CanvasService } from './canvas/canvas.service';
+import { GridService } from './services/map.service';
+import { DrawService } from './services/draw.service';
+import { CanvasService } from './services/canvas.service';
+import { CharacterEditorService } from './services/character-editor.service';
+import { EditorService } from './services/editor.service';
+import { GameMarkersService } from './services/game-markers.service';
+import { NewFogOfWarService } from './services/new-visibility.service';
+import { GSM } from './app.service.manager';
 
 @Component({
   selector: 'world-warriors-arena-root',
@@ -15,31 +19,28 @@ import { CanvasService } from './canvas/canvas.service';
 export class AppComponent {
   public selectedCell: Cell
   constructor(
-    private engine: Engine,
-    private assetService: AssetsService,
-    public grid: GridService,
-    public drawService: DrawService,
-    public visibilityService: FogOfWarService,
-    public canvasService: CanvasService
+    assetsService: AssetsService,
+    canvasService: CanvasService,
+    drawService: DrawService,
+    gridService: GridService,
+    editorService: EditorService,
+    fogOfWarService: NewFogOfWarService,
+    engine: Engine,
+    characterEditorService: CharacterEditorService,
+    gameMarkerService: GameMarkersService
   ) {
-
+    GSM.Assets = assetsService
+    GSM.Canvas = canvasService
+    GSM.Draw = drawService
+    GSM.Map = gridService
+    GSM.Editor = editorService
+    GSM.FogOfWar = fogOfWarService
+    GSM.Engine = engine
+    GSM.CharacterEditor = characterEditorService
+    GSM.GameMarker = gameMarkerService
   }
 
   public ngOnInit(): void {
-    this.engine.startEngine()
+    GSM.Engine.startEngine()
   }
-
-  public ngAfterViewInit(): void {
-
-  }
-  
-  public onAddCharacterClick(): void {
-    this.visibilityService.fogEnabled = false
-    if(this.visibilityService.fogEnabled) {
-      this.drawService.drawFog()
-      this.visibilityService.preloadVisibility(this.assetService.obstacles)
-      this.drawService.drawBlackoutFog()
-    }
-  }
-
 }
