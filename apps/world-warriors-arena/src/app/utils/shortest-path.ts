@@ -1,40 +1,27 @@
-import { Injectable } from "@angular/core";
 import { GameComponent } from "../models/assets.model";
 import { Cell, Visited } from "../models/cell.model";
 
-
-@Injectable()
 export class ShortestPath {
-  public grid: {[cell: string]: any } = { };
-  public creaturesOnGrid: any[] = []
-  public maxSearchRange = 1000
-  public searchIndex = 0
-  public totalDistance = 0
-   
-  public setGrid(grid: {[cell: string]: any }) {
-    this.grid = grid;
-  }
-  
-  public find(start: Cell, end: Cell, creaturesOnGrid: Array<GameComponent> ): Cell[] {
+  public static creaturesOnGrid: any[] = []
+
+  public static find(start: Cell, end: Cell, creaturesOnGrid: Array<GameComponent> ): Cell[] {
     this.creaturesOnGrid = creaturesOnGrid
     end.destination = true; // css styling
     end = this.verifyClosetLocation(start, end)
     return this.start(start, end)
   }
 
-  private start(start: Cell, end: Cell): Cell[] {
-    this.searchIndex = 0
+  private static start(start: Cell, end: Cell): Cell[] {
     const visited: any = { };
     visited[`x${start.x}:y${start.y}`] = { cell: start, steps: { moves: 0, distance: 0, odd: true } };
 
     this.visitedNow(end, visited);
     const shortestPath = [];
     shortestPath.push(end);
-    this.totalDistance = visited[`x${end.x}:y${end.y}`].steps.distance
     return this.getShortestPath(visited[`x${end.x}:y${end.y}`], shortestPath);
   }
 
-  private getShortestPath(cell: any, shortest: Cell[]) {
+  private static getShortestPath(cell: any, shortest: Cell[]) {
     if (cell.prevCel) {
      shortest.push(cell.prevCel.cell);
      cell.prevCel.cell.path = true;
@@ -44,7 +31,7 @@ export class ShortestPath {
     return shortest;
   }
 
-  private visitedNow(endingPoint: Cell, visited: any) {
+  private static visitedNow(endingPoint: Cell, visited: any) {
     if ((visited[`x${endingPoint.x}:y${endingPoint.y}`] && visited[`x${endingPoint.x}:y${endingPoint.y}`].cell === endingPoint)) {
       return;
     }
@@ -106,7 +93,7 @@ export class ShortestPath {
     this.visitedNow(endingPoint, visited);
   }
 
-  public verifyClosetLocation(start: Cell, end: Cell): Cell {
+  public static verifyClosetLocation(start: Cell, end: Cell): Cell {
     if(this.isBadLocation(end)) { 
       const possibleAlternatives = end.neighbors.filter(a => !this.isBadLocation(a))
       if(possibleAlternatives) {
@@ -127,11 +114,11 @@ export class ShortestPath {
     return end
   }
 
-  public isBadLocation(end: Cell): boolean {
+  public static isBadLocation(end: Cell): boolean {
     return end.obstacle || this.creaturesOnGrid.find(a => a.cell.id === end.id) 
   }
 
-  private alternateDiagonal(visited: Visited, index: number): any {
+  private static alternateDiagonal(visited: Visited, index: number): any {
     let newSteps
 
     if(index > 3) {

@@ -9,7 +9,6 @@ import { CharacterEditorService } from './services/character-editor.service';
 import { EditorService } from './services/editor.service';
 import { GameMarkersService } from './services/game-markers.service';
 import { NewFogOfWarService } from './services/new-visibility.service';
-import { ShortestPath } from './services/shortest-path.service';
 import { GSM } from './app.service.manager';
 
 @Component({
@@ -22,7 +21,6 @@ export class AppComponent {
   constructor(
     assetsService: AssetsService,
     canvasService: CanvasService,
-    shortestPath: ShortestPath,
     drawService: DrawService,
     gridService: GridService,
     editorService: EditorService,
@@ -33,7 +31,6 @@ export class AppComponent {
   ) {
     GSM.Assets = assetsService
     GSM.Canvas = canvasService
-    GSM.ShortestPath = shortestPath
     GSM.Draw = drawService
     GSM.Map = gridService
     GSM.Editor = editorService

@@ -3,6 +3,7 @@ import { GameMap } from "../services/map.service";
 import { Cell, DefaultMapSettings, MapPosition, MarkerIconType } from "../models/cell.model";
 import { PageTransitionMarker } from "../models/markers-icons";
 import { BaseMapGenerator } from "./base-map-generator";
+import { ShortestPath } from "./shortest-path";
 
 export class RandomMapGenerator extends BaseMapGenerator {
   public generateMap(width: number, height: number, mapDetails: DefaultMapSettings): GameMap {
@@ -43,7 +44,7 @@ export class RandomMapGenerator extends BaseMapGenerator {
       try {
         this.clearObstacles()
         this.randomlyPlaceInvisibleObstacles()
-        path = GSM.ShortestPath.find(GSM.Map.activeGrid.grid[`x0:y${randomLeft}`], GSM.Map.activeGrid.grid[`x${GSM.Map.activeGrid.width - 2}:y${randomRight}`], [])
+        path = ShortestPath.find(GSM.Map.activeGrid.grid[`x0:y${randomLeft}`], GSM.Map.activeGrid.grid[`x${GSM.Map.activeGrid.width - 2}:y${randomRight}`], [])
 
       } catch { }
     }

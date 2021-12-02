@@ -12,7 +12,6 @@ export class NewFogOfWarService {
   public nonObstructedCells: { [id: string]: Set<Cell> } = {}
   public fogOfWarRimPoints: { [id: string]: Cell[] } = {}
 
-
   public createCellLines(): void {
     this.findVisibleCellsEdges()
     GSM.Map.activeGrid.gridDisplay.forEach(row => {

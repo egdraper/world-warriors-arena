@@ -4,6 +4,7 @@ import { ClickAnimation } from './click-animation';
 import { SelectionIndicator } from './selection-indicator';
 import { Cell } from './cell.model';
 import { GameSettings } from './game-settings';
+import { ShortestPath } from '../utils/shortest-path';
 
 export class GameComponent {
   public id: string
@@ -95,12 +96,12 @@ export abstract class MotionAsset extends Asset {
       this.redirection = undefined
     }
 
-    this.currentPath = GSM.ShortestPath.find(startCell, endCell, charactersOnGrid)
+    this.currentPath = ShortestPath.find(startCell, endCell, charactersOnGrid)
     this.moving = true
     const currentCell = this.currentPath.pop() // removes cell the character is standing on
     this.nextCell = this.currentPath.pop()
     GSM.Assets.placementChanged = true
-   this.setSpriteDirection()
+    this.setSpriteDirection()
     this.animationFrame = 8
   }
 
@@ -132,8 +133,8 @@ export abstract class MotionAsset extends Asset {
 
     if (this.positionY % (32) === 0 && this.positionX % (32) === 0) {
       this.cell = GSM.Map.activeGrid.grid[`x${this.positionX / (32)}:y${this.positionY / (32)}`]
-     
-      if(this.cell.portalTo) {
+
+      if (this.cell.portalTo) {
         const newGridId = this.cell.portalTo.gridId
         const newCell = this.cell.portalTo.cell
         this.cell = newCell

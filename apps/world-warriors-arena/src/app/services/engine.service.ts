@@ -6,7 +6,6 @@ import { ShortLivedAnimation } from "../models/click-animation";
 import { ShortLivedAnimationPainter } from "../painters/short-lived-animation.paint";
 import { removeFromArray } from "../utils/functions";
 
-
 @Injectable()
 export class Engine {
   public static onFire = new Subject<number>()

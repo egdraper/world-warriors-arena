@@ -8,7 +8,6 @@ import { CanvasComponent } from './components/canvas/canvas.component';
 import { CanvasService } from './services/canvas.service';
 import { AssetsService } from './services/assets.service';
 import { DrawService } from './services/draw.service';
-import { ShortestPath } from './services/shortest-path.service';
 import { GlobalMapComponent } from './components/global-map/global-map.component';
 import { CharacterEditorPaletteComponent } from './components/character-editor-pallete/character-editor-palette.component';
 import { EditorPaletteComponent } from './components/editor-palette/editor-palette.component';
@@ -23,7 +22,6 @@ import { GameMarkersService } from './services/game-markers.service';
   providers: [
     AssetsService,
     CanvasService,
-    ShortestPath,
     DrawService,
     GridService,
     EditorService,
