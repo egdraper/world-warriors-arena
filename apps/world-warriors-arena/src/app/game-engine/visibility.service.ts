@@ -1,6 +1,7 @@
 import { Injectable } from "@angular/core";
 import { GridService } from "./grid.service";
 import { Cell } from "../models/cell.model";
+import { GSM } from "../app.service.manager";
 
 @Injectable() 
 export class FogOfWarService {
@@ -8,17 +9,13 @@ export class FogOfWarService {
   public visitedVisibleCell: {[id: string]: any[]} = {}
   public fogEnabled: boolean = false
 
-  constructor(
-    private gridService: GridService
-    ) { }
-
   public preloadVisibility(obstacles: string[]): void {  
-    this.gridService.activeGrid.gridDisplay.forEach(row => {
+    GSM.Map.activeGrid.gridDisplay.forEach(row => {
       row.forEach(cell => {
         if(!cell.obstacle) {
           this.visibleCell[cell.id] = []
           obstacles.forEach(id => {
-            this.traceCell(cell, this.gridService.activeGrid.grid[id])
+            this.traceCell(cell, GSM.Map.activeGrid.grid[id])
           })
         }
       })
@@ -225,7 +222,7 @@ export class FogOfWarService {
   }
 
   private checkForObstacle(centerX: number, centerY: number, pointX: number, pointY: number, obstacle: Cell): boolean {
-    const assetCell = this.gridService.activeGrid.getGridCellByCoordinate(centerX, centerY)
+    const assetCell = GSM.Map.activeGrid.getGridCellByCoordinate(centerX, centerY)
 
     const upLine = assetCell.x === obstacle.x && assetCell.y > obstacle.y
     const rightLine = assetCell.y === obstacle.y && assetCell.x < obstacle.x
@@ -295,7 +292,7 @@ export class FogOfWarService {
         reachedDestination = true
       } else {
         try {
-        const cell = this.gridService.activeGrid.getGridCellByCoordinate(checkLocationX, checkLocationY)
+        const cell = GSM.Map.activeGrid.getGridCellByCoordinate(checkLocationX, checkLocationY)
         foundObstacle = cell.obstacle
         if (foundObstacle) {
           reachedDestination = true

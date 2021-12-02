@@ -1,24 +1,14 @@
-import { CanvasService } from "../../../canvas/canvas.service";
-import { CharacterEditorService } from "../../../editor/character-edtor-palette/character-editor-pallete/character-editor.service";
-import { EditorService } from "../../../editor/editor-palette/editor.service";
-import { AssetsService } from "../../../game-assets/assets.service";
+import { GSM } from "../../../app.service.manager";
 import { growableItems } from "../../../game-assets/tiles.db.ts/tile-assets.db";
 import { MotionAsset } from "../../../models/assets.model";
 import { Cell } from "../../../models/cell.model";
 import { GameSettings } from "../../../models/game-settings";
 import { Engine } from "../../engine";
-import { GridService } from "../../grid.service";
 import { LayerPainter } from "./painter";
 
 export class AssetPainter extends LayerPainter {
-  constructor(
-    public canvasService: CanvasService,
-    public gridService: GridService,
-    public assetService: AssetsService,
-    public editorService: EditorService,
-    public characterEditorService: CharacterEditorService
-  ) { super(canvasService)
-  
+  constructor() {   
+    super()
     Engine.onFire.subscribe(this.paint.bind(this))
   }
 
@@ -31,54 +21,54 @@ export class AssetPainter extends LayerPainter {
   }
 
   public drawAnimatedAssets(): void {
-    if (!this.gridService.activeGrid) { return }
-    if (!this.gridService.activeGrid.gridLoaded) { return }
+    if (!GSM.Map.activeGrid) { return }
+    if (!GSM.Map.activeGrid.gridLoaded) { return }
 
-    if (this.canvasService.foregroundCTX) {
+    if (GSM.Canvas.foregroundCTX) {
 
       // Ensure the viewport does not kick back a negative number (cells don't work with negatives)
-      let topLeftPosX = -1 * this.canvasService.canvasViewPortOffsetX
-      let topLeftPosY = -1 * this.canvasService.canvasViewPortOffsetY
-      let topRightPosX = topLeftPosX + this.canvasService.canvasSizeX + (32 * (1 / GameSettings.scale))
-      let bottomPosY = topLeftPosY + this.canvasService.canvasSizeY + (32 * (1 / GameSettings.scale))
+      let topLeftPosX = -1 * GSM.Canvas.canvasViewPortOffsetX
+      let topLeftPosY = -1 * GSM.Canvas.canvasViewPortOffsetY
+      let topRightPosX = topLeftPosX + GSM.Canvas.canvasSizeX + (32 * (1 / GameSettings.scale))
+      let bottomPosY = topLeftPosY + GSM.Canvas.canvasSizeY + (32 * (1 / GameSettings.scale))
 
-      const cellTopLeft = this.gridService.activeGrid.getGridCellByCoordinate(topLeftPosX, topLeftPosY)
-      let cellTopRight = this.gridService.activeGrid.getGridCellByCoordinate(topRightPosX, topLeftPosY)
-      let cellBottomLeft = this.gridService.activeGrid.getGridCellByCoordinate(topLeftPosX, bottomPosY)
+      const cellTopLeft = GSM.Map.activeGrid.getGridCellByCoordinate(topLeftPosX, topLeftPosY)
+      let cellTopRight = GSM.Map.activeGrid.getGridCellByCoordinate(topRightPosX, topLeftPosY)
+      let cellBottomLeft = GSM.Map.activeGrid.getGridCellByCoordinate(topLeftPosX, bottomPosY)
 
       if (!cellBottomLeft) {
-        cellBottomLeft = this.gridService.activeGrid.grid[`x0:y${this.gridService.activeGrid.height - 1}`]
+        cellBottomLeft = GSM.Map.activeGrid.grid[`x0:y${GSM.Map.activeGrid.height - 1}`]
       }
       if (!cellTopRight) {
-        cellTopRight = this.gridService.activeGrid.grid[`x${this.gridService.activeGrid.width - 1}:y0`]
+        cellTopRight = GSM.Map.activeGrid.grid[`x${GSM.Map.activeGrid.width - 1}:y0`]
       }
       if (!cellTopLeft) {
-        cellTopRight = this.gridService.activeGrid.grid[`x0:y0`]
+        cellTopRight = GSM.Map.activeGrid.grid[`x0:y0`]
       }
 
       
       try {
-        if (this.gridService.activeGrid.largeImage.background) {
+        if (GSM.Map.activeGrid.largeImage.background) {
           if((this.frame - 1) % 2 === 0 ) {
-            // this.canvasService.backgroundCTX.clearRect(0, 0, this.gridService.activeGrid.width * 32, this.gridService.activeGrid.height * 32);
+            // GSM.Canvas.backgroundCTX.clearRect(0, 0, GSM.Map.activeGrid.width * 32, GSM.Map.activeGrid.height * 32);
             this.drawLargeImageBackground(topLeftPosX, topLeftPosY)
           }
           
           if(this.frame % 2 === 0) {
-            this.canvasService.foregroundCTX.clearRect(0, 0, this.gridService.activeGrid.width * 32, this.gridService.activeGrid.height * 32);
-            this.assetService.gameComponents.forEach(gameComponent => {
+            GSM.Canvas.foregroundCTX.clearRect(0, 0, GSM.Map.activeGrid.width * 32, GSM.Map.activeGrid.height * 32);
+            GSM.Assets.gameComponents.forEach(gameComponent => {
               this.drawAroundAsset(gameComponent)
             })
           }
           
         } else {
-          this.canvasService.foregroundCTX.clearRect(0, 0, this.gridService.activeGrid.width * 32, this.gridService.activeGrid.height * 32);
-          this.canvasService.backgroundCTX.clearRect(0, 0, this.gridService.activeGrid.width * 32, this.gridService.activeGrid.height * 32);
+          GSM.Canvas.foregroundCTX.clearRect(0, 0, GSM.Map.activeGrid.width * 32, GSM.Map.activeGrid.height * 32);
+          GSM.Canvas.backgroundCTX.clearRect(0, 0, GSM.Map.activeGrid.width * 32, GSM.Map.activeGrid.height * 32);
           for (let y = cellTopLeft.y; y <= cellBottomLeft.y; y++) {
             for (let x = cellTopLeft?.x; x <= cellTopRight?.x; x++) {
-              const drawableCell = this.gridService.activeGrid.getCell(x, y)
+              const drawableCell = GSM.Map.activeGrid.getCell(x, y)
 
-              this.drawAsset(this.assetService.gameComponents.find(gameComponent => gameComponent.cell.id === drawableCell.id && this.gridService.activeGrid.id === gameComponent.gridId))
+              this.drawAsset(GSM.Assets.gameComponents.find(gameComponent => gameComponent.cell.id === drawableCell.id && GSM.Map.activeGrid.id === gameComponent.gridId))
 
               this.drawOnCell(drawableCell)
               this.drawOnBackgroundCell(drawableCell)
@@ -87,18 +77,18 @@ export class AssetPainter extends LayerPainter {
             }
           }
 
-          if (this.canvasService.portalEntry) {
-            this.canvasService.backgroundCTX.globalAlpha = .5;
-            this.canvasService.portalEntry.forEach(cell => {
-              this.canvasService.backgroundCTX.fillStyle = 'blue';
-              this.canvasService.backgroundCTX.fillRect(
+          if (GSM.Canvas.portalEntry) {
+            GSM.Canvas.backgroundCTX.globalAlpha = .5;
+            GSM.Canvas.portalEntry.forEach(cell => {
+              GSM.Canvas.backgroundCTX.fillStyle = 'blue';
+              GSM.Canvas.backgroundCTX.fillRect(
                 cell.posX,
                 cell.posY,
                 32,
                 32
               )
             })
-            this.canvasService.backgroundCTX.globalAlpha = 1;
+            GSM.Canvas.backgroundCTX.globalAlpha = 1;
 
 
           }
@@ -113,23 +103,23 @@ export class AssetPainter extends LayerPainter {
 
   // Draws the Background and Foreground as a Single Image. In Game Mode the map is not being drawn a square at a time but as an entire image. 
   public drawLargeImageBackground(canvasTopLeftPosX: number, canvasTopLeftPosY: number): void {
-    this.canvasService.backgroundCTX.imageSmoothingEnabled = false
-    this.canvasService.backgroundCTX.drawImage(
-      this.gridService.activeGrid.largeImage.background,
+    GSM.Canvas.backgroundCTX.imageSmoothingEnabled = false
+    GSM.Canvas.backgroundCTX.drawImage(
+      GSM.Map.activeGrid.largeImage.background,
       canvasTopLeftPosX,
       canvasTopLeftPosY,
-      this.canvasService.canvasSizeX * (1 / GameSettings.scale),
-      this.canvasService.canvasSizeY * (1 / GameSettings.scale),
+      GSM.Canvas.canvasSizeX * (1 / GameSettings.scale),
+      GSM.Canvas.canvasSizeY * (1 / GameSettings.scale),
       canvasTopLeftPosX,
       canvasTopLeftPosY,
-      this.canvasService.canvasSizeX * (1 / GameSettings.scale),
-      this.canvasService.canvasSizeY * (1 / GameSettings.scale)
+      GSM.Canvas.canvasSizeX * (1 / GameSettings.scale),
+      GSM.Canvas.canvasSizeY * (1 / GameSettings.scale)
     )
   }
 
   // Draws draws around the asset so asset can stand behind objects in game mode (single image background)
   private drawAroundAsset(asset: MotionAsset): void {
-    if (asset.gridId !== this.gridService.activeGrid.id) { return }
+    if (asset.gridId !== GSM.Map.activeGrid.id) { return }
 
     const x = asset.cell.x
     const y = asset.cell.y
@@ -142,7 +132,7 @@ export class AssetPainter extends LayerPainter {
           continue
         }
 
-        const paintingArea = this.gridService.activeGrid.getCell(x + l, y + i)
+        const paintingArea = GSM.Map.activeGrid.getCell(x + l, y + i)
 
         if (paintingArea.imageTile) {
           this.drawOnCell(paintingArea, true)
@@ -154,31 +144,31 @@ export class AssetPainter extends LayerPainter {
  
   // Draws Items being placed in Edit mode
   public drawEditableObject(): void {
-    if (!this.editorService.selectedAsset || !this.gridService.hoveringCell) { return }
-    this.canvasService.foregroundCTX.drawImage(
-      this.editorService.selectedAsset.spriteSheet,
-      this.editorService.selectedAsset.spriteGridPosX * this.editorService.selectedAsset.multiplier,
-      this.editorService.selectedAsset.spriteGridPosY * this.editorService.selectedAsset.multiplier,
-      this.editorService.selectedAsset.tileWidth * this.editorService.selectedAsset.multiplier,
-      this.editorService.selectedAsset.tileHeight * this.editorService.selectedAsset.multiplier,
-      this.gridService.hoveringCell.posX + this.editorService.selectedAsset.tileOffsetX,
-      this.gridService.hoveringCell.posY + this.editorService.selectedAsset.tileOffsetY,
-      this.editorService.selectedAsset.tileWidth * (this.editorService.selectedAsset.sizeAdjustment || this.editorService.selectedAsset.multiplier),
-      this.editorService.selectedAsset.tileHeight * (this.editorService.selectedAsset.sizeAdjustment || this.editorService.selectedAsset.multiplier)
+    if (!GSM.Editor.selectedAsset || !GSM.Map.hoveringCell) { return }
+    GSM.Canvas.foregroundCTX.drawImage(
+      GSM.Editor.selectedAsset.spriteSheet,
+      GSM.Editor.selectedAsset.spriteGridPosX * GSM.Editor.selectedAsset.multiplier,
+      GSM.Editor.selectedAsset.spriteGridPosY * GSM.Editor.selectedAsset.multiplier,
+      GSM.Editor.selectedAsset.tileWidth * GSM.Editor.selectedAsset.multiplier,
+      GSM.Editor.selectedAsset.tileHeight * GSM.Editor.selectedAsset.multiplier,
+      GSM.Map.hoveringCell.posX + GSM.Editor.selectedAsset.tileOffsetX,
+      GSM.Map.hoveringCell.posY + GSM.Editor.selectedAsset.tileOffsetY,
+      GSM.Editor.selectedAsset.tileWidth * (GSM.Editor.selectedAsset.sizeAdjustment || GSM.Editor.selectedAsset.multiplier),
+      GSM.Editor.selectedAsset.tileHeight * (GSM.Editor.selectedAsset.sizeAdjustment || GSM.Editor.selectedAsset.multiplier)
     )
 
   }
   public drawEditableCharacter(): void {
-    if (!this.characterEditorService.selectedCharacter || !this.gridService.hoveringCell) { return }
-    // console.log(this.gridService.hoveringCell.x, this.gridService.hoveringCell.y)
-    this.canvasService.foregroundCTX.drawImage(
-      this.characterEditorService.selectedCharacter.image,
-      this.characterEditorService.selectedCharacter.frameXPosition[1],
-      this.characterEditorService.selectedCharacter.frameYPosition,
+    if (!GSM.CharacterEditor.selectedCharacter || !GSM.Map.hoveringCell) { return }
+    // console.log(GSM.Map.hoveringCell.x, GSM.Map.hoveringCell.y)
+    GSM.Canvas.foregroundCTX.drawImage(
+      GSM.CharacterEditor.selectedCharacter.image,
+      GSM.CharacterEditor.selectedCharacter.frameXPosition[1],
+      GSM.CharacterEditor.selectedCharacter.frameYPosition,
       25,
       36,
-      this.gridService.hoveringCell.posX - 8,
-      this.gridService.hoveringCell.posY - 58,
+      GSM.Map.hoveringCell.posX - 8,
+      GSM.Map.hoveringCell.posY - 58,
       50,
       80
     )
@@ -186,9 +176,9 @@ export class AssetPainter extends LayerPainter {
 
   // draws the entire grid foreground objects
   public drawObstacles(): void {
-    if (this.canvasService.foregroundCTX && this.assetService.obstaclesDirty && !this.gridService.activeGrid.largeImage.background) {
-      // this.canvasService.foregroundCTX.clearRect(0, 0, this.gridService.width * (36 * GameSettings.scale), this.gridService.height * (36 * GameSettings.scale));
-      this.gridService.activeGrid.gridDisplay.forEach(row => {
+    if (GSM.Canvas.foregroundCTX && GSM.Assets.obstaclesDirty && !GSM.Map.activeGrid.largeImage.background) {
+      // GSM.Canvas.foregroundCTX.clearRect(0, 0, GSM.Map.width * (36 * GameSettings.scale), GSM.Map.height * (36 * GameSettings.scale));
+      GSM.Map.activeGrid.gridDisplay.forEach(row => {
         row.forEach((cell: Cell) => {
 
           if (cell.growableTileId && !cell.growableTileOverride) {
@@ -198,7 +188,7 @@ export class AssetPainter extends LayerPainter {
           this.drawOnCell(cell)
         })
       })
-      this.assetService.obstaclesDirty = false
+      GSM.Assets.obstaclesDirty = false
     }
   }
 
@@ -207,10 +197,10 @@ export class AssetPainter extends LayerPainter {
     if (cell && cell.visible && cell.imageTile) {
 
       if (makeTransparent) {
-        this.canvasService.foregroundCTX.globalAlpha = .5
+        GSM.Canvas.foregroundCTX.globalAlpha = .5
       }
 
-      this.canvasService.foregroundCTX.drawImage(
+      GSM.Canvas.foregroundCTX.drawImage(
         cell.imageTile.spriteSheet,
         cell.imageTile.spriteGridPosX * cell.imageTile.multiplier,
         cell.imageTile.spriteGridPosY * cell.imageTile.multiplier,
@@ -221,7 +211,7 @@ export class AssetPainter extends LayerPainter {
         cell.imageTile.tileWidth * (cell.imageTile.sizeAdjustment || cell.imageTile.multiplier),
         cell.imageTile.tileHeight * (cell.imageTile.sizeAdjustment || cell.imageTile.multiplier)
       )
-      this.canvasService.foregroundCTX.globalAlpha = 1
+      GSM.Canvas.foregroundCTX.globalAlpha = 1
     }
   }
 
@@ -284,9 +274,9 @@ export class AssetPainter extends LayerPainter {
  
   // draws asset
   public drawAsset(gameComponent: MotionAsset): void {
-    this.canvasService.foregroundCTX.imageSmoothingEnabled = false
+    GSM.Canvas.foregroundCTX.imageSmoothingEnabled = false
     if (gameComponent && gameComponent.assetDirty) {
-      this.canvasService.foregroundCTX.drawImage(
+      GSM.Canvas.foregroundCTX.drawImage(
         gameComponent.image,
         gameComponent.frameXPosition[gameComponent.frameCounter],
         gameComponent.frameYPosition,
@@ -298,8 +288,8 @@ export class AssetPainter extends LayerPainter {
         80
       )
       if (gameComponent.selectionIndicator) {
-        this.canvasService.overlayCTX.clearRect(gameComponent.positionX, gameComponent.positionY, 32, 32);
-        this.canvasService.overlayCTX.drawImage(
+        GSM.Canvas.overlayCTX.clearRect(gameComponent.positionX, gameComponent.positionY, 32, 32);
+        GSM.Canvas.overlayCTX.drawImage(
           gameComponent.selectionIndicator.image,
           gameComponent.selectionIndicator.frameXPosition[gameComponent.selectionIndicator.frameXCounter],
           gameComponent.selectionIndicator.frameYPosition[gameComponent.selectionIndicator.frameYCounter],

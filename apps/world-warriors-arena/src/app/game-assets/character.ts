@@ -1,12 +1,6 @@
-import { Injectable } from "@angular/core";
-import { CanvasService } from "../canvas/canvas.service";
-import { DrawService } from "../game-engine/draw-tools/draw.service";
-import { Engine } from "../game-engine/engine";
-import { ShortestPath } from "../game-engine/shortest-path";
-import { GridService } from "../game-engine/grid.service";
+import { GSM } from "../app.service.manager";
 import { MotionAsset } from "../models/assets.model";
 import { Cell } from "../models/cell.model";
-import { AssetsService } from "./assets.service";
 
 export class Character extends MotionAsset {
   public frameCounter = 0
@@ -15,15 +9,9 @@ export class Character extends MotionAsset {
 
   constructor(
     public imageUrl: string,
-    public canvasService: CanvasService,
-    public drawService: DrawService,
     public cell: Cell,
-    public grid: GridService,
-    public shortestPath: ShortestPath,
-    public engine: Engine,
-    public assetService: AssetsService
   ) {
-    super(grid, shortestPath, engine, drawService, canvasService, assetService);
+    super();
     
     // sets the starting cell location
     if(cell) {
@@ -35,7 +23,7 @@ export class Character extends MotionAsset {
     this.image.src = imageUrl
 
     this.image.onload = () => {
-      this.canvasService.foregroundCTX.imageSmoothingEnabled = false
+      GSM.Canvas.foregroundCTX.imageSmoothingEnabled = false
     }
   }
 }

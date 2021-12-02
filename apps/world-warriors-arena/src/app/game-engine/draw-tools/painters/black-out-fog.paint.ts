@@ -1,3 +1,4 @@
+import { GSM } from "../../../app.service.manager";
 import { CanvasService } from "../../../canvas/canvas.service";
 import { AssetsService } from "../../../game-assets/assets.service";
 import { Cell } from "../../../models/cell.model";
@@ -9,13 +10,6 @@ import { Painter } from "./painter";
 export class BlackOutFogPainter extends Painter {
   public movementComplete = false
 
-  constructor(
-    public canvasService: CanvasService,
-    public gridService: GridService,
-    public assetService: AssetsService,
-    public newFogOfWarService: NewFogOfWarService
-  ) { super() }
-
   // Draws Grid Lines  
   public paint(): void {
     this.drawBlackoutFog()
@@ -23,41 +17,41 @@ export class BlackOutFogPainter extends Painter {
   }
 
   private drawBlackoutFog(): void {
-    if (!this.canvasService.blackoutCTX || !this.gridService.activeGrid) { return }
+    if (!GSM.Canvas.blackoutCTX || !GSM.Map.activeGrid) { return }
 
-    this.canvasService.blackoutCTX.clearRect(0, 0, this.gridService.activeGrid.width * 32, this.gridService.activeGrid.height * 32);
-    this.canvasService.backgroundCTX.imageSmoothingEnabled = false
+    GSM.Canvas.blackoutCTX.clearRect(0, 0, GSM.Map.activeGrid.width * 32, GSM.Map.activeGrid.height * 32);
+    GSM.Canvas.backgroundCTX.imageSmoothingEnabled = false
 
-    if (this.assetService.selectedGameComponent) {
-      this.canvasService.blackoutCTX.globalCompositeOperation = 'destination-over'
-      this.canvasService.blackoutCTX.globalAlpha = .9;
-      this.canvasService.blackoutCTX.fillRect(
+    if (GSM.Assets.selectedGameComponent) {
+      GSM.Canvas.blackoutCTX.globalCompositeOperation = 'destination-over'
+      GSM.Canvas.blackoutCTX.globalAlpha = .9;
+      GSM.Canvas.blackoutCTX.fillRect(
         0,
         0,
-        this.gridService.activeGrid.width * 32,
-        this.gridService.activeGrid.height * 32
+        GSM.Map.activeGrid.width * 32,
+        GSM.Map.activeGrid.height * 32
       )
     }
 
   }
 
   public revealBlackoutFog(): void {
-    if (this.assetService.selectedGameComponent) {
-      const fogOfWarRim = this.newFogOfWarService.fogOfWarRimPoints[this.assetService.selectedGameComponent.cell.id].map(a => a)
+    if (GSM.Assets.selectedGameComponent) {
+      const fogOfWarRim = GSM.FogOfWar.fogOfWarRimPoints[GSM.Assets.selectedGameComponent.cell.id].map(a => a)
 
-      this.canvasService.blackoutCTX.globalCompositeOperation = 'destination-out'
-      this.canvasService.blackoutCTX.fillStyle = "black"
+      GSM.Canvas.blackoutCTX.globalCompositeOperation = 'destination-out'
+      GSM.Canvas.blackoutCTX.fillStyle = "black"
 
       if(!DebugSettings.fogDebug && DebugSettings.fogFeather) {
-        this.canvasService.blackoutCTX.filter = "blur(35px)";  // "feather"
+        GSM.Canvas.blackoutCTX.filter = "blur(35px)";  // "feather"
       }
 
-      if (this.newFogOfWarService.blackOutRimPoints.length === 0) {
-        this.newFogOfWarService.blackOutRimPoints = fogOfWarRim
+      if (GSM.FogOfWar.blackOutRimPoints.length === 0) {
+        GSM.FogOfWar.blackOutRimPoints = fogOfWarRim
       }
-      let blackOutRim = this.newFogOfWarService.blackOutRimPoints
+      let blackOutRim = GSM.FogOfWar.blackOutRimPoints
 
-      const fogNonObstructedCells = this.newFogOfWarService.nonObstructedCells[this.assetService.selectedGameComponent.cell.id]
+      const fogNonObstructedCells = GSM.FogOfWar.nonObstructedCells[GSM.Assets.selectedGameComponent.cell.id]
 
       if (this.movementComplete) {
         const tempBlackOutRim: Cell[] = []
@@ -131,23 +125,23 @@ export class BlackOutFogPainter extends Painter {
           tempBlackOutRim.push(cell)
         })
 
-        this.newFogOfWarService.blackOutRimPoints = tempBlackOutRim
+        GSM.FogOfWar.blackOutRimPoints = tempBlackOutRim
       }
       this.movementComplete = false
 
-      this.newFogOfWarService.visitedCells = new Set([...this.newFogOfWarService.visitedCells, ...fogNonObstructedCells])
+      GSM.FogOfWar.visitedCells = new Set([...GSM.FogOfWar.visitedCells, ...fogNonObstructedCells])
 
       if (DebugSettings.fogDebug) {
-        this.newFogOfWarService.visitedCells.forEach(cell => {
+        GSM.FogOfWar.visitedCells.forEach(cell => {
           if (cell) {
-            this.canvasService.blackoutCTX.beginPath();
-            this.canvasService.blackoutCTX.fillRect(cell.x * 32, cell.y * 32, 5, 5)
-            this.canvasService.blackoutCTX.stroke();
+            GSM.Canvas.blackoutCTX.beginPath();
+            GSM.Canvas.blackoutCTX.fillRect(cell.x * 32, cell.y * 32, 5, 5)
+            GSM.Canvas.blackoutCTX.stroke();
           }
         })
       }
       
-      // this.clearOutVisibleArea(this.newFogOfWarService.blackOutRimPoints, this.canvasService.blackoutCTX)
+      // this.clearOutVisibleArea(GSM.FogOfWar.blackOutRimPoints, GSM.Canvas.blackoutCTX)
     }
   }
 

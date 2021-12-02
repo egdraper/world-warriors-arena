@@ -1,20 +1,9 @@
-import { CanvasService } from "../../canvas/canvas.service";
-import { GridService } from "../../game-engine/grid.service";
-import { ShortestPath } from "../../game-engine/shortest-path";
-import { Cell, GridMapCell, DefaultMapSettings } from "../../models/cell.model";
+import { GSM } from "../../app.service.manager";
+import { Cell, DefaultMapSettings, GridMapCell } from "../../models/cell.model";
 import { GameSettings } from "../../models/game-settings";
-import { EditorService } from "../editor-palette/editor.service";
 import { BaseMapGenerator } from "./base-map-generator";
 
 export class GridMapGenerator extends BaseMapGenerator {
-  constructor(
-    public gridService: GridService,
-    public shortestPath: ShortestPath,
-    public editorService: EditorService,
-  ) {
-    super(editorService,shortestPath, gridService)
-   }
-
   public generateMap(gridMapCell: GridMapCell, defaultMapSettings: DefaultMapSettings) {
     this.createNonObstructedPaths(gridMapCell, defaultMapSettings)
   }
@@ -23,7 +12,7 @@ export class GridMapGenerator extends BaseMapGenerator {
     let clearing: Cell[] = []
     gridMapCell.markers.forEach(marker => {
       try {
-        clearing.push(this.gridService.activeGrid.getGridCellByCoordinate(marker.x * (gridMapCell.relationX * GameSettings.scale), marker.y * (gridMapCell.relationY * GameSettings.scale )))
+        clearing.push(GSM.Map.activeGrid.getGridCellByCoordinate(marker.x * (gridMapCell.relationX * GameSettings.scale), marker.y * (gridMapCell.relationY * GameSettings.scale)))
       } catch { }
     })
     clearing = [...new Set(clearing)]
@@ -49,7 +38,7 @@ export class GridMapGenerator extends BaseMapGenerator {
   }
 
   public addFullTerrain(defaultMapSettings: DefaultMapSettings): void {
-    this.gridService.activeGrid.gridDisplay.forEach(row => {
+    GSM.Map.activeGrid.gridDisplay.forEach(row => {
       row.forEach(cell => {
         cell.growableTileId = defaultMapSettings.terrainTypeId
         cell.obstacle = true
@@ -75,5 +64,5 @@ export class GridMapGenerator extends BaseMapGenerator {
         }
       }
     })
-  } 
+  }
 }

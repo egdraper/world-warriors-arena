@@ -1,3 +1,4 @@
+import { GSM } from "../../../app.service.manager";
 import { CanvasService } from "../../../canvas/canvas.service";
 import { GameMarkersService } from "../../../game-assets/game-markers";
 import { Engine } from "../../engine";
@@ -7,9 +8,6 @@ import { Painter } from "./painter";
 
 export class GameMarkerPainter extends Painter {
   constructor(
-    public canvasService: CanvasService,
-    public gridService: GridService,
-    public gameMarkers: GameMarkersService,
   ) {
     super()
     Engine.onFire.subscribe(this.paint.bind(this))
@@ -17,11 +15,11 @@ export class GameMarkerPainter extends Painter {
 
   // Draws Grid Lines  
   public paint(): void {
-    if (this.gridService.activeGrid) {
-      this.gameMarkers.markerIcons.forEach(icon => {
-        if(this.gridService.activeGrid.id !== icon.mapId) { return }
+    if (GSM.Map.activeGrid) {
+      GSM.GameMarker.markerIcons.forEach(icon => {
+        if(GSM.Map.activeGrid.id !== icon.mapId) { return }
        
-        this.canvasService.foregroundCTX.drawImage(
+        GSM.Canvas.foregroundCTX.drawImage(
           icon.image,
           icon.hovering ? icon.hoverSpritePosX : icon.spritePosX,
           icon.hovering ? icon.hoverSpritePosY : icon.spritePosY,

@@ -1,22 +1,9 @@
-import { Injectable } from "@angular/core";
-import { CanvasService } from "../../../canvas/canvas.service";
-import { EditorService } from "../../../editor/editor-palette/editor.service";
-import { AssetsService } from "../../../game-assets/assets.service";
+import { GSM } from "../../../app.service.manager";
 import { Cell } from "../../../models/cell.model";
 import { DebugSettings } from "../../../models/game-settings";
-import { Engine } from "../../engine";
-import { GridService } from "../../grid.service";
-import { NewFogOfWarService } from "../../new-visibility.service";
 import { Painter } from "./painter";
 
 export class FogOfWarPainter extends Painter {
-  constructor(
-    public canvasService: CanvasService,
-    public gridService: GridService,
-    public assetService: AssetsService,
-    public newFogOfWarService: NewFogOfWarService
-  ) { super() }
-
   // Draws Grid Lines  
   public paint(): void {
     this.drawFog()
@@ -24,32 +11,32 @@ export class FogOfWarPainter extends Painter {
   }
 
   private drawFog(): void {
-    if (!this.canvasService.fogCTX || !this.gridService.activeGrid) { return }
-    this.canvasService.fogCTX.imageSmoothingEnabled = false
-    this.canvasService.fogCTX.filter = "none";
-    this.canvasService.fogCTX.globalCompositeOperation = 'destination-over'
-    this.canvasService.fogCTX.clearRect(0, 0, this.gridService.activeGrid.width * 32, this.gridService.activeGrid.height * 32);
-    this.canvasService.fogCTX.fillStyle = 'black';
-    this.canvasService.fogCTX.globalAlpha = .8;
-    this.canvasService.fogCTX.fillRect(
+    if (!GSM.Canvas.fogCTX || !GSM.Map.activeGrid) { return }
+    GSM.Canvas.fogCTX.imageSmoothingEnabled = false
+    GSM.Canvas.fogCTX.filter = "none";
+    GSM.Canvas.fogCTX.globalCompositeOperation = 'destination-over'
+    GSM.Canvas.fogCTX.clearRect(0, 0, GSM.Map.activeGrid.width * 32, GSM.Map.activeGrid.height * 32);
+    GSM.Canvas.fogCTX.fillStyle = 'black';
+    GSM.Canvas.fogCTX.globalAlpha = .8;
+    GSM.Canvas.fogCTX.fillRect(
       0,
       0,
-      this.gridService.activeGrid.width * 32,
-      this.gridService.activeGrid.height * 32
+      GSM.Map.activeGrid.width * 32,
+      GSM.Map.activeGrid.height * 32
     )
   }
 
   private revealFog(): void {
-    if (this.assetService.selectedGameComponent) {
-      const centerCells = this.newFogOfWarService.fogOfWarRimPoints[this.assetService.selectedGameComponent.cell.id]
-      this.canvasService.fogCTX.globalCompositeOperation = 'destination-out'
+    if (GSM.Assets.selectedGameComponent) {
+      const centerCells = GSM.FogOfWar.fogOfWarRimPoints[GSM.Assets.selectedGameComponent.cell.id]
+      GSM.Canvas.fogCTX.globalCompositeOperation = 'destination-out'
       
       if(!DebugSettings.fogDebug && DebugSettings.fogFeather) {
-        this.canvasService.fogCTX.filter = "blur(35px)";  // "feather"
+        GSM.Canvas.fogCTX.filter = "blur(35px)";  // "feather"
       }
 
       console.log(centerCells[0])
-      this.clearOutVisibleArea(centerCells, this.canvasService.fogCTX)
+      this.clearOutVisibleArea(centerCells, GSM.Canvas.fogCTX)
     }
   }
 

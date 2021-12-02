@@ -1,3 +1,4 @@
+import { GSM } from "../app.service.manager"
 import { GridService } from "../game-engine/grid.service"
 import { MapPosition, MarkerIconType } from "./cell.model"
 
@@ -24,14 +25,9 @@ export abstract class MarkerIcon {
 export class PageTransitionMarker extends MarkerIcon {
   public gridConnection: PageTransitionMarker
 
-  constructor(
-    public gridService: GridService) {
-    super()
-  }
-
   public onClick(): void {
     if(this.gridConnection) {
-      this.gridService.activeGrid = this.gridService.maps[this.mapId]
+      GSM.Map.activeGrid = GSM.Map.maps[this.mapId]
     }
 
   }

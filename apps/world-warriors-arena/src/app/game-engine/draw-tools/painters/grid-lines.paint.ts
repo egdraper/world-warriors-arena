@@ -1,37 +1,27 @@
-import { Injectable } from "@angular/core";
-import { CanvasService } from "../../../canvas/canvas.service";
-import { EditorService } from "../../../editor/editor-palette/editor.service";
-import { Engine } from "../../engine";
-import { GridService } from "../../grid.service";
+import { GSM } from "../../../app.service.manager";
 import { Painter } from "./painter";
 
 export class GridLinePainter extends Painter {
-  constructor(
-    public canvasService: CanvasService,
-    public gridService: GridService,
-    public editorService: EditorService,
-  ) { super() }
-
   // Draws Grid Lines  
   public paint(): void {
-    if (this.editorService.backgroundDirty) {
-      for (let h = 0; h <= this.gridService.activeGrid.height; h++) {
-        for (let w = 0; w <= this.gridService.activeGrid.width; w++) {
+    if (GSM.Editor.backgroundDirty) {
+      for (let h = 0; h <= GSM.Map.activeGrid.height; h++) {
+        for (let w = 0; w <= GSM.Map.activeGrid.width; w++) {
           // Horizontal lines
-          this.canvasService.backgroundCTX.beginPath()
-          this.canvasService.backgroundCTX.moveTo(w * 32, h * 32)
-          this.canvasService.backgroundCTX.lineTo(w * 32, (h * 32) + 32)
-          this.canvasService.backgroundCTX.lineWidth = 1;
-          this.canvasService.backgroundCTX.strokeStyle = "rgba(255, 255 ,255,.5)"
-          this.canvasService.backgroundCTX.stroke()
+          GSM.Canvas.backgroundCTX.beginPath()
+          GSM.Canvas.backgroundCTX.moveTo(w * 32, h * 32)
+          GSM.Canvas.backgroundCTX.lineTo(w * 32, (h * 32) + 32)
+          GSM.Canvas.backgroundCTX.lineWidth = 1;
+          GSM.Canvas.backgroundCTX.strokeStyle = "rgba(255, 255 ,255,.5)"
+          GSM.Canvas.backgroundCTX.stroke()
 
           // Vertical Lines
-          this.canvasService.backgroundCTX.beginPath()
-          this.canvasService.backgroundCTX.moveTo(w * 32, h * 32)
-          this.canvasService.backgroundCTX.lineTo((w * 32) + 32, h * 32)
-          this.canvasService.backgroundCTX.strokeStyle = "rgba(255,255,0,.5)"
-          this.canvasService.backgroundCTX.lineWidth = 1;
-          this.canvasService.backgroundCTX.stroke()
+          GSM.Canvas.backgroundCTX.beginPath()
+          GSM.Canvas.backgroundCTX.moveTo(w * 32, h * 32)
+          GSM.Canvas.backgroundCTX.lineTo((w * 32) + 32, h * 32)
+          GSM.Canvas.backgroundCTX.strokeStyle = "rgba(255,255,0,.5)"
+          GSM.Canvas.backgroundCTX.lineWidth = 1;
+          GSM.Canvas.backgroundCTX.stroke()
         }
       }
     }

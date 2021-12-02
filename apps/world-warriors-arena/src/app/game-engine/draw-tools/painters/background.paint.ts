@@ -1,26 +1,18 @@
-import { CanvasService } from "../../../canvas/canvas.service";
-import { EditorService } from "../../../editor/editor-palette/editor.service";
+import { GSM } from "../../../app.service.manager";
 import { growableItems } from "../../../game-assets/tiles.db.ts/tile-assets.db";
 import { Cell } from "../../../models/cell.model";
-import { GridService } from "../../grid.service";
 import { LayerPainter } from "./painter";
 
 export class BackgroundPainter extends LayerPainter {
-  constructor(
-    public canvasService: CanvasService,
-    public gridService: GridService,
-    public editorService: EditorService,
-  ) { super(canvasService) }
-
   // Draws Grid Lines  
   public paint(): void {
-    if (!this.gridService.activeGrid) { return }
-    if (!this.gridService.activeGrid.gridLoaded) { return }
+    if (!GSM.Map.activeGrid) { return }
+    if (!GSM.Map.activeGrid.gridLoaded) { return }
 
-    if (this.editorService.backgroundDirty) {
-      for (let h = 0; h < this.gridService.activeGrid.height; h++) {
-        for (let w = 0; w < this.gridService.activeGrid.width; w++) {
-          const cell = this.gridService.activeGrid.grid[`x${w}:y${h}`]
+    if (GSM.Editor.backgroundDirty) {
+      for (let h = 0; h < GSM.Map.activeGrid.height; h++) {
+        for (let w = 0; w < GSM.Map.activeGrid.width; w++) {
+          const cell = GSM.Map.activeGrid.grid[`x${w}:y${h}`]
 
           try {
             if (cell.backgroundGrowableTileId) {
@@ -33,14 +25,14 @@ export class BackgroundPainter extends LayerPainter {
         }
       }
 
-      this.editorService.backgroundDirty = false
+      GSM.Editor.backgroundDirty = false
     }    
   }
 
    
 
   private calculateGrowableBackgroundTerrain(selectedCell: Cell): void {
-    if (!this.editorService.backgroundDirty) { return }
+    if (!GSM.Editor.backgroundDirty) { return }
 
     const growableItem = growableItems.find(item => {
       return selectedCell.backgroundGrowableTileId.includes(item.id)

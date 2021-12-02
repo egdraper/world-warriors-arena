@@ -1,36 +1,30 @@
+import { GSM } from "../../app.service.manager"
 import { GridService } from "../../game-engine/grid.service"
 import { ShortestPath } from "../../game-engine/shortest-path"
 import { Cell, DefaultMapSettings } from "../../models/cell.model"
 import { EditorService } from "../editor-palette/editor.service"
 
 export class BaseMapGenerator {
-  constructor(
-    public editorService: EditorService,
-    public shortestPath: ShortestPath,
-    public gridService: GridService
-  ) { 
-  }
-
   public autoFillBackgroundTerrain(collectionId: string) {
-    for (let h = 0; h < this.gridService.activeGrid.height; h++) {
-      for (let w = 0; w < this.gridService.activeGrid.width; w++) {
+    for (let h = 0; h < GSM.Map.activeGrid.height; h++) {
+      for (let w = 0; w < GSM.Map.activeGrid.width; w++) {
         let spriteSheet
         let xPos = 0
         let yPos = 0
-        const cell = this.gridService.activeGrid.grid[`x${w}:y${h}`]
+        const cell = GSM.Map.activeGrid.grid[`x${w}:y${h}`]
 
         //Randomly generates random texture
         let weight = 0
-        this.editorService.findBackgroundCollection(collectionId).forEach(tile => {
+        GSM.Editor.findBackgroundCollection(collectionId).forEach(tile => {
           tile.lowWeight = weight
           weight += tile.rarity
           tile.highWeight = weight
         })
 
         const rand = Math.floor(Math.random() * weight);
-        spriteSheet = this.editorService.findBackgroundCollection(collectionId)[0].spriteSheet
+        spriteSheet = GSM.Editor.findBackgroundCollection(collectionId)[0].spriteSheet
 
-        this.editorService.findBackgroundCollection(collectionId).forEach(tile => {
+        GSM.Editor.findBackgroundCollection(collectionId).forEach(tile => {
           if (rand < tile.highWeight && rand >= tile.lowWeight) {
             xPos = Math.floor(Math.random() * tile.spriteGridPosX.length)
             yPos = Math.floor(Math.random() * tile.spriteGridPosY.length)
@@ -74,14 +68,14 @@ export class BaseMapGenerator {
   public createRandomizedBoarder(defaultMapSettings: DefaultMapSettings): void {
     const randomConsistency = 4
 
-    this.gridService.activeGrid.gridDisplay.forEach(row => {
+    GSM.Map.activeGrid.gridDisplay.forEach(row => {
       row.forEach(cell => {
         // Outer most layer
-        if (cell.x < 2 || cell.x > this.gridService.activeGrid.width - 3) {
+        if (cell.x < 2 || cell.x > GSM.Map.activeGrid.width - 3) {
           cell.obstacle = true
           cell.growableTileId = defaultMapSettings.terrainTypeId
         }
-        if (cell.y < 3 || cell.y > this.gridService.activeGrid.height - 3) {
+        if (cell.y < 3 || cell.y > GSM.Map.activeGrid.height - 3) {
           cell.obstacle = true
           cell.growableTileId = defaultMapSettings.terrainTypeId
         }
@@ -106,28 +100,28 @@ export class BaseMapGenerator {
       })
     })
 
-    this.gridService.activeGrid.gridDisplay.forEach(row => {
+    GSM.Map.activeGrid.gridDisplay.forEach(row => {
       row.forEach(cell => {
         // right side 2nd layers
-        if (cell.x === this.gridService.activeGrid.width - 3) {
+        if (cell.x === GSM.Map.activeGrid.width - 3) {
           this.setEdgeLayerRandomization(cell, 2, defaultMapSettings)
         }
 
         // bottom side 2nd layer
-        if (cell.y === this.gridService.activeGrid.height - 3) {
+        if (cell.y === GSM.Map.activeGrid.height - 3) {
           this.setEdgeLayerRandomization(cell, 1, defaultMapSettings)
         }
       })
     })
 
-    this.gridService.activeGrid.gridDisplay.forEach(row => {
+    GSM.Map.activeGrid.gridDisplay.forEach(row => {
       row.forEach(cell => {
         // right side 3rd layer
-        if (cell.x === this.gridService.activeGrid.width - 4 && cell.neighbors[1].obstacle && cell.neighbors[2] && cell.neighbors[2].neighbors[1].obstacle) {
+        if (cell.x === GSM.Map.activeGrid.width - 4 && cell.neighbors[1].obstacle && cell.neighbors[2] && cell.neighbors[2].neighbors[1].obstacle) {
           this.setEdgeLayerRandomization(cell, 2, defaultMapSettings)
         }
         // bottom side 3rd layer
-        if (cell.y === this.gridService.activeGrid.height - 4 && cell.neighbors[2].obstacle && cell.neighbors[1] && cell.neighbors[1].neighbors[2].obstacle) {
+        if (cell.y === GSM.Map.activeGrid.height - 4 && cell.neighbors[2].obstacle && cell.neighbors[1] && cell.neighbors[1].neighbors[2].obstacle) {
           this.setEdgeLayerRandomization(cell, 1, defaultMapSettings)
         }
       })
@@ -148,7 +142,7 @@ export class BaseMapGenerator {
   }
 
   public randomlyPlaceInvisibleObstacles(): void {
-    this.gridService.activeGrid.gridDisplay.forEach(row => {
+    GSM.Map.activeGrid.gridDisplay.forEach(row => {
       row.forEach(cell => {
         cell.obstacle = !!!Math.floor(Math.random() * 4)
       })
@@ -157,11 +151,11 @@ export class BaseMapGenerator {
 
 
   public addRandomTerrain(defaultMapSettings: DefaultMapSettings, weight: number = 3): void {
-    for (let i = 0; i < this.gridService.activeGrid.width; i++) {
-      const randomY = Math.floor(Math.random() * this.gridService.activeGrid.height)
-      const randomX = Math.floor(Math.random() * this.gridService.activeGrid.height)
+    for (let i = 0; i < GSM.Map.activeGrid.width; i++) {
+      const randomY = Math.floor(Math.random() * GSM.Map.activeGrid.height)
+      const randomX = Math.floor(Math.random() * GSM.Map.activeGrid.height)
 
-      const startCell = this.gridService.activeGrid.getCell(randomX, randomY)
+      const startCell = GSM.Map.activeGrid.getCell(randomX, randomY)
       startCell.obstacle = true
       startCell.growableTileId = defaultMapSettings.terrainTypeId
 
@@ -177,7 +171,7 @@ export class BaseMapGenerator {
   }
 
   public terrainCleanup(): void {
-    this.gridService.activeGrid.gridDisplay.forEach(row => {
+    GSM.Map.activeGrid.gridDisplay.forEach(row => {
       row.forEach(cell => {
         if(cell.growableTileId) {          
           if((cell.neighbors[1] && !cell.neighbors[1].growableTileId) && (cell.neighbors[3] && !cell.neighbors[3].growableTileId)) {
@@ -231,7 +225,7 @@ export class BaseMapGenerator {
   }
   
   public clearObstacles(): void {
-    this.gridService.activeGrid.gridDisplay.forEach(row => {
+    GSM.Map.activeGrid.gridDisplay.forEach(row => {
       row.forEach(cell => {
         cell.obstacle = false
       })

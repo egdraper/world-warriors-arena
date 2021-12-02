@@ -1,11 +1,6 @@
 import { Component, HostListener, OnInit } from '@angular/core';
-import { CanvasService } from '../../canvas/canvas.service';
-import { AssetsService } from '../../game-assets/assets.service';
-import { DrawService } from '../../game-engine/draw-tools/draw.service';
-import { GridService } from '../../game-engine/grid.service';
-import { ShortestPath } from '../../game-engine/shortest-path';
-import { GridMapCell, GRID_CELL_MULTIPLIER, DefaultMapSettings } from '../../models/cell.model';
-import { EditorService } from '../editor-palette/editor.service';
+import { GSM } from '../../app.service.manager';
+import { DefaultMapSettings, GridMapCell, GRID_CELL_MULTIPLIER } from '../../models/cell.model';
 import { GridMapGenerator } from '../map-generator/grid-map-generator';
 
 @Component({
@@ -22,15 +17,6 @@ export class GlobalMapComponent implements OnInit {
 
   private controlPressed = false
   private mouseIsDown = false
-
-  constructor( 
-    public gridService: GridService,
-    public editorService: EditorService,
-    public drawService: DrawService,
-    public canvasService: CanvasService,
-    public assetService: AssetsService,
-    public shortestPath: ShortestPath
-  ) { }
 
   public ngOnInit(): void {
     for (let i = 0; i < this.maxHeight; i++) {
@@ -60,8 +46,8 @@ export class GlobalMapComponent implements OnInit {
   public onGridCellClick(gridCell: GridMapCell, mouseEvent: MouseEvent, gridCanvas: HTMLCanvasElement): void {
     gridCell.context = gridCanvas.getContext('2d');
     gridCell.gridCanvas = gridCanvas
-    gridCell.relationX = (this.gridService.activeGrid.width * GRID_CELL_MULTIPLIER) / 200
-    gridCell.relationY = (this.gridService.activeGrid.height * GRID_CELL_MULTIPLIER) / 200
+    gridCell.relationX = (GSM.Map.activeGrid.width * GRID_CELL_MULTIPLIER) / 200
+    gridCell.relationY = (GSM.Map.activeGrid.height * GRID_CELL_MULTIPLIER) / 200
     
     gridCanvas.height = 200
     gridCanvas.width = 200
@@ -110,16 +96,16 @@ export class GlobalMapComponent implements OnInit {
           inverted: false,
           pathTypeId: "DrawableDirtRoad",
         }
-    this.gridService.createNewGrid(60, 60, mapDetails)
-    this.canvasService.setupCanvases()
+    GSM.Map.createNewGrid(60, 60, mapDetails)
+    GSM.Canvas.setupCanvases()
 
-    this.drawService.backgroundPainter.paint()
-    const generator = new GridMapGenerator(this.gridService, this.shortestPath, this.editorService)
+    GSM.Draw.backgroundPainter.paint()
+    const generator = new GridMapGenerator()
     generator.autoFillBackgroundTerrain("caveDirt")
     
     generator.generateMap(this.gridOfGrids[0][0], mapDetails)
     
-    this.editorService.backgroundDirty = true
-    this.assetService.obstaclesDirty = true
+    GSM.Editor.backgroundDirty = true
+    GSM.Assets.obstaclesDirty = true
   }
 }

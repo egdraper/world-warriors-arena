@@ -12,7 +12,6 @@ export class AssetsService {
 
   public obstaclesDirty: boolean = false
   public placementChanged: boolean = true
-  constructor() { }
 
   public removeGameComponent(): void {
     this.gameComponents = this.gameComponents.filter(asset => asset != this.selectedGameComponent)

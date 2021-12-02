@@ -1,23 +1,12 @@
-import { ShortestPath } from "../../game-engine/shortest-path";
-import { GridService, GameMap } from "../../game-engine/grid.service";
+import { GSM } from "../../app.service.manager";
+import { GameMap } from "../../game-engine/grid.service";
 import { Cell, DefaultMapSettings, MapPosition, MarkerIconType } from "../../models/cell.model";
-import { EditorService } from "../editor-palette/editor.service";
-import { BaseMapGenerator } from "./base-map-generator";
-import { GameMarkersService } from "../../game-assets/game-markers";
 import { PageTransitionMarker } from "../../models/markers-icons";
+import { BaseMapGenerator } from "./base-map-generator";
 
 export class RandomMapGenerator extends BaseMapGenerator {
-  constructor(
-    public editorService: EditorService,
-    public shortestPath: ShortestPath,
-    public gridService: GridService,
-    public gameMarkerService: GameMarkersService
-  ) {
-    super(editorService, shortestPath, gridService)
-  }
-
   public generateMap(width: number, height: number, mapDetails: DefaultMapSettings): GameMap {
-    const map = this.gridService.createNewGrid(width, height, mapDetails)
+    const map = GSM.Map.createNewGrid(width, height, mapDetails)
     const randomLeft = Math.floor(Math.random() * (height - 3) + 3)
     const randomRight = Math.floor(Math.random() * (height - 3) + 3)
 
@@ -52,7 +41,7 @@ export class RandomMapGenerator extends BaseMapGenerator {
       try {
         this.clearObstacles()
         this.randomlyPlaceInvisibleObstacles()
-        path = this.shortestPath.find(this.gridService.activeGrid.grid[`x0:y${randomLeft}`], this.gridService.activeGrid.grid[`x${this.gridService.activeGrid.width - 2}:y${randomRight}`], [])
+        path = GSM.ShortestPath.find(GSM.Map.activeGrid.grid[`x0:y${randomLeft}`], GSM.Map.activeGrid.grid[`x${GSM.Map.activeGrid.width - 2}:y${randomRight}`], [])
 
       } catch { }
     }
@@ -75,7 +64,7 @@ export class RandomMapGenerator extends BaseMapGenerator {
     // clears all obstacles from path
     this.clearOpening(path)
     this.terrainCleanup()
-    this.editorService.backgroundDirty = true
+    GSM.Editor.backgroundDirty = true
   }
 
   public setEdgeLayerRandomization(cell: Cell, neighborIndex: number, defaultMapSettings: DefaultMapSettings): void {
@@ -92,7 +81,7 @@ export class RandomMapGenerator extends BaseMapGenerator {
   }
 
   public randomlyPlaceInvisibleObstacles(): void {
-    this.gridService.activeGrid.gridDisplay.forEach(row => {
+    GSM.Map.activeGrid.gridDisplay.forEach(row => {
       row.forEach(cell => {
         cell.obstacle = !!!Math.floor(Math.random() * 4)
       })
@@ -104,7 +93,7 @@ export class RandomMapGenerator extends BaseMapGenerator {
     tokenImage.src = "assets/images/compasbig.png"
 
     // convert to DB
-    const pageMarkerLeft = new PageTransitionMarker(this.gridService)
+    const pageMarkerLeft = new PageTransitionMarker()
     pageMarkerLeft.id = Math.floor(Math.random() * 100000).toString()
     pageMarkerLeft.type = MarkerIconType.mapTransition
     pageMarkerLeft.position = MapPosition.left
@@ -119,13 +108,13 @@ export class RandomMapGenerator extends BaseMapGenerator {
     pageMarkerLeft.hoverSpritePosY = 0
     pageMarkerLeft.image = tokenImage
     pageMarkerLeft.gridConnection = rightTransitionMarker || null
-    this.gameMarkerService.addMarkerIcon(pageMarkerLeft)
+    GSM.GameMarker.addMarkerIcon(pageMarkerLeft)
 
-    const pageMarkerRight = new PageTransitionMarker(this.gridService)
+    const pageMarkerRight = new PageTransitionMarker()
     pageMarkerRight.id = Math.floor(Math.random() * 100000).toString()
     pageMarkerRight.type = MarkerIconType.mapTransition
     pageMarkerRight.position = MapPosition.right
-    pageMarkerRight.displayPosX = (this.gridService.activeGrid.width * 32) - 80
+    pageMarkerRight.displayPosX = (GSM.Map.activeGrid.width * 32) - 80
     pageMarkerRight.displayPosY = entranceRightPos * 32
     pageMarkerRight.height = 64
     pageMarkerRight.width = 64
@@ -136,6 +125,6 @@ export class RandomMapGenerator extends BaseMapGenerator {
     pageMarkerRight.hoverSpritePosY = 0
     pageMarkerRight.image = tokenImage
     pageMarkerRight.gridConnection = leftTransitionMarker || null
-    this.gameMarkerService.addMarkerIcon(pageMarkerRight)
+    GSM.GameMarker.addMarkerIcon(pageMarkerRight)
   }
 }

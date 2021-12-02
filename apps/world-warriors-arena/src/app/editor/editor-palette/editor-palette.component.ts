@@ -1,17 +1,10 @@
 import { Component, OnInit } from '@angular/core';
-import { CanvasService } from '../../canvas/canvas.service';
-import { AssetsService } from '../../game-assets/assets.service';
-import { GameMarkersService } from '../../game-assets/game-markers';
+import { GSM } from '../../app.service.manager';
 import { growableItems } from '../../game-assets/tiles.db.ts/tile-assets.db';
-import { DrawService } from '../../game-engine/draw-tools/draw.service';
-import { GridService } from '../../game-engine/grid.service';
-import { NewFogOfWarService } from '../../game-engine/new-visibility.service';
-import { ShortestPath } from '../../game-engine/shortest-path';
 import { DefaultMapSettings, MarkerIconType, SpriteTile } from '../../models/cell.model';
 import { GameSettings } from '../../models/game-settings';
 import { MarkerIcon, PageTransitionMarker } from '../../models/markers-icons';
 import { RandomMapGenerator } from '../map-generator/random-map-generator';
-import { EditorService } from './editor.service';
 
 @Component({
   selector: 'world-warriors-arena-editor-palette',
@@ -23,47 +16,40 @@ export class EditorPaletteComponent implements OnInit {
   public imageArray: any[] = []
   public currentImageSrc: string = ""
   public lockState = "Locked"
+  public mapService = GSM.Map
+  public canvasService = GSM.Canvas
 
-  constructor(
-    public assetService: AssetsService,
-    public canvasService: CanvasService,
-    private editorService: EditorService,
-    private shortestPath: ShortestPath,
-    public grid: GridService,
-    private drawService: DrawService,
-    private visibilityService: NewFogOfWarService,
-    private gameMarkerService: GameMarkersService
-  ) {
-    this.gameMarkerService.iconClick.subscribe(this.onGameMarkerClicked.bind(this))
-
+  constructor() {
+    GSM.GameMarker.iconClick.subscribe(this.onGameMarkerClicked.bind(this))
   }
 
   ngOnInit(): void {
-    this.imageArray = this.editorService.findObjectCollection("trees")
+
+    this.imageArray = GSM.Editor.findObjectCollection("trees")
   }
 
   public onSelectionChange(change: any): void {
-    this.editorService.selectedGrowableAsset = growableItems.find(item => item.name === change.value).id
+    GSM.Editor.selectedGrowableAsset = growableItems.find(item => item.name === change.value).id
   }
 
   public onTilesChange(change: any): void {
-    this.imageArray = this.editorService.findObjectCollection(change.value)
+    this.imageArray = GSM.Editor.findObjectCollection(change.value)
   }
 
   public tileClick(tile: SpriteTile): void {
-    this.editorService.selectedAsset = tile
+    GSM.Editor.selectedAsset = tile
   }
 
   public switchGrid(gridId: string): void {
-    this.grid.switchGrid(gridId)
+    GSM.Map.switchGrid(gridId)
   }
 
   public changeLockState(): void {
     this.lockState = this.lockState === "Locked" ? "UnLocked" : "Locked"
 
     if (this.lockState === "Locked") {
-      if (this.assetService.selectedGameComponent) {
-        this.canvasService.centerOverAsset(this.assetService.selectedGameComponent, this.grid.activeGrid)
+      if (GSM.Assets.selectedGameComponent) {
+        GSM.Canvas.centerOverAsset(GSM.Assets.selectedGameComponent, GSM.Map.activeGrid)
       }
       GameSettings.gm = false
     } else {
@@ -73,20 +59,20 @@ export class EditorPaletteComponent implements OnInit {
   }
 
   public baseClicked(): void {
-    this.editorService.layerID++
-    // this.editorService.baseOnly = true
+    GSM.Editor.layerID++
+    // GSM.Editor.baseOnly = true
   }
 
   public changeScale(scale: any): void {
-    const tempViewPortX = this.canvasService.canvasViewPortOffsetX
-    const tempViewPortY = this.canvasService.canvasViewPortOffsetY
+    const tempViewPortX = GSM.Canvas.canvasViewPortOffsetX
+    const tempViewPortY = GSM.Canvas.canvasViewPortOffsetY
 
-    this.canvasService.resetViewport()
+    GSM.Canvas.resetViewport()
     GameSettings.scale = Number(scale.value)
 
-    this.canvasService.setupCanvases()
-    this.editorService.backgroundDirty = true
-    this.assetService.obstaclesDirty = true
+    GSM.Canvas.setupCanvases()
+    GSM.Editor.backgroundDirty = true
+    GSM.Assets.obstaclesDirty = true
 
     let perfectHeight = window.innerHeight
 
@@ -94,14 +80,14 @@ export class EditorPaletteComponent implements OnInit {
       perfectHeight--
     }
 
-    this.canvasService.maxCellCountX = perfectHeight / (32 * GameSettings.scale)
-    // this.canvasService.adustViewPort(tempViewPortX, tempViewPortY)
+    GSM.Canvas.maxCellCountX = perfectHeight / (32 * GameSettings.scale)
+    // GSM.Canvas.adustViewPort(tempViewPortX, tempViewPortY)
 
 
   }
 
   public invertedClicked(): void {
-    this.grid.activeGrid.defaultSettings.inverted = !this.grid.activeGrid.defaultSettings.inverted
+    GSM.Map.activeGrid.defaultSettings.inverted = !GSM.Map.activeGrid.defaultSettings.inverted
   }
 
   public onGameMarkerClicked(markerIcon: MarkerIcon): void {
@@ -111,7 +97,7 @@ export class EditorPaletteComponent implements OnInit {
   }
 
   public generateRandomAttachmentMap(markerIcon: PageTransitionMarker): void {
-    const mapGenerator = new RandomMapGenerator(this.editorService, this.shortestPath, this.grid, this.gameMarkerService)
+    const mapGenerator = new RandomMapGenerator()
    
     // allow for override
     const mapDetails: DefaultMapSettings = {
@@ -122,24 +108,24 @@ export class EditorPaletteComponent implements OnInit {
       pathTypeId: "DrawableDirtRoad"
     }
    
-    mapGenerator.generateAttachmentMap(this.grid.activeGrid, mapDetails, markerIcon)
-    this.canvasService.setupCanvases()
+    mapGenerator.generateAttachmentMap(GSM.Map.activeGrid, mapDetails, markerIcon)
+    GSM.Canvas.setupCanvases()
 
     // CLEANUP - Rethink the "Dirty" locations, if they should be in drawing service or where they are
-    this.assetService.obstaclesDirty = true
-    this.editorService.backgroundDirty = true
+    GSM.Assets.obstaclesDirty = true
+    GSM.Editor.backgroundDirty = true
 
     // CLEANUP - Needs to be moved into somewhere that re-draws
-    const centerCell = this.grid.activeGrid.getGridCellByCoordinate(Math.floor(this.canvasService.canvasSizeX / 2), Math.floor(this.canvasService.canvasSizeY / 2))
-    this.canvasService.centerPointX = centerCell.posX * GameSettings.scale
-    this.canvasService.centerPointY = centerCell.posY * GameSettings.scale
+    const centerCell = GSM.Map.activeGrid.getGridCellByCoordinate(Math.floor(GSM.Canvas.canvasSizeX / 2), Math.floor(GSM.Canvas.canvasSizeY / 2))
+    GSM.Canvas.centerPointX = centerCell.posX * GameSettings.scale
+    GSM.Canvas.centerPointY = centerCell.posY * GameSettings.scale
 
-    this.drawService.blackOutFogPainter.paint()
-    this.visibilityService.createCellLines()
+    GSM.Draw.blackOutFogPainter.paint()
+    GSM.FogOfWar.createCellLines()
   }
 
   public generateRandomCoreMap(): void {
-    const mapGenerator = new RandomMapGenerator(this.editorService, this.shortestPath, this.grid, this.gameMarkerService)
+    const mapGenerator = new RandomMapGenerator()
 
     const mapDetails: DefaultMapSettings = {
       autoGeneratedMap: true,
@@ -150,18 +136,18 @@ export class EditorPaletteComponent implements OnInit {
     }
 
     mapGenerator.generateMap(45, 45, mapDetails)
-    this.canvasService.setupCanvases()
+    GSM.Canvas.setupCanvases()
 
     // CLEANUP - Rethink the "Dirty" locations, if they should be in drawing service or where they are
-    this.assetService.obstaclesDirty = true
-    this.editorService.backgroundDirty = true
+    GSM.Assets.obstaclesDirty = true
+    GSM.Editor.backgroundDirty = true
 
     // CLEANUP - Needs to be moved into somewhere that re-draws
-    const centerCell = this.grid.activeGrid.getGridCellByCoordinate(Math.floor(this.canvasService.canvasSizeX / 2), Math.floor(this.canvasService.canvasSizeY / 2))
-    this.canvasService.centerPointX = centerCell.posX * GameSettings.scale
-    this.canvasService.centerPointY = centerCell.posY * GameSettings.scale
+    const centerCell = GSM.Map.activeGrid.getGridCellByCoordinate(Math.floor(GSM.Canvas.canvasSizeX / 2), Math.floor(GSM.Canvas.canvasSizeY / 2))
+    GSM.Canvas.centerPointX = centerCell.posX * GameSettings.scale
+    GSM.Canvas.centerPointY = centerCell.posY * GameSettings.scale
 
-    this.drawService.blackOutFogPainter.paint()
-    this.visibilityService.createCellLines()
+    GSM.Draw.blackOutFogPainter.paint()
+    GSM.FogOfWar.createCellLines()
   }
 }

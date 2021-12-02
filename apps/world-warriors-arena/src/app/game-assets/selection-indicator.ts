@@ -1,4 +1,5 @@
 
+import { GSM } from "../app.service.manager";
 import { Engine } from "../game-engine/engine";
 import { ShortLivedAnimation } from "./click-animation";
 
@@ -6,15 +7,14 @@ export class SelectionIndicator extends ShortLivedAnimation {
   public image = new Image()
 
   constructor(
-    public numberOfCycles: number, 
-    public engineService: Engine,
+    public numberOfCycles: number,
     public imgSrc: string,
     public longLiving?: boolean
   ) {
-    super(numberOfCycles, engineService)
+    super(numberOfCycles)
 
     this.image.src = this.imgSrc
-    this.engineService.shortLivedAnimations.push(this)
+    GSM.Engine.shortLivedAnimations.push(this)
     this.longLive = true
   }
 

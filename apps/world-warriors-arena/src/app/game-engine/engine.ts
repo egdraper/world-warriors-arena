@@ -1,5 +1,6 @@
 import { Injectable } from "@angular/core";
 import { interval, Subject } from "rxjs";
+import { GSM } from "../app.service.manager";
 import { CanvasService } from "../canvas/canvas.service";
 
 import { removeFromArray } from "../common/functions";
@@ -18,12 +19,8 @@ export class Engine {
 
   private shortLivedAnimation: ShortLivedAnimationPainter
 
-  constructor(
-    private drawService: DrawService,
-    private canvasService: CanvasService,
-    private gridService: GridService
-    ) { 
-    this.shortLivedAnimation = new ShortLivedAnimationPainter(this.canvasService, this.gridService)
+  constructor() { 
+    this.shortLivedAnimation = new ShortLivedAnimationPainter()
   }
 
   public startShortLiveAnimation(animation: ShortLivedAnimation): void {
@@ -78,14 +75,14 @@ export class Engine {
     }
 
     // if(this.frame % 2 === 0) {
-    // // this.drawService.assetPainter.drawAnimatedAssets()
+    // // GSM.Draw.assetPainter.drawAnimatedAssets()
     // // }
-    this.drawService.assetPainter.drawObstacles()
-    this.drawService.assetPainter.drawEditableCharacter()
-    this.drawService.assetPainter.drawEditableObject()
-    // this.drawService.fogOfWarPainter.paint()
-    // this.drawService.blackOutFogPainter.paint()
-    // this.drawService.drawBlackOutEdges()    
+    GSM.Draw.assetPainter.drawObstacles()
+    GSM.Draw.assetPainter.drawEditableCharacter()
+    GSM.Draw.assetPainter.drawEditableObject()
+    // GSM.Draw.fogOfWarPainter.paint()
+    // GSM.Draw.blackOutFogPainter.paint()
+    // GSM.Draw.drawBlackOutEdges()    
     Engine.onFire.next(this.frame)    
 
     requestAnimationFrame(this.startEngine.bind(this)); 

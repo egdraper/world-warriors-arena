@@ -1,5 +1,5 @@
 import { Subscription } from "rxjs";
-import { CanvasService } from "../../../canvas/canvas.service";
+import { GSM } from "../../../app.service.manager";
 import { Cell } from "../../../models/cell.model";
 import { Engine } from "../../engine";
 
@@ -20,19 +20,12 @@ export abstract class Painter {
 }
 
 export abstract class LayerPainter extends Painter {
-
-  constructor(
-    public canvasService: CanvasService
-  ) {
-    super()
-  }
-
   // draws the background item for each cell provided
   public drawOnBackgroundCell(cell: Cell): void {
     if (cell && cell.backgroundTile) {
 
-      this.canvasService.backgroundCTX.imageSmoothingEnabled = false
-      this.canvasService.backgroundCTX.drawImage(
+      GSM.Canvas.backgroundCTX.imageSmoothingEnabled = false
+      GSM.Canvas.backgroundCTX.drawImage(
         cell.backgroundTile.spriteSheet,
         cell.backgroundTile.spriteGridPosX[0] * 32,
         cell.backgroundTile.spriteGridPosY[0] * 32,
@@ -45,15 +38,15 @@ export abstract class LayerPainter extends Painter {
       )
 
       if (cell.portalTo) {
-        this.canvasService.backgroundCTX.globalAlpha = .5;
-        this.canvasService.backgroundCTX.fillStyle = 'blue';
-        this.canvasService.backgroundCTX.fillRect(
+        GSM.Canvas.backgroundCTX.globalAlpha = .5;
+        GSM.Canvas.backgroundCTX.fillStyle = 'blue';
+        GSM.Canvas.backgroundCTX.fillRect(
           cell.posX,
           cell.posY,
           32,
           32
         )
-        this.canvasService.backgroundCTX.globalAlpha = 1;
+        GSM.Canvas.backgroundCTX.globalAlpha = 1;
 
       }
     }

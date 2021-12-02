@@ -1,6 +1,6 @@
-import { Engine } from "../game-engine/engine";
 import { v4 as uuidv4 } from 'uuid';
 import { Cell } from "../models/cell.model";
+import { GSM } from "../app.service.manager";
 
 export class ShortLivedAnimation {
   public image = new Image()
@@ -16,7 +16,6 @@ export class ShortLivedAnimation {
 
   constructor(
     public numberOfCycles: number,
-    public engineService: Engine,
     public cell?: Cell
   ) {
     this.cyclesRemaining = numberOfCycles
@@ -25,14 +24,14 @@ export class ShortLivedAnimation {
 
   public update(): void {
     if (this.cyclesRemaining === 0 && !this.longLive) {
-      this.engineService.endShortLivedAnimation(this)
+      GSM.Engine.endShortLivedAnimation(this)
     }
 
     this.cyclesRemaining--
   }
 
   public forceStop(): void {
-    this.engineService.endShortLivedAnimation(this)
+    GSM.Engine.endShortLivedAnimation(this)
   }
 }
 
@@ -41,14 +40,13 @@ export class ClickAnimation extends ShortLivedAnimation {
 
   constructor(
     public numberOfCycles: number,
-    public engineService: Engine,
     public imgSrc: string,
     public cell?: Cell
   ) {
-    super(numberOfCycles, engineService)
+    super(numberOfCycles)
     this.image.src = this.imgSrc
 
-    this.engineService.shortLivedAnimations.push(this)
+    GSM.Engine.shortLivedAnimations.push(this)
   }
 
   public update() {

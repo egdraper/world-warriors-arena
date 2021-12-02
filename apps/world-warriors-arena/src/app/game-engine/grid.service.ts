@@ -1,4 +1,5 @@
 import { Injectable } from '@angular/core';
+import { GSM } from '../app.service.manager';
 import { CanvasService } from '../canvas/canvas.service';
 import { GameMarkersService } from '../game-assets/game-markers';
 import { MotionAsset } from '../models/assets.model';
@@ -109,12 +110,9 @@ export class GridService {
 
   private index = 0
 
-  constructor(
-    private canvasService: CanvasService) { }
-
   public switchGrid(gridId: string): GameMap {
     this.activeGrid = this.maps[gridId]
-    this.canvasService.resetViewport()
+    GSM.Canvas.resetViewport()
     
     return this.activeGrid
   }
@@ -123,14 +121,14 @@ export class GridService {
      // Grid Setup
     const newMap = new GameMap(width, height, defaultMapSettings)
     
-    newMap.largeImage = new LargeCanvasImage(this.canvasService.drawingCanvas, this.canvasService.drawingCTX)
+    newMap.largeImage = new LargeCanvasImage(GSM.Canvas.drawingCanvas, GSM.Canvas.drawingCTX)
     newMap.id = this.index.toString()
    
     // Set Grid
     this.mapIds.push(newMap.id)
     this.maps[newMap.id] = newMap
     this.activeGrid = newMap
-    this.canvasService.resetViewport()
+    GSM.Canvas.resetViewport()
     return newMap
   }  
 }

@@ -47,9 +47,4 @@ export class AppComponent {
   public ngOnInit(): void {
     GSM.Engine.startEngine()
   }
-
-  public ngAfterViewInit(): void {
-
-  }
-  
 }
