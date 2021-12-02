@@ -4,11 +4,11 @@ import { GameSettings } from "../models/game-settings";
 import { BaseMapGenerator } from "./base-map-generator";
 
 export class GridMapGenerator extends BaseMapGenerator {
-  public generateMap(gridMapCell: GridMapCell, defaultMapSettings: DefaultMapSettings) {
+  public static generateMap(gridMapCell: GridMapCell, defaultMapSettings: DefaultMapSettings) {
     this.createNonObstructedPaths(gridMapCell, defaultMapSettings)
   }
 
-  public createNonObstructedPaths(gridMapCell: GridMapCell, defaultMapSettings: DefaultMapSettings): void {
+  public static createNonObstructedPaths(gridMapCell: GridMapCell, defaultMapSettings: DefaultMapSettings): void {
     let clearing: Cell[] = []
     gridMapCell.markers.forEach(marker => {
       try {
@@ -37,7 +37,7 @@ export class GridMapGenerator extends BaseMapGenerator {
     this.clearOpening(clearing)
   }
 
-  public addFullTerrain(defaultMapSettings: DefaultMapSettings): void {
+  public static addFullTerrain(defaultMapSettings: DefaultMapSettings): void {
     GSM.Map.activeGrid.gridDisplay.forEach(row => {
       row.forEach(cell => {
         cell.growableTileId = defaultMapSettings.terrainTypeId
@@ -46,7 +46,7 @@ export class GridMapGenerator extends BaseMapGenerator {
     })
   }
 
-  public clearOpening(path: Cell[]): void {
+  protected static clearOpening(path: Cell[]): void {
     path.forEach(cell => {
       cell.obstacle = false
       cell.growableTileId = undefined

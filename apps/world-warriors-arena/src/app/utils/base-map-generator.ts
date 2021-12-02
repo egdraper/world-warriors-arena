@@ -2,7 +2,7 @@ import { GSM } from "../app.service.manager"
 import { Cell, DefaultMapSettings } from "../models/cell.model"
 
 export class BaseMapGenerator {
-  public autoFillBackgroundTerrain(collectionId: string) {
+  public static autoFillBackgroundTerrain(collectionId: string) {
     for (let h = 0; h < GSM.Map.activeGrid.height; h++) {
       for (let w = 0; w < GSM.Map.activeGrid.width; w++) {
         let spriteSheet
@@ -42,7 +42,7 @@ export class BaseMapGenerator {
     }
   }
 
-  public clearOpening(path: Cell[]): void {
+  protected static clearOpening(path: Cell[]): void {
     path.forEach(cell => {
       cell.obstacle = false
       cell.growableTileId = undefined
@@ -62,9 +62,7 @@ export class BaseMapGenerator {
     })
   }
 
-  public createRandomizedBoarder(defaultMapSettings: DefaultMapSettings): void {
-    const randomConsistency = 4
-
+  protected static createRandomizedBoarder(defaultMapSettings: DefaultMapSettings): void {
     GSM.Map.activeGrid.gridDisplay.forEach(row => {
       row.forEach(cell => {
         // Outer most layer
@@ -125,7 +123,7 @@ export class BaseMapGenerator {
     })
   }
 
-  public setEdgeLayerRandomization(cell: Cell, neighborIndex: number, defaultMapSettings: DefaultMapSettings): void {
+  protected static setEdgeLayerRandomization(cell: Cell, neighborIndex: number, defaultMapSettings: DefaultMapSettings): void {
     const random = !!!Math.floor(Math.random() * 2)
     if (random) {
       if (cell.neighbors[neighborIndex]) {
@@ -138,7 +136,7 @@ export class BaseMapGenerator {
     }
   }
 
-  public randomlyPlaceInvisibleObstacles(): void {
+  protected randomlyPlaceInvisibleObstacles(): void {
     GSM.Map.activeGrid.gridDisplay.forEach(row => {
       row.forEach(cell => {
         cell.obstacle = !!!Math.floor(Math.random() * 4)
@@ -147,7 +145,7 @@ export class BaseMapGenerator {
   }
 
 
-  public addRandomTerrain(defaultMapSettings: DefaultMapSettings, weight: number = 3): void {
+  protected static addRandomTerrain(defaultMapSettings: DefaultMapSettings, weight: number = 3): void {
     for (let i = 0; i < GSM.Map.activeGrid.width; i++) {
       const randomY = Math.floor(Math.random() * GSM.Map.activeGrid.height)
       const randomX = Math.floor(Math.random() * GSM.Map.activeGrid.height)
@@ -167,7 +165,7 @@ export class BaseMapGenerator {
     }
   }
 
-  public terrainCleanup(): void {
+  protected static terrainCleanup(): void {
     GSM.Map.activeGrid.gridDisplay.forEach(row => {
       row.forEach(cell => {
         if(cell.growableTileId) {          
@@ -185,7 +183,7 @@ export class BaseMapGenerator {
     })
   }
 
-  private populateCell(cell: Cell, neighborIndex: number, weight: number, defaultMapSettings: DefaultMapSettings): void {
+  protected static populateCell(cell: Cell, neighborIndex: number, weight: number, defaultMapSettings: DefaultMapSettings): void {
     const isPlaced = !!!Math.floor(Math.random() * weight)
     if (!cell) { return }
     if (cell.neighbors[neighborIndex] && neighborIndex < 8 && isPlaced) {
@@ -221,7 +219,7 @@ export class BaseMapGenerator {
     }
   }
   
-  public clearObstacles(): void {
+  protected static clearObstacles(): void {
     GSM.Map.activeGrid.gridDisplay.forEach(row => {
       row.forEach(cell => {
         cell.obstacle = false

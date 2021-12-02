@@ -6,7 +6,7 @@ import { BaseMapGenerator } from "./base-map-generator";
 import { ShortestPath } from "./shortest-path";
 
 export class RandomMapGenerator extends BaseMapGenerator {
-  public generateMap(width: number, height: number, mapDetails: DefaultMapSettings): GameMap {
+  public static generateMap(width: number, height: number, mapDetails: DefaultMapSettings): GameMap {
     const map = GSM.Map.createNewGrid(width, height, mapDetails)
     const randomLeft = Math.floor(Math.random() * ((height - 10) - 10 + 1) + 10)
     const randomRight = Math.floor(Math.random() * ((height - 10) - 10 + 1) + 10)
@@ -18,7 +18,7 @@ export class RandomMapGenerator extends BaseMapGenerator {
     return map
   }
 
-  public generateAttachmentMap(transitionFromMap: GameMap, mapDetails: DefaultMapSettings, pageTransitionMarker: PageTransitionMarker): GameMap {
+  public static generateAttachmentMap(transitionFromMap: GameMap, mapDetails: DefaultMapSettings, pageTransitionMarker: PageTransitionMarker): GameMap {
     const map = GSM.Map.createNewGrid(transitionFromMap.width, transitionFromMap.height, mapDetails)
     const randomLeft = Math.floor(Math.random() * ((transitionFromMap.height - 10) - 10 + 1) + 10)
     const randomRight = Math.floor(Math.random() * ((transitionFromMap.height - 10) - 10 + 1) + 10)
@@ -36,7 +36,7 @@ export class RandomMapGenerator extends BaseMapGenerator {
     return map
   }
 
-  public autoPopulateForegroundTerrain(defaultMapSettings: DefaultMapSettings, randomLeft: number, randomRight: number): void {
+  public static autoPopulateForegroundTerrain(defaultMapSettings: DefaultMapSettings, randomLeft: number, randomRight: number): void {
     let path
 
     // Places random obstacles in the map to make the path somewhat wind around
@@ -70,7 +70,7 @@ export class RandomMapGenerator extends BaseMapGenerator {
     GSM.Editor.backgroundDirty = true
   }
 
-  public setEdgeLayerRandomization(cell: Cell, neighborIndex: number, defaultMapSettings: DefaultMapSettings): void {
+  public static setEdgeLayerRandomization(cell: Cell, neighborIndex: number, defaultMapSettings: DefaultMapSettings): void {
     const random = !!!Math.floor(Math.random() * 2)
     if (random) {
       if (cell.neighbors[neighborIndex]) {
@@ -83,7 +83,7 @@ export class RandomMapGenerator extends BaseMapGenerator {
     }
   }
 
-  public randomlyPlaceInvisibleObstacles(): void {
+  public static randomlyPlaceInvisibleObstacles(): void {
     GSM.Map.activeGrid.gridDisplay.forEach(row => {
       row.forEach(cell => {
         cell.obstacle = !!!Math.floor(Math.random() * 4)
@@ -91,7 +91,7 @@ export class RandomMapGenerator extends BaseMapGenerator {
     })
   }
 
-  public addPortalMarkerIcons(map: GameMap, entranceLeftPos: number, entranceRightPos: number, leftTransitionMarker?: PageTransitionMarker, rightTransitionMarker?: PageTransitionMarker): void {
+  public static addPortalMarkerIcons(map: GameMap, entranceLeftPos: number, entranceRightPos: number, leftTransitionMarker?: PageTransitionMarker, rightTransitionMarker?: PageTransitionMarker): void {
     const tokenImage = new Image()
     tokenImage.src = "assets/images/compasbig.png"
 
