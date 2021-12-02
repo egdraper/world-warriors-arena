@@ -1,13 +1,13 @@
-import { CanvasService } from "./canvas/canvas.service";
-import { CharacterEditorService } from "./editor/character-edtor-palette/character-editor-pallete/character-editor.service";
-import { EditorService } from "./editor/editor-palette/editor.service";
-import { AssetsService } from "./game-assets/assets.service";
-import { GameMarkersService } from "./game-assets/game-markers";
-import { DrawService } from "./game-engine/draw-tools/draw.service";
-import { Engine } from "./game-engine/engine";
-import { GridService } from "./game-engine/grid.service";
-import { NewFogOfWarService } from "./game-engine/new-visibility.service";
-import { ShortestPath } from "./game-engine/shortest-path";
+import { CanvasService } from "./services/canvas.service";
+import { CharacterEditorService } from "./services/character-editor.service";
+import { EditorService } from "./services/editor.service";
+import { AssetsService } from "./services/assets.service";
+import { GameMarkersService } from "./services/game-markers.service";
+import { DrawService } from "./services/draw.service";
+import { Engine } from "./services/engine.service";
+import { GridService } from "./services/map.service";
+import { NewFogOfWarService } from "./services/new-visibility.service";
+import { ShortestPath } from "./services/shortest-path.service";
 
 export class GSM {
   public static Canvas: CanvasService

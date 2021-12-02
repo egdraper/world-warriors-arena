@@ -1,6 +1,4 @@
-import { TerrainType } from "../game-assets/tiles.db.ts/tile-assets.db"
-import { GameMap } from "../game-engine/grid.service"
-import { GameComponent, MotionAsset } from "./assets.model"
+import { TerrainType } from "../game-assets/tile-assets.db"
 
 export const GRID_CELL_MULTIPLIER = 32
 

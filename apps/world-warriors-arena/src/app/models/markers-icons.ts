@@ -1,5 +1,5 @@
 import { GSM } from "../app.service.manager"
-import { GridService } from "../game-engine/grid.service"
+import { GridService } from "../services/map.service"
 import { MapPosition, MarkerIconType } from "./cell.model"
 
 export abstract class MarkerIcon {

@@ -1,7 +1,7 @@
 import { v4 as uuidv4 } from 'uuid';
 import { GSM } from '../app.service.manager';
-import { ClickAnimation } from '../game-assets/click-animation';
-import { SelectionIndicator } from '../game-assets/selection-indicator';
+import { ClickAnimation } from './click-animation';
+import { SelectionIndicator } from './selection-indicator';
 import { Cell } from './cell.model';
 import { GameSettings } from './game-settings';
 
