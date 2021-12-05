@@ -68,6 +68,10 @@ export class AssetPainter extends LayerPainter {
             for (let x = cellTopLeft?.x; x <= cellTopRight?.x; x++) {
               const drawableCell = GSM.Map.activeGrid.getCell(x, y)
 
+              if (drawableCell.growableTileId && !drawableCell.growableTileOverride) {
+                this.calculateGrowableTerrain(drawableCell)
+              }
+    
               this.drawAsset(GSM.Assets.gameComponents.find(gameComponent => gameComponent.cell.id === drawableCell.id && GSM.Map.activeGrid.id === gameComponent.gridId))
 
               this.drawOnCell(drawableCell)
@@ -174,27 +178,9 @@ export class AssetPainter extends LayerPainter {
     )
   }
 
-  // draws the entire grid foreground objects
-  public drawObstacles(): void {
-    if (GSM.Canvas.foregroundCTX && GSM.Assets.obstaclesDirty && !GSM.Map.activeGrid.largeImage.background) {
-      // GSM.Canvas.foregroundCTX.clearRect(0, 0, GSM.Map.width * (36 * GameSettings.scale), GSM.Map.height * (36 * GameSettings.scale));
-      GSM.Map.activeGrid.gridDisplay.forEach(row => {
-        row.forEach((cell: Cell) => {
-
-          if (cell.growableTileId && !cell.growableTileOverride) {
-            this.calculateGrowableTerrain(cell)
-          }
-
-          this.drawOnCell(cell)
-        })
-      })
-      GSM.Assets.obstaclesDirty = false
-    }
-  }
-
   // draws each foreground item for the cell provided
   private drawOnCell(cell: Cell, makeTransparent: boolean = false): void {
-    if (cell && cell.visible && cell.imageTile) {
+    if (cell && cell.imageTile) {
 
       if (makeTransparent) {
         GSM.Canvas.foregroundCTX.globalAlpha = .5
@@ -269,13 +255,12 @@ export class AssetPainter extends LayerPainter {
     }
 
     selectedCell.imageTile = tile
-    selectedCell.visible = true
   }
  
   // draws asset
   public drawAsset(gameComponent: MotionAsset): void {
     GSM.Canvas.foregroundCTX.imageSmoothingEnabled = false
-    if (gameComponent && gameComponent.assetDirty) {
+    if (gameComponent) {
       GSM.Canvas.foregroundCTX.drawImage(
         gameComponent.image,
         gameComponent.frameXPosition[gameComponent.frameCounter],
@@ -301,7 +286,6 @@ export class AssetPainter extends LayerPainter {
           32
         )
       }
-      gameComponent.assetDirty = false
     }
   }
 

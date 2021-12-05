@@ -1,14 +1,15 @@
 import { GSM } from "../app.service.manager";
 import { Cell, DefaultMapSettings, GridMapCell } from "../models/cell.model";
 import { GameSettings } from "../models/game-settings";
+import { GameMap } from "../services/map.service";
 import { BaseMapGenerator } from "./base-map-generator";
 
 export class GridMapGenerator extends BaseMapGenerator {
-  public static generateMap(gridMapCell: GridMapCell, defaultMapSettings: DefaultMapSettings) {
-    this.createNonObstructedPaths(gridMapCell, defaultMapSettings)
+  public static generateMap(map: GameMap, gridMapCell: GridMapCell, defaultMapSettings: DefaultMapSettings) {
+    this.createNonObstructedPaths(map, gridMapCell, defaultMapSettings)
   }
 
-  public static createNonObstructedPaths(gridMapCell: GridMapCell, defaultMapSettings: DefaultMapSettings): void {
+  public static createNonObstructedPaths(map: GameMap, gridMapCell: GridMapCell, defaultMapSettings: DefaultMapSettings): void {
     let clearing: Cell[] = []
     gridMapCell.markers.forEach(marker => {
       try {
@@ -30,8 +31,8 @@ export class GridMapGenerator extends BaseMapGenerator {
     if (defaultMapSettings.inverted) {
       this.addFullTerrain(defaultMapSettings)
     } else {
-      this.addRandomTerrain(defaultMapSettings)
-      this.createRandomizedBoarder(defaultMapSettings)
+      this.addRandomTerrain(map, defaultMapSettings)
+      this.createRandomizedBoarder(map, defaultMapSettings)
     }
 
     this.clearOpening(clearing)

@@ -10,9 +10,7 @@ import { RandomMapGenerator } from "../utils/random-map-generator";
 export class EditorService {
   public selectedAsset: SpriteTile
   public selectedGrowableAsset: string = "DrawableDirtRoad"
-  public layerID = 1
-  public backgroundDirty = false
- 
+  public layerID = 1 
 
   public findBackgroundCollection(category: string): SpriteBackgroundTile[] {
     return getBackgroundCollection(category)
@@ -39,12 +37,9 @@ export class EditorService {
       pathTypeId: "DrawableDirtRoad",
     }
 
-    RandomMapGenerator.generateMap(45, 45, mapDetails)
+    RandomMapGenerator.generateMap(96, 96, mapDetails)
     GSM.Canvas.setupCanvases()
-
-    // CLEANUP - Rethink the "Dirty" locations, if they should be in drawing service or where they are
-    GSM.Assets.obstaclesDirty = true
-    GSM.Editor.backgroundDirty = true
+    GSM.FogOfWar.setup()
 
     // CLEANUP - Needs to be moved into somewhere that re-draws
     const centerCell = GSM.Map.activeGrid.getGridCellByCoordinate(Math.floor(GSM.Canvas.canvasSizeX / 2), Math.floor(GSM.Canvas.canvasSizeY / 2))
@@ -52,7 +47,7 @@ export class EditorService {
     GSM.Canvas.centerPointY = centerCell.posY * GameSettings.scale
 
     GSM.Draw.blackOutFogPainter.paint()
-    GSM.FogOfWar.createCellLines()
+    // GSM.FogOfWar.createCellLines()
   }
 
   public generateRandomAttachmentMap(markerIcon: PageTransitionMarker): void {
@@ -69,17 +64,13 @@ export class EditorService {
     RandomMapGenerator.generateAttachmentMap(GSM.Map.activeGrid, mapDetails, markerIcon)
     GSM.Canvas.setupCanvases()
 
-    // CLEANUP - Rethink the "Dirty" locations, if they should be in drawing service or where they are
-    GSM.Assets.obstaclesDirty = true
-    GSM.Editor.backgroundDirty = true
-
     // CLEANUP - Needs to be moved into somewhere that re-draws
-    const centerCell = GSM.Map.activeGrid.getGridCellByCoordinate(Math.floor(GSM.Canvas.canvasSizeX / 2), Math.floor(GSM.Canvas.canvasSizeY / 2))
-    GSM.Canvas.centerPointX = centerCell.posX * GameSettings.scale
-    GSM.Canvas.centerPointY = centerCell.posY * GameSettings.scale
+    // const centerCell = GSM.Map.activeGrid.getGridCellByCoordinate(Math.floor(GSM.Canvas.canvasSizeX / 2), Math.floor(GSM.Canvas.canvasSizeY / 2))
+    // GSM.Canvas.centerPointX = centerCell.posX * GameSettings.scale
+    // GSM.Canvas.centerPointY = centerCell.posY * GameSettings.scale
 
-    GSM.Draw.blackOutFogPainter.paint()
-    GSM.FogOfWar.createCellLines()
+    // GSM.Draw.blackOutFogPainter.paint()
+    // GSM.FogOfWar.createCellLines()
   }
 
 } 

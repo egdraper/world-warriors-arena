@@ -32,7 +32,7 @@ export class LargeCanvasImage {
         this.drawLargeImageBackgroundCell(cell, ctx)
       })
     })
-    // this.drawGridLines(gridService, ctx)
+    this.drawGridLines(gridService, ctx)
     gridService.activeGrid.gridDisplay.forEach((row: Cell[]) => {
       row.forEach((cell: Cell) => {
         this.drawLargeImageCells(cell, ctx)
@@ -69,7 +69,6 @@ export class LargeCanvasImage {
 
   private drawLargeImageCells(cell: Cell, ctx: CanvasRenderingContext2D): void {
     if (cell.imageTile) {
-
       ctx.drawImage(
         cell.imageTile.spriteSheet,
         cell.imageTile.spriteGridPosX * cell.imageTile.multiplier,

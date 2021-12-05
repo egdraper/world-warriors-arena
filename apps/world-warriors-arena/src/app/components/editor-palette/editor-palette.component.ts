@@ -59,8 +59,6 @@ export class EditorPaletteComponent implements OnInit {
     GameSettings.scale = Number(scale.value)
 
     GSM.Canvas.setupCanvases()
-    GSM.Editor.backgroundDirty = true
-    GSM.Assets.obstaclesDirty = true
 
     let perfectHeight = window.innerHeight
 

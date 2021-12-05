@@ -12,8 +12,11 @@ export class NewFogOfWarService {
   public nonObstructedCells: { [id: string]: Set<Cell> } = {}
   public fogOfWarRimPoints: { [id: string]: Cell[] } = {}
 
-  public createCellLines(): void {
+  public setup(): void {
     this.findVisibleCellsEdges()
+  }
+
+  public createCellLines(): void {
     GSM.Map.activeGrid.gridDisplay.forEach(row => {
       row.forEach(cell => {
         if (!cell.obstacle) {
@@ -30,6 +33,19 @@ export class NewFogOfWarService {
         }
       })
     })
+  }
+
+  public getSingleView(cell: Cell): Cell[] {
+    cell.revealed = false
+    console.log(cell.id)
+    this.fogOfWarRimPoints[cell.id] = []
+    this.edgeCells.forEach(edgeCell => {
+      this.checkForObstacle(cell, edgeCell)
+    })
+
+    const cleanSet = new Set(this.fogOfWarRimPoints[cell.id])
+    return Array.from(cleanSet)
+
   }
 
   private checkForObstacle(assetCell: Cell, edgeCell: Cell): boolean {

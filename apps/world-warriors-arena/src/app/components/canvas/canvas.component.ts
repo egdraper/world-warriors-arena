@@ -166,12 +166,18 @@ export class CanvasComponent {
     console.log(selectedCell)
     const assetInCell = GSM.Assets.getAssetFromCell(selectedCell, GSM.Map.activeGrid.id)
 
-
+    // Game Marker
     const markerIcon = GSM.GameMarker.getHoveringIcon()
+    
+    if(markerIcon && this.controlPressed) {
+      markerIcon.onClickWithCtrl()
+      return
+    }
+        
     if(markerIcon) {
       markerIcon.onClick()
+      return
     }
-    
     // select Asset
     if(assetInCell && !GSM.Assets.selectedGameComponent) {
       GSM.Assets.selectAsset(assetInCell)
@@ -220,8 +226,6 @@ export class CanvasComponent {
 
   public onMouseMove(event: any): void {
     if(!GSM.Map.activeGrid) { return }
-
-
     
     const clickX = event.offsetX + (-1 * GSM.Canvas.canvasViewPortOffsetX * GameSettings.scale)
     const clickY = event.offsetY + (-1 * GSM.Canvas.canvasViewPortOffsetY * GameSettings.scale)
@@ -247,7 +251,6 @@ export class CanvasComponent {
       return
     }
 
-
     // Control Pressed
     if (event.offsetX < 0 || event.offsetY < 0) { return }
     if (!this.mouseIsDown || !this.controlPressed) { return }
@@ -259,15 +262,12 @@ export class CanvasComponent {
 
     if (GSM.Map.activeGrid.defaultSettings.inverted) { // Rename to GSM.Map.removing or something
       GSM.Assets.addInvertedMapAsset(this.hoveringCell)
-      GSM.Editor.backgroundDirty = true
     } else if (this.mouseIsDown && this.controlPressed) {
       const selectedAsset = GSM.Editor.selectedAsset
       const drawableItem = growableItems.find(item => item.id === GSM.Editor.selectedGrowableAsset)
 
       GSM.Assets.addMapAsset(this.hoveringCell, selectedAsset, drawableItem)
-      if (drawableItem.terrainType === TerrainType.Background) { GSM.Editor.backgroundDirty = true }
     }
-    GSM.Assets.obstaclesDirty = true
   }
 
   public onMouseUp(event: any): void {

@@ -29,7 +29,8 @@ export class FogOfWarPainter extends Painter {
 
   private revealFog(): void {
     if (GSM.Assets.selectedGameComponent) {
-      const centerCells = GSM.FogOfWar.fogOfWarRimPoints[GSM.Assets.selectedGameComponent.cell.id]
+      // const centerCells = GSM.FogOfWar.fogOfWarRimPoints[GSM.Assets.selectedGameComponent.cell.id]
+      const centerCells = GSM.FogOfWar.getSingleView(GSM.Assets.selectedGameComponent.cell)
       GSM.Canvas.fogCTX.globalCompositeOperation = 'destination-out'
       
       if(!DebugSettings.fogDebug && DebugSettings.fogFeather) {

@@ -14,7 +14,6 @@ export class GameMap {
   public gridDisplay: Cell[][] = [];
   public widthPx = 0
   public heightPx = 0
-  public gridDirty = false
   public gridLoaded = false
   public includeGridLines = false
   public largeImage: LargeCanvasImage
@@ -115,7 +114,7 @@ export class GridService {
     return this.activeGrid
   }
 
-  public createNewGrid(width: number, height: number, defaultMapSettings: DefaultMapSettings): GameMap {
+  public createNewGrid(width: number, height: number, defaultMapSettings: DefaultMapSettings, autoSwitchMap: boolean = false): GameMap {
      // Grid Setup
     const newMap = new GameMap(width, height, defaultMapSettings)
     
@@ -126,8 +125,10 @@ export class GridService {
     // Set Grid
     this.mapIds.push(newMap.id)
     this.maps[newMap.id] = newMap
-    this.activeGrid = newMap
-    GSM.Canvas.resetViewport()
+    if(autoSwitchMap) {
+      GSM.Map.switchGrid(newMap.id)
+      GSM.Canvas.resetViewport()
+    }
     return newMap
   }  
 }

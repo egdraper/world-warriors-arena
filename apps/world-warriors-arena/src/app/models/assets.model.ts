@@ -19,7 +19,6 @@ export class GameComponent {
 export class AnimationComponent extends GameComponent {
   public animationFrame: number[] | number = 10
   public moving: boolean
-  public assetDirty: boolean
   public update(): void { }
   public move(): void { }
 }
@@ -48,7 +47,7 @@ export abstract class MotionAsset extends Asset {
   public currentPath: Cell[] = []
   public selectionIndicator: SelectionIndicator
   public destinationIndicator: ClickAnimation
-  public assetDirty = false
+  public onFinished: () => void
 
   private redirection: { start: Cell, end: Cell, charactersOnGrid: MotionAsset[] }
   private nextCell: Cell
@@ -86,7 +85,8 @@ export abstract class MotionAsset extends Asset {
     }
   }
 
-  public startMovement(startCell: Cell, endCell: Cell, charactersOnGrid: MotionAsset[]): void {
+  public startMovement(startCell: Cell, endCell: Cell, charactersOnGrid: MotionAsset[], onFinished?: ()=> void): void {
+    if(onFinished) { this.onFinished = onFinished }
     this.destinationIndicator = new ClickAnimation(350, `../../../assets/images/DestinationX.png`, endCell)
 
     if (this.moving) {
@@ -98,7 +98,7 @@ export abstract class MotionAsset extends Asset {
 
     this.currentPath = ShortestPath.find(startCell, endCell, charactersOnGrid)
     this.moving = true
-    const currentCell = this.currentPath.pop() // removes cell the character is standing on
+    this.currentPath.pop() // removes cell the character is standing on
     this.nextCell = this.currentPath.pop()
     GSM.Assets.placementChanged = true
     this.setSpriteDirection()
@@ -134,17 +134,6 @@ export abstract class MotionAsset extends Asset {
     if (this.positionY % (32) === 0 && this.positionX % (32) === 0) {
       this.cell = GSM.Map.activeGrid.grid[`x${this.positionX / (32)}:y${this.positionY / (32)}`]
 
-      if (this.cell.portalTo) {
-        const newGridId = this.cell.portalTo.gridId
-        const newCell = this.cell.portalTo.cell
-        this.cell = newCell
-        this.gridId = newGridId
-        this.positionX = this.cell.posX
-        this.positionY = this.cell.posY
-        GSM.Map.switchGrid(newGridId)
-        GSM.Canvas.centerOverAsset(GSM.Assets.selectedGameComponent, GSM.Map.activeGrid)
-      }
-
       GSM.Map.activeGrid.drawBlackoutImage = true
       this.nextCell = this.currentPath.length > 0
         ? this.currentPath.pop()
@@ -158,6 +147,11 @@ export abstract class MotionAsset extends Asset {
 
       if (!this.nextCell) {
         this.endMovement()
+        if(this.onFinished) { 
+          const onFinished = this.onFinished
+          this.onFinished = undefined
+          onFinished()
+        }
       } else {
         this.setSpriteDirection()
       }

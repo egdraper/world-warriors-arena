@@ -10,35 +10,29 @@ export class BackgroundPainter extends LayerPainter {
     if (!GSM.Map.activeGrid) { return }
     if (!GSM.Map.activeGrid.gridLoaded) { return }
 
-    if (GSM.Editor.backgroundDirty) {
-      for (let h = 0; h < GSM.Map.activeGrid.height; h++) {
-        for (let w = 0; w < GSM.Map.activeGrid.width; w++) {
-          const cell = GSM.Map.activeGrid.grid[`x${w}:y${h}`]
+    for (let h = 0; h < GSM.Map.activeGrid.height; h++) {
+      for (let w = 0; w < GSM.Map.activeGrid.width; w++) {
+        const cell = GSM.Map.activeGrid.grid[`x${w}:y${h}`]
 
-          try {
-            if (cell.backgroundGrowableTileId) {
-              this.calculateGrowableBackgroundTerrain(cell)
-            }
-            this.drawOnBackgroundCell(cell)
-          } catch {
-            debugger
+        try {
+          if (cell.backgroundGrowableTileId) {
+            this.calculateGrowableBackgroundTerrain(cell)
           }
+          this.drawOnBackgroundCell(cell)
+        } catch {
+          debugger
         }
       }
-
-      GSM.Editor.backgroundDirty = false
-    }    
+    }
   }
 
-   
+
 
   private calculateGrowableBackgroundTerrain(selectedCell: Cell): void {
-    if (!GSM.Editor.backgroundDirty) { return }
-
     const growableItem = growableItems.find(item => {
       return selectedCell.backgroundGrowableTileId.includes(item.id)
     })
-    
+
     const topNeighbor = selectedCell.neighbors[0]
     const topRightNeighbor = selectedCell.neighbors[4]
     const rightNeighbor = selectedCell.neighbors[1]

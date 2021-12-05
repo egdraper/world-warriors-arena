@@ -96,15 +96,12 @@ export class GlobalMapComponent implements OnInit {
       inverted: false,
       pathTypeId: "DrawableDirtRoad",
     }
-    GSM.Map.createNewGrid(60, 60, mapDetails)
+    const map = GSM.Map.createNewGrid(60, 60, mapDetails)
     GSM.Canvas.setupCanvases()
 
     GSM.Draw.backgroundPainter.paint()
     
-    GridMapGenerator.autoFillBackgroundTerrain("caveDirt")
-    GridMapGenerator.generateMap(this.gridOfGrids[0][0], mapDetails)
-
-    GSM.Editor.backgroundDirty = true
-    GSM.Assets.obstaclesDirty = true
+    GridMapGenerator.autoFillBackgroundTerrain(map ,"caveDirt")
+    GridMapGenerator.generateMap(map, this.gridOfGrids[0][0], mapDetails)
   }
 }
