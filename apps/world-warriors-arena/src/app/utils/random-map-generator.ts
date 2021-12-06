@@ -1,6 +1,6 @@
 import { GSM } from "../app.service.manager";
-import { GameMap } from "../services/map.service";
 import { Cell, DefaultMapSettings, MapPosition, MarkerIconType } from "../models/cell.model";
+import { GameMap } from "../models/game-map";
 import { PageTransitionMarker } from "../models/markers-icons";
 import { BaseMapGenerator } from "./base-map-generator";
 import { ShortestPath } from "./shortest-path";
@@ -8,7 +8,7 @@ import { ShortestPath } from "./shortest-path";
 export class RandomMapGenerator extends BaseMapGenerator {
   public static generateMap(width: number, height: number, mapDetails: DefaultMapSettings): GameMap {
     const map = GSM.Map.createNewGrid(width, height, mapDetails, true)
-    const randomLeft = Math.floor(Math.random() * ((height - 10) - 10 + 1) + 10)
+    const randomLeft = 18 //Math.floor(Math.random() * ((height - 10) - 10 + 1) + 10)
     const randomRight = Math.floor(Math.random() * ((height - 10) - 10 + 1) + 10)
 
     this.addPortalMarkerIcons(map, randomLeft, randomRight)

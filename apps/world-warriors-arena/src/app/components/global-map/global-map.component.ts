@@ -46,8 +46,8 @@ export class GlobalMapComponent implements OnInit {
   public onGridCellClick(gridCell: GridMapCell, mouseEvent: MouseEvent, gridCanvas: HTMLCanvasElement): void {
     gridCell.context = gridCanvas.getContext('2d');
     gridCell.gridCanvas = gridCanvas
-    gridCell.relationX = (GSM.Map.activeGrid.width * GRID_CELL_MULTIPLIER) / 200
-    gridCell.relationY = (GSM.Map.activeGrid.height * GRID_CELL_MULTIPLIER) / 200
+    gridCell.relationX = (GSM.Map.activeMap.width * GRID_CELL_MULTIPLIER) / 200
+    gridCell.relationY = (GSM.Map.activeMap.height * GRID_CELL_MULTIPLIER) / 200
 
     gridCanvas.height = 200
     gridCanvas.width = 200

@@ -3,7 +3,7 @@ import { BrowserModule } from '@angular/platform-browser';
 
 import { AppComponent } from './app.component';
 import { Engine } from './services/engine.service';
-import { GridService } from './services/map.service';
+import { MapService } from './services/map.service';
 import { CanvasComponent } from './components/canvas/canvas.component';
 import { CanvasService } from './services/canvas.service';
 import { AssetsService } from './services/assets.service';
@@ -23,7 +23,7 @@ import { GameMarkersService } from './services/game-markers.service';
     AssetsService,
     CanvasService,
     DrawService,
-    GridService,
+    MapService,
     EditorService,
     NewFogOfWarService,
     Engine,

@@ -97,6 +97,7 @@ export abstract class MotionAsset extends Asset {
     }
 
     this.currentPath = ShortestPath.find(startCell, endCell, charactersOnGrid)
+    if(this.currentPath.length === 0) { return }
     this.moving = true
     this.currentPath.pop() // removes cell the character is standing on
     this.nextCell = this.currentPath.pop()
@@ -128,13 +129,13 @@ export abstract class MotionAsset extends Asset {
     this.positionY += nextYMove
 
     if (!GameSettings.gm || GameSettings.trackMovement) {
-      GSM.Canvas.trackAsset(-1 * (nextXMove), -1 * (nextYMove), this, GSM.Map.activeGrid)
+      GSM.Canvas.trackAsset(-1 * (nextXMove), -1 * (nextYMove), this, GSM.Map.activeMap)
     }
 
     if (this.positionY % (32) === 0 && this.positionX % (32) === 0) {
-      this.cell = GSM.Map.activeGrid.grid[`x${this.positionX / (32)}:y${this.positionY / (32)}`]
+      this.cell = GSM.Map.activeMap.grid[`x${this.positionX / (32)}:y${this.positionY / (32)}`]
 
-      GSM.Map.activeGrid.drawBlackoutImage = true
+      GSM.Map.activeMap.drawBlackoutImage = true
       this.nextCell = this.currentPath.length > 0
         ? this.currentPath.pop()
         : null

@@ -42,7 +42,7 @@ export class EditorPaletteComponent implements OnInit {
 
     if (this.lockState === "Locked") {
       if (GSM.Assets.selectedGameComponent) {
-        GSM.Canvas.centerOverAsset(GSM.Assets.selectedGameComponent, GSM.Map.activeGrid)
+        GSM.Canvas.centerOverAsset(GSM.Assets.selectedGameComponent, GSM.Map.activeMap)
       }
       GameSettings.gm = false
     } else {
@@ -70,7 +70,7 @@ export class EditorPaletteComponent implements OnInit {
   }
 
   public invertedClicked(): void {
-    GSM.Map.activeGrid.defaultSettings.inverted = !GSM.Map.activeGrid.defaultSettings.inverted
+    GSM.Map.activeMap.defaultSettings.inverted = !GSM.Map.activeMap.defaultSettings.inverted
   }
 
   public onGenerateCoreMapClick(): void {

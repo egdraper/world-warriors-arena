@@ -1,7 +1,7 @@
 import { GSM } from "../app.service.manager";
 import { Cell, DefaultMapSettings, GridMapCell } from "../models/cell.model";
+import { GameMap } from "../models/game-map";
 import { GameSettings } from "../models/game-settings";
-import { GameMap } from "../services/map.service";
 import { BaseMapGenerator } from "./base-map-generator";
 
 export class GridMapGenerator extends BaseMapGenerator {
@@ -13,7 +13,7 @@ export class GridMapGenerator extends BaseMapGenerator {
     let clearing: Cell[] = []
     gridMapCell.markers.forEach(marker => {
       try {
-        clearing.push(GSM.Map.activeGrid.getGridCellByCoordinate(marker.x * (gridMapCell.relationX * GameSettings.scale), marker.y * (gridMapCell.relationY * GameSettings.scale)))
+        clearing.push(GSM.Map.activeMap.getGridCellByCoordinate(marker.x * (gridMapCell.relationX * GameSettings.scale), marker.y * (gridMapCell.relationY * GameSettings.scale)))
       } catch { }
     })
     clearing = [...new Set(clearing)]
@@ -39,7 +39,7 @@ export class GridMapGenerator extends BaseMapGenerator {
   }
 
   public static addFullTerrain(defaultMapSettings: DefaultMapSettings): void {
-    GSM.Map.activeGrid.gridDisplay.forEach(row => {
+    GSM.Map.activeMap.gridDisplay.forEach(row => {
       row.forEach(cell => {
         cell.growableTileId = defaultMapSettings.terrainTypeId
         cell.obstacle = true

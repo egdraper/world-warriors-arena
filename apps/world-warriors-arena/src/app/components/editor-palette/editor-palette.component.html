@@ -8,11 +8,11 @@
 <div 
   *ngFor="let mapId of mapService.mapIds"
   class="button" 
-  [class.selected]="mapId === mapService?.activeGrid?.id"
+  [class.selected]="mapId === mapService?.activeMap?.id"
   (click)="switchGrid(mapId)">
     {{mapId}}
 </div>
-<h2 [style.color]="'white'">{{mapService?.activeGrid?.id}}</h2>
+<h2 [style.color]="'white'">{{mapService?.activeMap?.id}}</h2>
 
 <!-- 
 <select (change)="changeScale($event.target)">

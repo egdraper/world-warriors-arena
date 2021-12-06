@@ -12,18 +12,18 @@ export class FogOfWarPainter extends Painter {
   }
 
   private drawFog(): void {
-    if (!GSM.Canvas.fogCTX || !GSM.Map.activeGrid) { return }
+    if (!GSM.Canvas.fogCTX || !GSM.Map.activeMap) { return }
     GSM.Canvas.fogCTX.imageSmoothingEnabled = false
     GSM.Canvas.fogCTX.filter = "none";
     GSM.Canvas.fogCTX.globalCompositeOperation = 'destination-over'
-    GSM.Canvas.fogCTX.clearRect(0, 0, GSM.Map.activeGrid.width * 32, GSM.Map.activeGrid.height * 32);
+    GSM.Canvas.fogCTX.clearRect(0, 0, GSM.Map.activeMap.width * 32, GSM.Map.activeMap.height * 32);
     GSM.Canvas.fogCTX.fillStyle = 'black';
     GSM.Canvas.fogCTX.globalAlpha = .8;
     GSM.Canvas.fogCTX.fillRect(
       0,
       0,
-      GSM.Map.activeGrid.width * 32,
-      GSM.Map.activeGrid.height * 32
+      GSM.Map.activeMap.width * 32,
+      GSM.Map.activeMap.height * 32
     )
   }
 

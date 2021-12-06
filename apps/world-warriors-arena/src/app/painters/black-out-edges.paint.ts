@@ -5,8 +5,8 @@ import { Painter } from "./painter";
 export class BlackOutEdgesPainter extends Painter {
   // Draws Grid Lines  
   public paint(): void {
-    if (!GSM.Map.activeGrid) { return }
-    if (!GSM.Map.activeGrid.gridLoaded) { return }
+    if (!GSM.Map.activeMap) { return }
+    if (!GSM.Map.activeMap.gridLoaded) { return }
 
     if (GSM.Canvas.blackoutCTX) {
       GSM.Canvas.blackoutCTX.fillStyle = 'black';
@@ -14,7 +14,7 @@ export class BlackOutEdgesPainter extends Painter {
         0,
         0,
         32,
-        GSM.Map.activeGrid.width * 32,
+        GSM.Map.activeMap.width * 32,
       )
     }
 
@@ -22,8 +22,8 @@ export class BlackOutEdgesPainter extends Painter {
       GSM.Canvas.blackoutCTX.fillStyle = 'black';
       GSM.Canvas.blackoutCTX.fillRect(
         0,
-        GSM.Map.activeGrid.height * 32 - 64,
-        GSM.Map.activeGrid.width * 32,
+        GSM.Map.activeMap.height * 32 - 64,
+        GSM.Map.activeMap.width * 32,
         64,
       )
 

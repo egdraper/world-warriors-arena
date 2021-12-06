@@ -7,12 +7,12 @@ import { LayerPainter } from "./painter"
 export class BackgroundPainter extends LayerPainter {
   // Draws Grid Lines  
   public paint(): void {
-    if (!GSM.Map.activeGrid) { return }
-    if (!GSM.Map.activeGrid.gridLoaded) { return }
+    if (!GSM.Map.activeMap) { return }
+    if (!GSM.Map.activeMap.gridLoaded) { return }
 
-    for (let h = 0; h < GSM.Map.activeGrid.height; h++) {
-      for (let w = 0; w < GSM.Map.activeGrid.width; w++) {
-        const cell = GSM.Map.activeGrid.grid[`x${w}:y${h}`]
+    for (let h = 0; h < GSM.Map.activeMap.height; h++) {
+      for (let w = 0; w < GSM.Map.activeMap.width; w++) {
+        const cell = GSM.Map.activeMap.grid[`x${w}:y${h}`]
 
         try {
           if (cell.backgroundGrowableTileId) {

@@ -13,9 +13,9 @@ export class GameMarkerPainter extends Painter {
 
   // Draws Grid Lines  
   public paint(): void {
-    if (GSM.Map.activeGrid) {
+    if (GSM.Map.activeMap) {
       GSM.GameMarker.markerIcons.forEach(icon => {
-        if(GSM.Map.activeGrid.id !== icon.mapId) { return }
+        if(GSM.Map.activeMap.id !== icon.mapId) { return }
        
         GSM.Canvas.foregroundCTX.drawImage(
           icon.image,

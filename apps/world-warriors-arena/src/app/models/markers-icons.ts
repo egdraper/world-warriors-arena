@@ -28,11 +28,14 @@ export class PageTransitionMarker extends MarkerIcon {
 
   public onClick(): void {
     if (!this.gridConnection) {
+      GSM.Map.activeMap.changePageXOffset = GSM.Canvas.canvasViewPortOffsetX
+      GSM.Map.activeMap.changePageYOffset = GSM.Canvas.canvasViewPortOffsetY
       GSM.Editor.generateRandomAttachmentMap(this)
+      GSM.Canvas.hardAdjust(GSM.Map.activeMap.changePageXOffset, GSM.Map.activeMap.changePageYOffset)
     }
 
     if(GSM.Assets.selectedGameComponent) {
-      const selectedCell = GSM.Map.activeGrid.getGridCellByCoordinate(this.displayPosX, this.displayPosY)
+      const selectedCell = GSM.Map.activeMap.getGridCellByCoordinate(this.displayPosX, this.displayPosY)
       GSM.Assets.selectedGameComponent.startMovement(GSM.Assets.selectedGameComponent.cell, selectedCell, GSM.Assets.gameComponents, this.onMarkerReached.bind(this))
     }
   }
@@ -47,14 +50,13 @@ export class PageTransitionMarker extends MarkerIcon {
 
   public onMarkerReached(): void {
     GSM.Map.switchGrid(this.gridConnection.mapId)
-    const newCell = GSM.Map.activeGrid.getGridCellByCoordinate(this.gridConnection.displayPosX, this.gridConnection.displayPosY)
+    const newCell = GSM.Map.activeMap.getGridCellByCoordinate(this.gridConnection.displayPosX, this.gridConnection.displayPosY)
     GSM.Assets.selectedGameComponent.cell = newCell
     GSM.Assets.selectedGameComponent.positionX = newCell.posX
     GSM.Assets.selectedGameComponent.positionY = newCell.posY
     GSM.Assets.selectedGameComponent.gridId = this.gridConnection.mapId
 
-    // GSM.Map.switchGrid(this.gridConnection.mapId)
-    // GSM.Canvas.centerOverAsset(GSM.Assets.selectedGameComponent, GSM.Map.activeGrid)
+    GSM.Canvas.centerOverAsset(GSM.Assets.selectedGameComponent, GSM.Map.activeMap)
     
   }
 

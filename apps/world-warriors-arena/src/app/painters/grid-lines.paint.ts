@@ -4,8 +4,8 @@ import { Painter } from "./painter";
 export class GridLinePainter extends Painter {
   // Draws Grid Lines  
   public paint(): void {
-    for (let h = 0; h <= GSM.Map.activeGrid.height; h++) {
-      for (let w = 0; w <= GSM.Map.activeGrid.width; w++) {
+    for (let h = 0; h <= GSM.Map.activeMap.height; h++) {
+      for (let w = 0; w <= GSM.Map.activeMap.width; w++) {
         // Horizontal lines
         GSM.Canvas.backgroundCTX.beginPath()
         GSM.Canvas.backgroundCTX.moveTo(w * 32, h * 32)

@@ -1,5 +1,5 @@
 import { Injectable } from "@angular/core";
-import { GridService } from "./map.service";
+import { MapService } from "./map.service";
 import { Cell, Point } from "../models/cell.model";
 import { DebugSettings } from "../models/game-settings";
 import { GSM } from "../app.service.manager";
@@ -17,7 +17,7 @@ export class NewFogOfWarService {
   }
 
   public createCellLines(): void {
-    GSM.Map.activeGrid.gridDisplay.forEach(row => {
+    GSM.Map.activeMap.gridDisplay.forEach(row => {
       row.forEach(cell => {
         if (!cell.obstacle) {
           cell.revealed = false
@@ -115,8 +115,8 @@ export class NewFogOfWarService {
       checkLocationX += (xRatio * xRatioMultiplier)
       checkLocationY += (yRatio * yRatioMultiplier)
 
-      const checkedCell = GSM.Map.activeGrid.getGridCellByCoordinate(checkLocationX, checkLocationY)
-      if (GSM.Map.activeGrid.getGridCellByCoordinate(checkLocationX, checkLocationY)?.id === edgeCell.id) {
+      const checkedCell = GSM.Map.activeMap.getGridCellByCoordinate(checkLocationX, checkLocationY)
+      if (GSM.Map.activeMap.getGridCellByCoordinate(checkLocationX, checkLocationY)?.id === edgeCell.id) {
         reachedDestination = true
       } else {
         try {
@@ -189,17 +189,17 @@ export class NewFogOfWarService {
 
   public findVisibleCellsEdges(): void {
     this.edgeCells = []
-    for (let a = 0; a <= GSM.Map.activeGrid.width; a++) {
-      this.edgeCells.push(GSM.Map.activeGrid.getCell(a, 0))
+    for (let a = 0; a <= GSM.Map.activeMap.width; a++) {
+      this.edgeCells.push(GSM.Map.activeMap.getCell(a, 0))
     }
-    for (let a = 0; a < GSM.Map.activeGrid.height; a++) {
-      this.edgeCells.push(GSM.Map.activeGrid.getCell(GSM.Map.activeGrid.width - 1, a))
+    for (let a = 0; a < GSM.Map.activeMap.height; a++) {
+      this.edgeCells.push(GSM.Map.activeMap.getCell(GSM.Map.activeMap.width - 1, a))
     }
-    for (let a = GSM.Map.activeGrid.width - 1; a >= 0; a--) {
-      this.edgeCells.push(GSM.Map.activeGrid.getCell(a, GSM.Map.activeGrid.height - 1))
+    for (let a = GSM.Map.activeMap.width - 1; a >= 0; a--) {
+      this.edgeCells.push(GSM.Map.activeMap.getCell(a, GSM.Map.activeMap.height - 1))
     }
-    for (let a = GSM.Map.activeGrid.height; a >= 0; a--) {
-      this.edgeCells.push(GSM.Map.activeGrid.getCell(0, a))
+    for (let a = GSM.Map.activeMap.height; a >= 0; a--) {
+      this.edgeCells.push(GSM.Map.activeMap.getCell(0, a))
     }
     this.edgeCells = this.edgeCells.filter(a => a)
   }

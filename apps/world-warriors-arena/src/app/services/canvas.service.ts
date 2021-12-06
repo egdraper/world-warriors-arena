@@ -1,8 +1,9 @@
 import { ElementRef, Injectable } from "@angular/core";
-import { GameMap, GridService } from "./map.service";
+import { MapService } from "./map.service";
 import { Asset } from "../models/assets.model";
 import { Cell } from "../models/cell.model";
 import { GameSettings } from "../models/game-settings";
+import { GameMap } from "../models/game-map";
 
 @Injectable()
 export class CanvasService {
@@ -68,10 +69,11 @@ export class CanvasService {
     this.blackoutCTX.canvas.height = this.canvasSizeY
     this.blackoutCTX.canvas.width = this.canvasSizeX
     this.blackoutCTX.scale(GameSettings.scale, GameSettings.scale)
+    this.saveState()
   }
 
-  public scrollViewPort(x: number, y: number, grid: GridService): void {
-    if (x > 0 && this.cellOffsetX + this.maxCellCountX < grid.activeGrid.width - 1) {
+  public scrollViewPort(x: number, y: number, grid: MapService): void {
+    if (x > 0 && this.cellOffsetX + this.maxCellCountX < grid.activeMap.width - 1) {
       this.cellOffsetX += (1 / GameSettings.scale)
       this.adustViewPort(-32, 0)
     }
@@ -79,7 +81,7 @@ export class CanvasService {
       this.cellOffsetX -= (1 / GameSettings.scale)
       this.adustViewPort(32, 0)
     }
-    if (y > 0 && this.cellOffsetY + this.maxCellCountX < grid.activeGrid.height - 1) {
+    if (y > 0 && this.cellOffsetY + this.maxCellCountX < grid.activeMap.height - 1) {
       this.cellOffsetY += (1 / GameSettings.scale)
       this.adustViewPort(0, -32)
     }
@@ -131,8 +133,29 @@ export class CanvasService {
     this.adustViewPort((-1 * this.cellOffsetX * 32), (-1 * this.cellOffsetY * 32))
   }
 
+  public pageChangeAdjust(map: GameMap): void {
+    this.resetViewport()
+    this.canvasViewPortOffsetX += map.changePageXOffset
+    this.canvasViewPortOffsetY += map.changePageYOffset
 
-  private adustViewPort(xPos: number, yPos: number, gridWidth?: number, gridHeight?: number) {
+    this.fogCTX.translate(map.changePageXOffset, map.changePageYOffset)
+    this.blackoutCTX.translate(map.changePageXOffset, map.changePageYOffset)
+    this.backgroundCTX.translate(map.changePageXOffset, map.changePageYOffset)
+    this.overlayCTX.translate(map.changePageXOffset, map.changePageYOffset)
+    this.foregroundCTX.translate(map.changePageXOffset, map.changePageYOffset)
+  }
+
+
+  public hardAdjust(xPosAdjust: number, yPosAdjust: number) {
+    this.fogCTX.translate(xPosAdjust, yPosAdjust)
+    this.blackoutCTX.translate(xPosAdjust, yPosAdjust)
+    this.backgroundCTX.translate(xPosAdjust, yPosAdjust)
+    this.overlayCTX.translate(xPosAdjust, yPosAdjust)
+    this.foregroundCTX.translate(xPosAdjust, yPosAdjust)
+  }
+
+
+  public adustViewPort(xPos: number, yPos: number, gridWidth?: number, gridHeight?: number) {
     // console.log(xPos, yPos, this.canvasViewPortOffsetX, this.canvasViewPortOffsetY)
     if (yPos > 0 && this.canvasViewPortOffsetY >= 0) {
       yPos = 0
@@ -160,6 +183,22 @@ export class CanvasService {
     this.backgroundCTX.translate(xPosAdjust, yPosAdjust)
     this.overlayCTX.translate(xPosAdjust, yPosAdjust)
     this.foregroundCTX.translate(xPosAdjust, yPosAdjust)
+  }
+
+  public saveState(): void {
+    this.fogCTX.save()
+    this.blackoutCTX.save()
+    this.backgroundCTX.save()
+    this.overlayCTX.save()
+    this.foregroundCTX.save()
+  }
+
+  public restoreState(): void {
+    this.fogCTX.restore()
+    this.blackoutCTX.restore()
+    this.backgroundCTX.restore()
+    this.overlayCTX.restore()
+    this.foregroundCTX.restore()
   }
 
   public setCanvasSpecs(): void {

@@ -1,6 +1,6 @@
 import { GSM } from "../app.service.manager"
 import { Cell, DefaultMapSettings } from "../models/cell.model"
-import { GameMap } from "../services/map.service"
+import { GameMap } from "../models/game-map"
 
 export class BaseMapGenerator {
   public static autoFillBackgroundTerrain(map: GameMap, collectionId: string) {

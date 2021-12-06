@@ -75,8 +75,8 @@ export class Engine {
     // GSM.Draw.fogOfWarPainter.paint()
     // GSM.Draw.blackOutFogPainter.paint()
     // GSM.Draw.drawBlackOutEdges()    
-    Engine.onFire.next(this.frame)    
-
+    Engine.onFire.next(this.frame)   
+    
     requestAnimationFrame(this.startEngine.bind(this)); 
     this.frame >= 64 ? this.frame = 1 : this.frame += 1
   }

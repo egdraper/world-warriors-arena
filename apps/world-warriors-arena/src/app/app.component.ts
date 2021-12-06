@@ -2,7 +2,7 @@ import { Component } from '@angular/core';
 import { Engine } from './services/engine.service';
 import { AssetsService } from './services/assets.service';
 import { Cell } from './models/cell.model';
-import { GridService } from './services/map.service';
+import { MapService } from './services/map.service';
 import { DrawService } from './services/draw.service';
 import { CanvasService } from './services/canvas.service';
 import { CharacterEditorService } from './services/character-editor.service';
@@ -22,7 +22,7 @@ export class AppComponent {
     assetsService: AssetsService,
     canvasService: CanvasService,
     drawService: DrawService,
-    gridService: GridService,
+    mapService: MapService,
     editorService: EditorService,
     fogOfWarService: NewFogOfWarService,
     engine: Engine,
@@ -32,7 +32,7 @@ export class AppComponent {
     GSM.Assets = assetsService
     GSM.Canvas = canvasService
     GSM.Draw = drawService
-    GSM.Map = gridService
+    GSM.Map = mapService
     GSM.Editor = editorService
     GSM.FogOfWar = fogOfWarService
     GSM.Engine = engine

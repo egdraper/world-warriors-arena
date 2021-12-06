@@ -21,8 +21,8 @@ export class AssetPainter extends LayerPainter {
   }
 
   public drawAnimatedAssets(): void {
-    if (!GSM.Map.activeGrid) { return }
-    if (!GSM.Map.activeGrid.gridLoaded) { return }
+    if (!GSM.Map.activeMap) { return }
+    if (!GSM.Map.activeMap.gridLoaded) { return }
 
     if (GSM.Canvas.foregroundCTX) {
 
@@ -32,47 +32,47 @@ export class AssetPainter extends LayerPainter {
       let topRightPosX = topLeftPosX + GSM.Canvas.canvasSizeX + (32 * (1 / GameSettings.scale))
       let bottomPosY = topLeftPosY + GSM.Canvas.canvasSizeY + (32 * (1 / GameSettings.scale))
 
-      const cellTopLeft = GSM.Map.activeGrid.getGridCellByCoordinate(topLeftPosX, topLeftPosY)
-      let cellTopRight = GSM.Map.activeGrid.getGridCellByCoordinate(topRightPosX, topLeftPosY)
-      let cellBottomLeft = GSM.Map.activeGrid.getGridCellByCoordinate(topLeftPosX, bottomPosY)
+      const cellTopLeft = GSM.Map.activeMap.getGridCellByCoordinate(topLeftPosX, topLeftPosY)
+      let cellTopRight = GSM.Map.activeMap.getGridCellByCoordinate(topRightPosX, topLeftPosY)
+      let cellBottomLeft = GSM.Map.activeMap.getGridCellByCoordinate(topLeftPosX, bottomPosY)
 
       if (!cellBottomLeft) {
-        cellBottomLeft = GSM.Map.activeGrid.grid[`x0:y${GSM.Map.activeGrid.height - 1}`]
+        cellBottomLeft = GSM.Map.activeMap.grid[`x0:y${GSM.Map.activeMap.height - 1}`]
       }
       if (!cellTopRight) {
-        cellTopRight = GSM.Map.activeGrid.grid[`x${GSM.Map.activeGrid.width - 1}:y0`]
+        cellTopRight = GSM.Map.activeMap.grid[`x${GSM.Map.activeMap.width - 1}:y0`]
       }
       if (!cellTopLeft) {
-        cellTopRight = GSM.Map.activeGrid.grid[`x0:y0`]
+        cellTopRight = GSM.Map.activeMap.grid[`x0:y0`]
       }
 
       
       try {
-        if (GSM.Map.activeGrid.largeImage.background) {
+        if (GSM.Map.activeMap.largeImage.background) {
           if((this.frame - 1) % 2 === 0 ) {
             // GSM.Canvas.backgroundCTX.clearRect(0, 0, GSM.Map.activeGrid.width * 32, GSM.Map.activeGrid.height * 32);
             this.drawLargeImageBackground(topLeftPosX, topLeftPosY)
           }
           
           if(this.frame % 2 === 0) {
-            GSM.Canvas.foregroundCTX.clearRect(0, 0, GSM.Map.activeGrid.width * 32, GSM.Map.activeGrid.height * 32);
+            GSM.Canvas.foregroundCTX.clearRect(0, 0, GSM.Map.activeMap.width * 32, GSM.Map.activeMap.height * 32);
             GSM.Assets.gameComponents.forEach(gameComponent => {
               this.drawAroundAsset(gameComponent)
             })
           }
           
         } else {
-          GSM.Canvas.foregroundCTX.clearRect(0, 0, GSM.Map.activeGrid.width * 32, GSM.Map.activeGrid.height * 32);
-          GSM.Canvas.backgroundCTX.clearRect(0, 0, GSM.Map.activeGrid.width * 32, GSM.Map.activeGrid.height * 32);
+          GSM.Canvas.foregroundCTX.clearRect(0, 0, GSM.Map.activeMap.width * 32, GSM.Map.activeMap.height * 32);
+          GSM.Canvas.backgroundCTX.clearRect(0, 0, GSM.Map.activeMap.width * 32, GSM.Map.activeMap.height * 32);
           for (let y = cellTopLeft.y; y <= cellBottomLeft.y; y++) {
             for (let x = cellTopLeft?.x; x <= cellTopRight?.x; x++) {
-              const drawableCell = GSM.Map.activeGrid.getCell(x, y)
+              const drawableCell = GSM.Map.activeMap.getCell(x, y)
 
               if (drawableCell.growableTileId && !drawableCell.growableTileOverride) {
                 this.calculateGrowableTerrain(drawableCell)
               }
     
-              this.drawAsset(GSM.Assets.gameComponents.find(gameComponent => gameComponent.cell.id === drawableCell.id && GSM.Map.activeGrid.id === gameComponent.gridId))
+              this.drawAsset(GSM.Assets.gameComponents.find(gameComponent => gameComponent.cell.id === drawableCell.id && GSM.Map.activeMap.id === gameComponent.gridId))
 
               this.drawOnCell(drawableCell)
               this.drawOnBackgroundCell(drawableCell)
@@ -109,7 +109,7 @@ export class AssetPainter extends LayerPainter {
   public drawLargeImageBackground(canvasTopLeftPosX: number, canvasTopLeftPosY: number): void {
     GSM.Canvas.backgroundCTX.imageSmoothingEnabled = false
     GSM.Canvas.backgroundCTX.drawImage(
-      GSM.Map.activeGrid.largeImage.background,
+      GSM.Map.activeMap.largeImage.background,
       canvasTopLeftPosX,
       canvasTopLeftPosY,
       GSM.Canvas.canvasSizeX * (1 / GameSettings.scale),
@@ -123,7 +123,7 @@ export class AssetPainter extends LayerPainter {
 
   // Draws draws around the asset so asset can stand behind objects in game mode (single image background)
   private drawAroundAsset(asset: MotionAsset): void {
-    if (asset.gridId !== GSM.Map.activeGrid.id) { return }
+    if (asset.gridId !== GSM.Map.activeMap.id) { return }
 
     const x = asset.cell.x
     const y = asset.cell.y
@@ -136,7 +136,7 @@ export class AssetPainter extends LayerPainter {
           continue
         }
 
-        const paintingArea = GSM.Map.activeGrid.getCell(x + l, y + i)
+        const paintingArea = GSM.Map.activeMap.getCell(x + l, y + i)
 
         if (paintingArea.imageTile) {
           this.drawOnCell(paintingArea, true)
