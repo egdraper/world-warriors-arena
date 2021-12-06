@@ -3,6 +3,8 @@ import { Cell, Visited } from "../models/cell.model";
 
 export class ShortestPath {
   public static creaturesOnGrid: any[] = []
+  private static maxSearches = 2000000
+  private static searchIndex = 0
 
   public static find(start: Cell, end: Cell, creaturesOnGrid: Array<GameComponent> ): Cell[] {
     this.creaturesOnGrid = creaturesOnGrid
@@ -12,6 +14,8 @@ export class ShortestPath {
   }
 
   private static start(start: Cell, end: Cell): Cell[] {
+    if(!end) { return [] }
+    this.searchIndex = 0
     const visited: any = { };
     visited[`x${start.x}:y${start.y}`] = { cell: start, steps: { moves: 0, distance: 0, odd: true } };
 
@@ -32,11 +36,14 @@ export class ShortestPath {
   }
 
   private static visitedNow(endingPoint: Cell, visited: any) {
+    if(!endingPoint) { return }
+    if(this.maxSearches < this.searchIndex) { return }
+    
     if ((visited[`x${endingPoint.x}:y${endingPoint.y}`] && visited[`x${endingPoint.x}:y${endingPoint.y}`].cell === endingPoint)) {
       return;
     }
     
-
+    
     Object.keys(visited).forEach(visitedCell => {
         if (!visited[visitedCell].checked) {
           const store: number[] = [ ];
@@ -87,7 +94,7 @@ export class ShortestPath {
           }
         });
       }
-
+      this.searchIndex++
       visited[visitedCell].checked = true;
     });
     this.visitedNow(endingPoint, visited);

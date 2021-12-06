@@ -1,57 +1,59 @@
 import { GSM } from "../app.service.manager";
-import { GameMap } from "../services/map.service";
 import { Cell, DefaultMapSettings, MapPosition, MarkerIconType } from "../models/cell.model";
+import { GameMap } from "../models/game-map";
 import { PageTransitionMarker } from "../models/markers-icons";
 import { BaseMapGenerator } from "./base-map-generator";
 import { ShortestPath } from "./shortest-path";
 
 export class RandomMapGenerator extends BaseMapGenerator {
-  public generateMap(width: number, height: number, mapDetails: DefaultMapSettings): GameMap {
-    const map = GSM.Map.createNewGrid(width, height, mapDetails)
-    const randomLeft = Math.floor(Math.random() * ((height - 10) - 10 + 1) + 10)
+  public static generateMap(width: number, height: number, mapDetails: DefaultMapSettings): GameMap {
+    const map = GSM.Map.createNewGrid(width, height, mapDetails, true)
+    const randomLeft = 18 //Math.floor(Math.random() * ((height - 10) - 10 + 1) + 10)
     const randomRight = Math.floor(Math.random() * ((height - 10) - 10 + 1) + 10)
 
     this.addPortalMarkerIcons(map, randomLeft, randomRight)
-    this.autoFillBackgroundTerrain(mapDetails.backgroundTypeId)
-    this.autoPopulateForegroundTerrain(mapDetails, randomLeft, randomRight)
+    this.autoFillBackgroundTerrain(map, mapDetails.backgroundTypeId)
+    this.autoPopulateForegroundTerrain(map, mapDetails, randomLeft, randomRight)
     map.defaultSettings = mapDetails
     return map
   }
 
-  public generateAttachmentMap(transitionFromMap: GameMap, mapDetails: DefaultMapSettings, pageTransitionMarker: PageTransitionMarker): GameMap {
-    const map = GSM.Map.createNewGrid(transitionFromMap.width, transitionFromMap.height, mapDetails)
+  public static generateAttachmentMap(transitionFromMap: GameMap, mapDetails: DefaultMapSettings, pageTransitionMarker: PageTransitionMarker): GameMap {
+    const map = GSM.Map.createNewGrid(transitionFromMap.width, transitionFromMap.height, mapDetails, false)
+
     const randomLeft = Math.floor(Math.random() * ((transitionFromMap.height - 10) - 10 + 1) + 10)
     const randomRight = Math.floor(Math.random() * ((transitionFromMap.height - 10) - 10 + 1) + 10)
     
     if (pageTransitionMarker.position === MapPosition.left) {
       this.addPortalMarkerIcons(map, randomLeft, randomRight, pageTransitionMarker, null)
     }
+
     if (pageTransitionMarker.position === MapPosition.right) {
       this.addPortalMarkerIcons(map, randomLeft, randomRight, null, pageTransitionMarker)
     }
     
-    this.autoFillBackgroundTerrain(mapDetails.backgroundTypeId)
-    this.autoPopulateForegroundTerrain(mapDetails, randomLeft, randomRight)
+    this.autoFillBackgroundTerrain(map, mapDetails.backgroundTypeId)
+    this.autoPopulateForegroundTerrain(map, mapDetails, randomLeft, randomRight)
     map.defaultSettings = mapDetails
     return map
   }
 
-  public autoPopulateForegroundTerrain(defaultMapSettings: DefaultMapSettings, randomLeft: number, randomRight: number): void {
+  public static autoPopulateForegroundTerrain(map: GameMap, defaultMapSettings: DefaultMapSettings, randomLeft: number, randomRight: number): void {
     let path
 
     // Places random obstacles in the map to make the path somewhat wind around
     for (let i = 0; i < 5; i++) {
       try {
-        this.clearObstacles()
-        this.randomlyPlaceInvisibleObstacles()
-        path = ShortestPath.find(GSM.Map.activeGrid.grid[`x0:y${randomLeft}`], GSM.Map.activeGrid.grid[`x${GSM.Map.activeGrid.width - 2}:y${randomRight}`], [])
+        this.clearObstacles(map)
+        this.randomlyPlaceInvisibleObstacles(map)
+        path = ShortestPath.find(map.grid[`x0:y${randomLeft}`], map.grid[`x${map.width - 2}:y${randomRight}`], [])
 
       } catch { }
     }
-    this.clearObstacles()
+    this.clearObstacles(map)
 
     // Adds random objects like trees or cliffs
-    this.addRandomTerrain(defaultMapSettings)
+    this.addRandomTerrain(map, defaultMapSettings)
 
     // Creates a drawn path if desired
     path.forEach(cell => {
@@ -62,15 +64,14 @@ export class RandomMapGenerator extends BaseMapGenerator {
     })
 
     // creates a randomized boarder to encapsulate the map
-    this.createRandomizedBoarder(defaultMapSettings)
+    this.createRandomizedBoarder(map, defaultMapSettings)
 
     // clears all obstacles from path
     this.clearOpening(path)
-    this.terrainCleanup()
-    GSM.Editor.backgroundDirty = true
+    this.terrainCleanup(map)
   }
 
-  public setEdgeLayerRandomization(cell: Cell, neighborIndex: number, defaultMapSettings: DefaultMapSettings): void {
+  public static setEdgeLayerRandomization(cell: Cell, neighborIndex: number, defaultMapSettings: DefaultMapSettings): void {
     const random = !!!Math.floor(Math.random() * 2)
     if (random) {
       if (cell.neighbors[neighborIndex]) {
@@ -83,15 +84,15 @@ export class RandomMapGenerator extends BaseMapGenerator {
     }
   }
 
-  public randomlyPlaceInvisibleObstacles(): void {
-    GSM.Map.activeGrid.gridDisplay.forEach(row => {
+  public static randomlyPlaceInvisibleObstacles(map: GameMap): void {
+    map.gridDisplay.forEach(row => {
       row.forEach(cell => {
         cell.obstacle = !!!Math.floor(Math.random() * 4)
       })
     })
   }
 
-  public addPortalMarkerIcons(map: GameMap, entranceLeftPos: number, entranceRightPos: number, leftTransitionMarker?: PageTransitionMarker, rightTransitionMarker?: PageTransitionMarker): void {
+  public static addPortalMarkerIcons(map: GameMap, entranceLeftPos: number, entranceRightPos: number, leftTransitionMarker?: PageTransitionMarker, rightTransitionMarker?: PageTransitionMarker): void {
     const tokenImage = new Image()
     tokenImage.src = "assets/images/compasbig.png"
 
@@ -121,7 +122,7 @@ export class RandomMapGenerator extends BaseMapGenerator {
     pageMarkerRight.id = Math.floor(Math.random() * 100000).toString()
     pageMarkerRight.type = MarkerIconType.mapTransition
     pageMarkerRight.position = MapPosition.right
-    pageMarkerRight.displayPosX = (GSM.Map.activeGrid.width * 32) - 80
+    pageMarkerRight.displayPosX = (map.width * 32) - 80
     pageMarkerRight.displayPosY = entranceRightPos * 32
     pageMarkerRight.height = 64
     pageMarkerRight.width = 64

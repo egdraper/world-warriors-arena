@@ -42,19 +42,16 @@ export class Engine {
         // handles specific frames for uneven animation. example [3, 10, 15, 16, 17]
         if (asset.animationFrame.find(_frame => _frame === this.frame)) {
           asset.update()
-          asset.assetDirty = true
         }
       } else {
         // handles even frame animation. Example "5", which represents every 5 frames the update function are ran
         if(this.frame % asset.animationFrame === 0) {
           asset.update()
-          asset.assetDirty = true
         }
       }
 
       // asset motion frame, for moving from cell to cell
       if(this.frame % 1 === 0) {
-        asset.assetDirty = true
        if(asset.moving) { 
          asset.move()
         }
@@ -73,14 +70,13 @@ export class Engine {
     // if(this.frame % 2 === 0) {
     // // GSM.Draw.assetPainter.drawAnimatedAssets()
     // // }
-    GSM.Draw.assetPainter.drawObstacles()
     GSM.Draw.assetPainter.drawEditableCharacter()
     GSM.Draw.assetPainter.drawEditableObject()
     // GSM.Draw.fogOfWarPainter.paint()
     // GSM.Draw.blackOutFogPainter.paint()
     // GSM.Draw.drawBlackOutEdges()    
-    Engine.onFire.next(this.frame)    
-
+    Engine.onFire.next(this.frame)   
+    
     requestAnimationFrame(this.startEngine.bind(this)); 
     this.frame >= 64 ? this.frame = 1 : this.frame += 1
   }

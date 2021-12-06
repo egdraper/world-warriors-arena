@@ -22,7 +22,8 @@
               "apps/world-warriors-arena/src/assets"
             ],
             "styles": ["apps/world-warriors-arena/src/styles.scss"],
-            "scripts": []
+            "scripts": [],
+            "webWorkerTsConfig": "apps/world-warriors-arena/tsconfig.worker.json"
           },
           "configurations": {
             "production": {
@@ -90,7 +91,8 @@
           "outputs": ["coverage/apps/world-warriors-arena"],
           "options": {
             "jestConfig": "apps/world-warriors-arena/jest.config.js",
-            "passWithNoTests": true
+            "passWithNoTests": true,
+            "webWorkerTsConfig": "apps/world-warriors-arena/tsconfig.worker.json"
           }
         }
       }

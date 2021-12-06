@@ -25,7 +25,7 @@ export class GameMarkersService {
         && this.mouseY >= icon.displayPosY 
         && this.mouseX <= icon.displayPosX + icon.width 
         && this.mouseY <= icon.displayPosY + icon.height
-        && GSM.Map.activeGrid.id === icon.mapId
+        && GSM.Map.activeMap.id === icon.mapId
     })
   }
 

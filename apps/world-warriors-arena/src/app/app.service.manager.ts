@@ -5,7 +5,7 @@ import { AssetsService } from "./services/assets.service";
 import { GameMarkersService } from "./services/game-markers.service";
 import { DrawService } from "./services/draw.service";
 import { Engine } from "./services/engine.service";
-import { GridService } from "./services/map.service";
+import { MapService } from "./services/map.service";
 import { NewFogOfWarService } from "./services/new-visibility.service";
 import { ShortestPath } from "./utils/shortest-path";
 
@@ -13,7 +13,7 @@ export class GSM {
   public static Canvas: CanvasService
   public static Assets: AssetsService
   public static Draw: DrawService
-  public static Map: GridService
+  public static Map: MapService
   public static Editor: EditorService
   public static FogOfWar: NewFogOfWarService
   public static Engine: Engine

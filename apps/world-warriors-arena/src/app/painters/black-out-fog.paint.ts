@@ -14,9 +14,9 @@ export class BlackOutFogPainter extends Painter {
   }
 
   private drawBlackoutFog(): void {
-    if (!GSM.Canvas.blackoutCTX || !GSM.Map.activeGrid) { return }
+    if (!GSM.Canvas.blackoutCTX || !GSM.Map.activeMap) { return }
 
-    GSM.Canvas.blackoutCTX.clearRect(0, 0, GSM.Map.activeGrid.width * 32, GSM.Map.activeGrid.height * 32);
+    GSM.Canvas.blackoutCTX.clearRect(0, 0, GSM.Map.activeMap.width * 32, GSM.Map.activeMap.height * 32);
     GSM.Canvas.backgroundCTX.imageSmoothingEnabled = false
 
     if (GSM.Assets.selectedGameComponent) {
@@ -25,8 +25,8 @@ export class BlackOutFogPainter extends Painter {
       GSM.Canvas.blackoutCTX.fillRect(
         0,
         0,
-        GSM.Map.activeGrid.width * 32,
-        GSM.Map.activeGrid.height * 32
+        GSM.Map.activeMap.width * 32,
+        GSM.Map.activeMap.height * 32
       )
     }
 

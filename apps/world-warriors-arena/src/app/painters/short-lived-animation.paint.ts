@@ -9,7 +9,7 @@ export class ShortLivedAnimationPainter extends Painter {
  
   public paint(): void {
     this.animations.forEach(animation => {
-      GSM.Canvas.overlayCTX.clearRect(0, 0, GSM.Map.activeGrid.width * 32 * GameSettings.scale, GSM.Map.activeGrid.height * 32 * GameSettings.scale);
+      GSM.Canvas.overlayCTX.clearRect(0, 0, GSM.Map.activeMap.width * 32 * GameSettings.scale, GSM.Map.activeMap.height * 32 * GameSettings.scale);
 
       if (!animation.cell) { return }
       GSM.Canvas.foregroundCTX.imageSmoothingEnabled = false

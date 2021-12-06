@@ -10,7 +10,6 @@ export class AssetsService {
   public selectedGameComponents: MotionAsset[] = [] 
   public obstacles: string[] = []
 
-  public obstaclesDirty: boolean = false
   public placementChanged: boolean = true
 
   public removeGameComponent(): void {
@@ -44,7 +43,6 @@ export class AssetsService {
 
     selectedCell.imageTile = selectedAsset
     selectedCell.obstacle = true
-    selectedCell.visible = true
 
     if (!selectedAsset) {
       this.addRequiredNeighborTiles(selectedCell, drawableItem)
@@ -95,12 +93,10 @@ export class AssetsService {
 
       if (selectedCell.neighbors[0]) {
         selectedCell.neighbors[0].growableTileId = drawableItem.id + drawableItem.layers
-        selectedCell.neighbors[0].visible = true
         selectedCell.neighbors[0].obstacle = true
       }
       if (selectedCell.neighbors[1]) {
         selectedCell.neighbors[1].growableTileId = drawableItem.id + drawableItem.layers
-        selectedCell.neighbors[1].visible = true
         selectedCell.neighbors[1].obstacle = true
       }
       if (selectedCell.neighbors[4]) {
@@ -109,7 +105,6 @@ export class AssetsService {
       }
 
       selectedCell.growableTileId = drawableItem.id + drawableItem.layers
-      selectedCell.visible = true
     }
   }
 }
