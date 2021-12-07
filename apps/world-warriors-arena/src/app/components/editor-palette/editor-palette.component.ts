@@ -16,6 +16,7 @@ export class EditorPaletteComponent implements OnInit {
   public lockState = "Locked"
   public mapService = GSM.Map
   public canvasService = GSM.Canvas
+  public assetService = GSM.Assets
 
   public ngOnInit(): void {
     this.imageArray = GSM.Editor.findObjectCollection("trees")
