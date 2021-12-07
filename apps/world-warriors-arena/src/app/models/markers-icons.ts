@@ -55,8 +55,7 @@ export class PageTransitionMarker extends MarkerIcon {
     GSM.Assets.selectedGameComponent.positionX = newCell.posX
     GSM.Assets.selectedGameComponent.positionY = newCell.posY
     GSM.Assets.selectedGameComponent.gridId = this.gridConnection.mapId
-
-    GSM.Canvas.centerOverAsset(GSM.Assets.selectedGameComponent, GSM.Map.activeMap)
+    GSM.Canvas.centerOverAsset(GSM.Assets.selectedGameComponent)
     
   }
 

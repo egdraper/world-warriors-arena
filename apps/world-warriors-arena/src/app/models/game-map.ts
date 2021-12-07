@@ -15,7 +15,6 @@ export class GameMap {
   public gridLoaded = false
   public includeGridLines = false
   public largeImage: LargeCanvasImage
-  public drawBlackoutImage = false
   public selectedGameComponent: MotionAsset
 
   public changePageXOffset: number

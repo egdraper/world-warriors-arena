@@ -42,7 +42,7 @@ export class EditorPaletteComponent implements OnInit {
 
     if (this.lockState === "Locked") {
       if (GSM.Assets.selectedGameComponent) {
-        GSM.Canvas.centerOverAsset(GSM.Assets.selectedGameComponent, GSM.Map.activeMap)
+        GSM.Canvas.centerOverAsset(GSM.Assets.selectedGameComponent)
       }
       GameSettings.gm = false
     } else {
