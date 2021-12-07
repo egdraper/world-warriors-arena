@@ -97,19 +97,15 @@ export class CanvasComponent {
         this.shiftPressed = true
         break;    
       case "ArrowRight":
-        console.log("right pressed")
         this.rightArrowDown = true
         break;
       case "ArrowLeft":
-        console.log("left pressed")
         this.leftArrowDown = true
         break;
         case "ArrowUp":
-        console.log("up pressed")
         this.upArrowDown = true
         break;
         case "ArrowDown":
-        console.log("down pressed")
         this.downArrowDown = true
         break;      
       case "e":
@@ -181,6 +177,7 @@ export class CanvasComponent {
     // select Asset
     if(assetInCell && !GSM.Assets.selectedGameComponent) {
       GSM.Assets.selectAsset(assetInCell)
+      GSM.Canvas.centerOverAsset(assetInCell)
       return
     }
 
@@ -194,7 +191,7 @@ export class CanvasComponent {
     if(assetInCell && assetInCell.id !== GSM.Assets.selectedGameComponent.id) {
       GSM.Assets.deselectAsset()
       GSM.Assets.selectAsset(assetInCell)
-      GSM.Canvas.centerOverAsset(assetInCell, GSM.Map.activeMap)
+      GSM.Canvas.centerOverAsset(assetInCell)
       return
     }
 
@@ -276,34 +273,35 @@ export class CanvasComponent {
 
   public subscribeToEngine(): void {
     Engine.onFire.subscribe((frame) => {
+      if(!GameSettings.gm) { return }
       if (this.rightArrowDown) {
-        GSM.Canvas.scrollViewPort(1, 0, GSM.Map)
+        GSM.Canvas.scrollViewPort(1, 0)
       }
       if (this.leftArrowDown) {
-        GSM.Canvas.scrollViewPort(-1, 0, GSM.Map)
+        GSM.Canvas.scrollViewPort(-1, 0)
       }
       if (this.upArrowDown) {
-        GSM.Canvas.scrollViewPort(0, -1, GSM.Map)
+        GSM.Canvas.scrollViewPort(0, -1)
       }
       if (this.downArrowDown) {
-        GSM.Canvas.scrollViewPort(0, 1, GSM.Map)
+        GSM.Canvas.scrollViewPort(0, 1)
       }
 
+
       if (this.rightQuadrant) {
-        console.log("r" + this.rightQuadrant)
-        GSM.Canvas.scrollViewPort(1, 0, GSM.Map)
+        GSM.Canvas.scrollViewPort(1, 0)
       }
       
       if (this.leftQuadrant) {
-        GSM.Canvas.scrollViewPort(0, -1, GSM.Map)
+        GSM.Canvas.scrollViewPort(0, -1)
       }
       
       if (this.topQuadrant) {
-        GSM.Canvas.scrollViewPort(-1, 0, GSM.Map)
+        GSM.Canvas.scrollViewPort(-1, 0)
       }
       
       if (this.bottomQuadrant) {
-        GSM.Canvas.scrollViewPort(0, 1, GSM.Map)
+        GSM.Canvas.scrollViewPort(0, 1)
       }
     })
   }

@@ -4,6 +4,7 @@ import { Asset } from "../models/assets.model";
 import { Cell } from "../models/cell.model";
 import { GameSettings } from "../models/game-settings";
 import { GameMap } from "../models/game-map";
+import { GSM } from "../app.service.manager";
 
 @Injectable()
 export class CanvasService {
@@ -72,49 +73,59 @@ export class CanvasService {
     this.saveState()
   }
 
-  public scrollViewPort(x: number, y: number, grid: MapService): void {
-    if (x > 0 && this.cellOffsetX + this.maxCellCountX < grid.activeMap.width - 1) {
+  public scrollViewPort(x: number, y: number): void {
+    let adjustX = 0
+    let adjustY = 0
+
+    if (x > 0 && this.cellOffsetX + this.maxCellCountX < GSM.Map.activeMap.width) {
       this.cellOffsetX += (1 / GameSettings.scale)
-      this.adustViewPort(-32, 0)
+      adjustX = -32
+      adjustY = 0
     }
+
     if (x < 0 && this.cellOffsetX > 0) {
       this.cellOffsetX -= (1 / GameSettings.scale)
-      this.adustViewPort(32, 0)
+      adjustX = 32
+      adjustY = 0
     }
-    if (y > 0 && this.cellOffsetY + this.maxCellCountX < grid.activeMap.height - 1) {
+
+    if (y > 0 && this.cellOffsetY + this.maxCellCountY < GSM.Map.activeMap.height) {
       this.cellOffsetY += (1 / GameSettings.scale)
-      this.adustViewPort(0, -32)
+      adjustX = 0
+      adjustY = -32
     }
+
     if (y < 0 && this.cellOffsetY > 0) {
       this.cellOffsetY -= (1 / GameSettings.scale)
-      this.adustViewPort(0, 32)
+      adjustX = 0
+      adjustY = 32
     }
+   
+    this.adustViewPort(adjustX, adjustY)
+
   }
   
-  public resetViewport(): void {
-    const xPos = -1 * this.canvasViewPortOffsetX
-    const yPos = -1 * this.canvasViewPortOffsetY
-    this.cellOffsetX = 0
-    this.cellOffsetY = 0
-    this.adustViewPort(xPos, yPos)
-  }
-
-  public trackAsset(xPos: number, yPos: number, asset: Asset, grid: GameMap): void {
-    if (asset && grid.width && grid.height) {
-      if (!grid.height || !grid.height) {
+  public trackAsset(xPos: number, yPos: number, asset: Asset, adjustCanvasOffsetOnly: boolean = false): void {
+    if (asset && GSM.Map.activeMap.width && GSM.Map.activeMap.height) {
+      if (!GSM.Map.activeMap.height || !GSM.Map.activeMap.height) {
         throw new Error("Passing in asset requires gridWidth and grid height")
       }
 
       if (asset.positionX <= this.centerPointX + 32) { xPos = 0 }
       if (asset.positionY <= this.centerPointY + 32) { yPos = 0 }
-      if (asset.positionX >= (grid.width * 32) - this.centerPointX - 32) { xPos = 0 }
-      if (asset.positionY >= (grid.height * 32) - this.centerPointY - 32) { yPos = 0 }
+      if (asset.positionX >= (GSM.Map.activeMap.width * 32) - this.centerPointX) { xPos = 0 }
+      if (asset.positionY >= (GSM.Map.activeMap.height * 32) - this.centerPointY) { yPos = 0 }
     }
 
-    this.adustViewPort(xPos, yPos, grid.width, grid.height)
+    if(adjustCanvasOffsetOnly) {
+      this.cellOffsetX += xPos
+      this.cellOffsetY += yPos
+    } else {
+      this.adustViewPort(xPos, yPos, GSM.Map.activeMap.width, GSM.Map.activeMap.height)
+    }
   }
   
-  public centerOverAsset(asset: Asset, grid: GameMap): void {
+  public centerOverAsset(asset: Asset): void {
     if(!asset) {return}
 
     // select Asset
@@ -123,14 +134,44 @@ export class CanvasService {
     let assetXPos = asset.cell.posX <= this.centerPointX ? 0 : -1 * asset.cell.posX + this.centerPointX
     let assetYPos = asset.cell.posY <= this.centerPointY ? 0 : -1 * asset.cell.posY + this.centerPointY
 
-    assetXPos = asset.cell.posX >= (grid.width * 32) - this.centerPointX ? -1 * ((grid.width * 32) - this.canvasSizeX - 32) : assetXPos
-    assetYPos = asset.cell.posY >= (grid.width * 32) - this.centerPointY ? -1 * ((grid.height * 32) - this.canvasSizeY - 32) : assetYPos
+    assetXPos = asset.cell.posX >= (GSM.Map.activeMap.width * 32) - this.centerPointX ? -1 * ((GSM.Map.activeMap.width * 32) - this.canvasSizeX - 32) : assetXPos
+    assetYPos = asset.cell.posY >= (GSM.Map.activeMap.width * 32) - this.centerPointY ? -1 * ((GSM.Map.activeMap.height * 32) - this.canvasSizeY - 32) : assetYPos
 
-    const topCorner = grid.getGridCellByCoordinate((-1 * assetXPos), (-1 * assetYPos))
+    const topCorner = GSM.Map.activeMap.getGridCellByCoordinate((-1 * assetXPos), (-1 * assetYPos))
     this.cellOffsetX = topCorner.x
     this.cellOffsetY = topCorner.y
 
     this.adustViewPort((-1 * this.cellOffsetX * 32), (-1 * this.cellOffsetY * 32))
+  }
+
+  public adustViewPort(xPos: number, yPos: number, gridWidth?: number, gridHeight?: number) {
+    // console.log(xPos, yPos, this.canvasViewPortOffsetX, this.canvasViewPortOffsetY)
+    if (yPos > 0 && this.canvasViewPortOffsetY >= 0) {
+      yPos = 0
+    } if (xPos > 0 && this.canvasViewPortOffsetX >= 0) {
+      xPos = 0
+    }
+    if (xPos < 0 && this.canvasViewPortOffsetX - this.canvasSizeX <= (-1 * gridWidth * GameSettings.cellDimension)) {
+      xPos = 0
+    }
+    if (yPos < 0 && this.canvasViewPortOffsetY - this.canvasSizeY <= (-1 * gridHeight * GameSettings.cellDimension)) {
+      yPos = 0
+    }
+
+    let xPosAdjust = 0
+    let yPosAdjust = 0
+
+    xPosAdjust = xPos * (1 / GameSettings.scale)
+    yPosAdjust = yPos * (1 / GameSettings.scale)
+
+    this.canvasViewPortOffsetX += xPos
+    this.canvasViewPortOffsetY += yPos
+
+    this.fogCTX.translate(xPosAdjust, yPosAdjust)
+    this.blackoutCTX.translate(xPosAdjust, yPosAdjust)
+    this.backgroundCTX.translate(xPosAdjust, yPosAdjust)
+    this.overlayCTX.translate(xPosAdjust, yPosAdjust)
+    this.foregroundCTX.translate(xPosAdjust, yPosAdjust)
   }
 
   public pageChangeAdjust(map: GameMap): void {
@@ -145,39 +186,16 @@ export class CanvasService {
     this.foregroundCTX.translate(map.changePageXOffset, map.changePageYOffset)
   }
 
-
-  public hardAdjust(xPosAdjust: number, yPosAdjust: number) {
-    this.fogCTX.translate(xPosAdjust, yPosAdjust)
-    this.blackoutCTX.translate(xPosAdjust, yPosAdjust)
-    this.backgroundCTX.translate(xPosAdjust, yPosAdjust)
-    this.overlayCTX.translate(xPosAdjust, yPosAdjust)
-    this.foregroundCTX.translate(xPosAdjust, yPosAdjust)
+    
+  public resetViewport(): void {
+    const xPos = -1 * this.canvasViewPortOffsetX
+    const yPos = -1 * this.canvasViewPortOffsetY
+    this.cellOffsetX = 0
+    this.cellOffsetY = 0
+    this.adustViewPort(xPos, yPos)
   }
 
-
-  public adustViewPort(xPos: number, yPos: number, gridWidth?: number, gridHeight?: number) {
-    // console.log(xPos, yPos, this.canvasViewPortOffsetX, this.canvasViewPortOffsetY)
-    if (yPos > 0 && this.canvasViewPortOffsetY >= 0) {
-      yPos = 0
-    } if (xPos > 0 && this.canvasViewPortOffsetX >= 0) {
-      xPos = 0
-    }
-    if (xPos < 0 && this.canvasViewPortOffsetX - this.canvasSizeX <= (-1 * gridWidth * GameSettings.cellDimension) + 64) {
-      xPos = 0
-    }
-    if (yPos < 0 && this.canvasViewPortOffsetY - this.canvasSizeY <= (-1 * gridHeight * GameSettings.cellDimension) + 64) {
-      yPos = 0
-    }
-
-    let xPosAdjust = 0
-    let yPosAdjust = 0
-
-    xPosAdjust = xPos * (1 / GameSettings.scale)
-    yPosAdjust = yPos * (1 / GameSettings.scale)
-
-    this.canvasViewPortOffsetX += xPos
-    this.canvasViewPortOffsetY += yPos
-
+  public hardAdjust(xPosAdjust: number, yPosAdjust: number) {
     this.fogCTX.translate(xPosAdjust, yPosAdjust)
     this.blackoutCTX.translate(xPosAdjust, yPosAdjust)
     this.backgroundCTX.translate(xPosAdjust, yPosAdjust)

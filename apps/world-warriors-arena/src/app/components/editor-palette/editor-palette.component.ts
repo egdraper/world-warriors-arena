@@ -16,6 +16,7 @@ export class EditorPaletteComponent implements OnInit {
   public lockState = "Locked"
   public mapService = GSM.Map
   public canvasService = GSM.Canvas
+  public assetService = GSM.Assets
 
   public ngOnInit(): void {
     this.imageArray = GSM.Editor.findObjectCollection("trees")
@@ -42,7 +43,7 @@ export class EditorPaletteComponent implements OnInit {
 
     if (this.lockState === "Locked") {
       if (GSM.Assets.selectedGameComponent) {
-        GSM.Canvas.centerOverAsset(GSM.Assets.selectedGameComponent, GSM.Map.activeMap)
+        GSM.Canvas.centerOverAsset(GSM.Assets.selectedGameComponent)
       }
       GameSettings.gm = false
     } else {

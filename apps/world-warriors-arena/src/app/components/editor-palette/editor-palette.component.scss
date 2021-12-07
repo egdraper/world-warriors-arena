@@ -34,6 +34,11 @@
   background-color:#222222;
 }
 
+.disabled {
+  background-color: #aaaaaa;
+  pointer-events: none;
+}
+
 select {
   width: 100%;
 }

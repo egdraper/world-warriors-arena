@@ -47,7 +47,6 @@ export class EditorService {
     GSM.Canvas.centerPointY = centerCell.posY * GameSettings.scale
 
     GSM.Draw.blackOutFogPainter.paint()
-    // GSM.FogOfWar.createCellLines()
   }
 
   public generateRandomAttachmentMap(markerIcon: PageTransitionMarker): void {
@@ -62,14 +61,6 @@ export class EditorService {
    
     RandomMapGenerator.generateAttachmentMap(GSM.Map.activeMap, mapDetails, markerIcon)
     GSM.Canvas.setupCanvases()
-
-    // CLEANUP - Needs to be moved into somewhere that re-draws
-    // const centerCell = GSM.Map.activeGrid.getGridCellByCoordinate(Math.floor(GSM.Canvas.canvasSizeX / 2), Math.floor(GSM.Canvas.canvasSizeY / 2))
-    // GSM.Canvas.centerPointX = centerCell.posX * GameSettings.scale
-    // GSM.Canvas.centerPointY = centerCell.posY * GameSettings.scale
-
-    // GSM.Draw.blackOutFogPainter.paint()
-    // GSM.FogOfWar.createCellLines()
   }
 
 } 

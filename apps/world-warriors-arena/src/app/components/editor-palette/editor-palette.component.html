@@ -4,7 +4,12 @@
 <div class="button" (click)="invertedClicked()">Invert</div>
 <div class="button" (click)="baseClicked()">Layer</div>
 <div class="button" (click)="canvasService.resetViewport()">Reset View Port</div>
-<div class="button" (click)="changeLockState()" [class.color]="lockState === 'Locked'? 'red' : 'blue'">{{lockState}}</div>
+<div class="button" 
+  (click)="changeLockState()"
+  [class.disabled]="assetService?.selectedGameComponent?.moving" 
+  [class.color]="lockState === 'Locked'? 'red' : 'blue'">
+    {{lockState}}
+</div>
 <div 
   *ngFor="let mapId of mapService.mapIds"
   class="button" 

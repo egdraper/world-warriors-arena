@@ -85,6 +85,7 @@ export abstract class MotionAsset extends Asset {
     }
   }
 
+  private prevCell: Cell
   public startMovement(startCell: Cell, endCell: Cell, charactersOnGrid: MotionAsset[], onFinished?: ()=> void): void {
     if(onFinished) { this.onFinished = onFinished }
     this.destinationIndicator = new ClickAnimation(350, `../../../assets/images/DestinationX.png`, endCell)
@@ -99,7 +100,7 @@ export abstract class MotionAsset extends Asset {
     this.currentPath = ShortestPath.find(startCell, endCell, charactersOnGrid)
     if(this.currentPath.length === 0) { return }
     this.moving = true
-    this.currentPath.pop() // removes cell the character is standing on
+    this.prevCell = this.currentPath.pop() // removes cell the character is standing on
     this.nextCell = this.currentPath.pop()
     GSM.Assets.placementChanged = true
     this.setSpriteDirection()
@@ -129,16 +130,23 @@ export abstract class MotionAsset extends Asset {
     this.positionY += nextYMove
 
     if (!GameSettings.gm || GameSettings.trackMovement) {
-      GSM.Canvas.trackAsset(-1 * (nextXMove), -1 * (nextYMove), this, GSM.Map.activeMap)
+      GSM.Canvas.trackAsset(-1 * (nextXMove), -1 * (nextYMove), this)
     }
 
     if (this.positionY % (32) === 0 && this.positionX % (32) === 0) {
       this.cell = GSM.Map.activeMap.grid[`x${this.positionX / (32)}:y${this.positionY / (32)}`]
-
-      GSM.Map.activeMap.drawBlackoutImage = true
+      
+      // sets screen position for scrolling
+      if(!GameSettings.gm) {
+        GSM.Canvas.trackAsset(this.nextCell.x - this.prevCell.x, this.nextCell.y - this.prevCell.y, this, true)
+      }
+      this.prevCell = this.nextCell
+      
       this.nextCell = this.currentPath.length > 0
         ? this.currentPath.pop()
         : null
+
+      // handles screen offset  
 
       GSM.Draw.blackOutFogPainter.movementComplete = true
       if (this.redirection) {
