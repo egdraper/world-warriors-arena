@@ -1,6 +1,7 @@
+import { SpriteBackgroundTile } from "../models/cell.model";
 import { tileA5_outside } from "./images";
 
-export const greenGrass = [
+export const greenGrass: SpriteBackgroundTile[] = [
   {
     id: "greenGrass",
     spriteSheet: tileA5_outside,

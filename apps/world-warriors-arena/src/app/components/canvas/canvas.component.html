@@ -1,4 +1,7 @@
+<canvas #drawCanvas *ngIf="canvasService.editMode" id="drawCanvas">
+</canvas>
 <!-- <h1>X{{hoveringCell?.x}}:Y{{hoveringCell?.y}}<h1> -->
+
 <div class="game-canvas">
   <canvas #backgroundCanvas id="backgroundCanvas"></canvas>
   <canvas #overlayCanvas id="overlayCanvas"></canvas>
@@ -10,15 +13,18 @@
   </canvas>
 
 
-  <canvas #blackoutCanvas id="blackoutCanvas" (mousedown)="onCanvasClick($event)" (mousemove)="onMouseMove($event)"
-    (mouseup)="onMouseUp($event)" (keydown)="onKeyDown($event)" (keyup)="onKeyUp($event)">
+  <canvas 
+    #blackoutCanvas 
+    id="blackoutCanvas" 
+    [style.cursor]="playerEvent?.cursor ? playerEvent?.cursor: 'pointer'"
+    (mousedown)="onCanvasClick($event)" 
+    (mousemove)="onMouseMove($event)"
+    (mouseup)="onMouseUp($event)" 
+    (keydown)="onKeyDown($event)"
+    (keyup)="onKeyUp($event)">
   </canvas>
   <div class="character-hover">
     <!-- <h1>{{hoveringCell?.occupiedBy?.image?.src}}
     </h1> -->
   </div>
 </div>
-
-
-<canvas #drawCanvas *ngIf="canvasService.editMode" id="drawCanvas">
-</canvas>

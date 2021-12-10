@@ -126,7 +126,7 @@ export class CanvasService {
   }
   
   public centerOverAsset(asset: Asset): void {
-    if(!asset) {return}
+    if(!asset || !asset.cell) {return}
 
     // select Asset
     this.resetViewport()

@@ -17,7 +17,6 @@ export class AssetPainter extends LayerPainter {
   public paint(frame: number): void {
     this.frame = frame
     this.drawAnimatedAssets()
-  
   }
 
   public drawAnimatedAssets(): void {
@@ -45,7 +44,6 @@ export class AssetPainter extends LayerPainter {
       if (!cellTopLeft) {
         cellTopRight = GSM.Map.activeMap.grid[`x0:y0`]
       }
-
       
       try {
         if (GSM.Map.activeMap.largeImage.background) {
@@ -72,7 +70,11 @@ export class AssetPainter extends LayerPainter {
                 this.calculateGrowableTerrain(drawableCell)
               }
     
-              this.drawAsset(GSM.Assets.gameComponents.find(gameComponent => gameComponent.cell.id === drawableCell.id && GSM.Map.activeMap.id === gameComponent.gridId))
+              
+              this.drawAsset(GSM.Assets.gameComponents.find(gameComponent => { 
+                if(!gameComponent.cell) { return false }
+                return gameComponent.cell.id === drawableCell.id && GSM.Map.activeMap.id === gameComponent.gridId
+              }))
 
               this.drawOnCell(drawableCell)
               this.drawOnBackgroundCell(drawableCell)
@@ -256,7 +258,7 @@ export class AssetPainter extends LayerPainter {
 
     selectedCell.imageTile = tile
   }
- 
+
   // draws asset
   public drawAsset(gameComponent: MotionAsset): void {
     GSM.Canvas.foregroundCTX.imageSmoothingEnabled = false

@@ -4,6 +4,7 @@ import { Engine } from '../../services/engine.service';
 import { Cell } from '../../models/cell.model';
 import { GameSettings } from '../../models/game-settings';
 import { growableItems, TerrainType } from '../../game-assets/tile-assets.db';
+import { EventStateDetails } from '../../models/game-event-handler.model';
 
 @Component({
   selector: 'world-warriors-arena-canvas',
@@ -27,7 +28,10 @@ export class CanvasComponent {
   public drawingContext: CanvasRenderingContext2D;
 
   public canvasService = GSM.Canvas
+  public playerEvent = GSM.PlayerEvent
+
   public hoveringCell: Cell
+  public grabbingCharacter: boolean = false
 
   private mouseIsDown = false
   private controlPressed = false
@@ -92,9 +96,11 @@ export class CanvasComponent {
       case "Control":
         this.controlPressed = true
         GSM.Map.hoveringCell = this.hoveringCell
+        GSM.PlayerEvent.ctrlDown = true
         break;
       case "Shift":
         this.shiftPressed = true
+        GSM.PlayerEvent.shiftDown = true
         break;    
       case "ArrowRight":
         this.rightArrowDown = true
@@ -124,9 +130,11 @@ export class CanvasComponent {
         break
       case "Control":
         this.controlPressed = false
+        GSM.PlayerEvent.ctrlDown = false
         GSM.Map.hoveringCell = undefined
         break;
       case "Shift":
+        GSM.PlayerEvent.shiftDown = false
         this.shiftPressed = false
         this.topQuadrant = false
         this.bottomQuadrant = false
@@ -164,7 +172,12 @@ export class CanvasComponent {
 
     // Game Marker
     const markerIcon = GSM.GameMarker.getHoveringIcon()
-    
+    GSM.PlayerEvent.mouseDown = true
+
+    if(this.grabbingCharacter) {
+
+    }
+
     if(markerIcon && this.controlPressed) {
       markerIcon.onClickWithCtrl()
       return
@@ -177,7 +190,9 @@ export class CanvasComponent {
     // select Asset
     if(assetInCell && !GSM.Assets.selectedGameComponent) {
       GSM.Assets.selectAsset(assetInCell)
-      GSM.Canvas.centerOverAsset(assetInCell)
+      if(!GameSettings.gm) {
+        GSM.Canvas.centerOverAsset(assetInCell)
+      }
       return
     }
 
@@ -191,7 +206,9 @@ export class CanvasComponent {
     if(assetInCell && assetInCell.id !== GSM.Assets.selectedGameComponent.id) {
       GSM.Assets.deselectAsset()
       GSM.Assets.selectAsset(assetInCell)
-      GSM.Canvas.centerOverAsset(assetInCell)
+      if(!GameSettings.gm) {
+        GSM.Canvas.centerOverAsset(assetInCell)
+      }
       return
     }
 
@@ -222,17 +239,37 @@ export class CanvasComponent {
   }
 
   public onMouseMove(event: any): void {
+   
     if(!GSM.Map.activeMap) { return }
     
     const clickX = event.offsetX + (-1 * GSM.Canvas.canvasViewPortOffsetX * GameSettings.scale)
     const clickY = event.offsetY + (-1 * GSM.Canvas.canvasViewPortOffsetY * GameSettings.scale)
+    
+    // Game Marker
     GSM.GameMarker.checkForHover()
     GSM.GameMarker.mouseX = clickX
     GSM.GameMarker.mouseY = clickY
-
+    
     this.hoveringCell = GSM.Map.activeMap.getGridCellByCoordinate(clickX, clickY)
     GSM.Map.hoveringCell = this.hoveringCell
+     
+    const mouseHoveringDetails: EventStateDetails = {
+      cellId: this.hoveringCell.id,
+      hoveringPlayer: GSM.Assets.getAssetFromCell(this.hoveringCell, GSM.Map.activeMap.id),
+      hoveringBackground: this.hoveringCell.backgroundTile,
+      hoveringTerrain: this.hoveringCell.imageTile,
+      hoveringObject: undefined,
+      altPressed: false,
+      ctrlPressed: this.controlPressed,
+      shiftPressed: this.shiftPressed,
+      mouseX: clickX,
+      mouseY: clickY,
+    }
 
+    GSM.PlayerEvent.hoverDetails = mouseHoveringDetails
+
+    GSM.PlayerEvent.mouseMove = true
+  
     // scroll with mouse movement
     if (this.shiftPressed) {
       this.rightQuadrant = clickX > (-1 * GSM.Canvas.canvasViewPortOffsetX + GSM.Canvas.canvasSizeX) - GSM.Canvas.canvasSizeX / 3 
@@ -249,28 +286,32 @@ export class CanvasComponent {
     }
 
     // Control Pressed
+   
     if (event.offsetX < 0 || event.offsetY < 0) { return }
     if (!this.mouseIsDown || !this.controlPressed) { return }
-
+    
     this.rightQuadrant = clickX > (-1 * GSM.Canvas.canvasViewPortOffsetX + GSM.Canvas.canvasSizeX) - 96
     this.bottomQuadrant = clickY > (-1 * GSM.Canvas.canvasViewPortOffsetY + GSM.Canvas.canvasSizeY) - 96
     this.topQuadrant = clickX < (-1 * GSM.Canvas.canvasViewPortOffsetX + 96) && (GSM.Canvas.canvasViewPortOffsetX < 0)
     this.leftQuadrant = clickY < (-1 * GSM.Canvas.canvasViewPortOffsetY + 96) && (GSM.Canvas.canvasViewPortOffsetY < 0)
-
+    
     if (GSM.Map.activeMap.defaultSettings.inverted) { // Rename to GSM.Map.removing or something
       GSM.Assets.addInvertedMapAsset(this.hoveringCell)
     } else if (this.mouseIsDown && this.controlPressed) {
       const selectedAsset = GSM.Editor.selectedAsset
       const drawableItem = growableItems.find(item => item.id === GSM.Editor.selectedGrowableAsset)
-
+      
       GSM.Assets.addMapAsset(this.hoveringCell, selectedAsset, drawableItem)
     }
+    GSM.PlayerEvent.mouseMove = false
   }
-
+  
   public onMouseUp(event: any): void {
     this.mouseIsDown = false
+    this.grabbingCharacter = false
+    GSM.PlayerEvent.mouseDown = false
   }
-
+  
   public subscribeToEngine(): void {
     Engine.onFire.subscribe((frame) => {
       if(!GameSettings.gm) { return }

@@ -8,6 +8,7 @@ import { Engine } from "./services/engine.service";
 import { MapService } from "./services/map.service";
 import { NewFogOfWarService } from "./services/new-visibility.service";
 import { ShortestPath } from "./utils/shortest-path";
+import { PlayerEventsService } from "./services/player-events.service";
 
 export class GSM {
   public static Canvas: CanvasService
@@ -19,4 +20,5 @@ export class GSM {
   public static Engine: Engine
   public static CharacterEditor: CharacterEditorService
   public static GameMarker: GameMarkersService
+  public static PlayerEvent: PlayerEventsService
 }
