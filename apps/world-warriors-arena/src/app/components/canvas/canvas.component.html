@@ -16,7 +16,7 @@
   <canvas 
     #blackoutCanvas 
     id="blackoutCanvas" 
-    [style.cursor]="playerEvent?.cursor ? playerEvent?.cursor: 'pointer'"
+    [style.cursor]="playerEvent?.cursor?.style ? playerEvent?.cursor.style: 'auto'"
     (mousedown)="onCanvasClick($event)" 
     (mousemove)="onMouseMove($event)"
     (mouseup)="onMouseUp($event)" 

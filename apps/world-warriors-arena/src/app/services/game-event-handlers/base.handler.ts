@@ -1,16 +1,42 @@
-import { PlayerEventsService } from "../player-events.service"
+import { Subject } from "rxjs"
+import { MotionAsset } from "../../models/assets.model"
+import { MarkerIconType, SpriteBackgroundTile, SpriteTile } from "../../models/cell.model"
+import { KeyPressEventDetails, MouseEventDetails } from "../../models/game-event-handler.model"
+import { GameSettings } from "../../models/game-settings"
+import { MarkerIcon } from "../../models/marker-icon.model"
+import { GameEventsService } from "../game-events.service"
 
-export abstract class GameEventHandler {
-  public eventService: PlayerEventsService
+export abstract class GameEventHandler implements KeyPressEventDetails {
+  public id: string
+  public keyPressDetails: KeyPressEventDetails
+  public mouseEventDetails: MouseEventDetails
+  public cursor: {style: string}
+
+  public ctrlPressed: boolean
+  public altPressed: boolean
+  public shiftPressed: boolean
+  public arrowDownPressed: boolean
+  public arrowLeftPressed: boolean
+  public arrowRightPressed: boolean
+  public arrowUpPressed: boolean
+  public mouseDown: boolean  
+  public trackingLocked: boolean
+  public hoveringMarkerIcon: boolean
+  public markerIconType: MarkerIconType
+  public hoveringPlayer: boolean
+  public hoveringTerrain: boolean
+  public hoveringBackground: boolean
+  public hoveringObject: boolean
 
   // Getters Setters
   public _handlerActive = false
   public set handlerActive(isActive: boolean) {
-    if(isActive === this._handlerActive) { return }
+    if (isActive === this._handlerActive) { return }
     this._handlerActive = isActive
-    if(isActive) {
+    if (isActive) {
       this.startEventProcess()
     } else {
+      console.log(this.id, "ended")
       this.endEvent()
     }
   }
@@ -18,8 +44,29 @@ export abstract class GameEventHandler {
     return this._handlerActive
   }
 
-  public id: string
-  public criteriaMet(): boolean { return false }
-  public startEventProcess(): void {}
-  public endEvent(): void {}
+  public onMouseMove: Subject<{mouseX:number, mouseY: number}> = new Subject()
+
+  public criteriaMet(): void {
+    const baseKeyConditions = 
+         (this.ctrlPressed !== undefined ? this.ctrlPressed === this.keyPressDetails.ctrlPressed : true)
+      && (this.altPressed !== undefined ? this.altPressed === this.keyPressDetails.altPressed : true)
+      && (this.shiftPressed !== undefined ? this.shiftPressed === this.keyPressDetails.shiftPressed : true)
+      && (this.arrowDownPressed !== undefined ? this.arrowDownPressed === this.keyPressDetails.arrowDownPressed : true)
+      && (this.arrowLeftPressed !== undefined ? this.arrowLeftPressed === this.keyPressDetails.arrowLeftPressed : true)
+      && (this.arrowUpPressed !== undefined ? this.arrowUpPressed === this.keyPressDetails.arrowUpPressed : true)
+      && (this.arrowRightPressed !== undefined ? this.arrowRightPressed === this.keyPressDetails.arrowRightPressed : true)
+      && (this.trackingLocked !== undefined ? this.trackingLocked === GameSettings.gm : true)
+      && (this.hoveringMarkerIcon !== undefined ? this.hoveringMarkerIcon === !!this.mouseEventDetails.markerIcon : true)
+      && (this.hoveringPlayer !== undefined ? this.hoveringPlayer === !!this.mouseEventDetails.hoveringPlayer : true)
+      && (this.hoveringTerrain !== undefined ? this.hoveringTerrain === !!this.mouseEventDetails.hoveringTerrain : true)
+      && (this.markerIconType !== undefined ? this.markerIconType === this.mouseEventDetails.markerIcon.type : true)
+      && (this.mouseDown !== undefined ? this.mouseDown === this.keyPressDetails.mouseDown : true)
+
+    this.handlerActive = (baseKeyConditions && this.and()) || this.or()
+  }
+
+  protected and(): boolean { return true }
+  protected or(): boolean { return false }
+  public startEventProcess(): void { }
+  public endEvent(): void { }
 }

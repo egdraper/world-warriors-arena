@@ -1,7 +1,7 @@
 import { GSM } from "../app.service.manager";
 import { Cell, DefaultMapSettings, MapPosition, MarkerIconType } from "../models/cell.model";
 import { GameMap } from "../models/game-map";
-import { PageTransitionMarker } from "../models/markers-icons";
+import { PageTransitionMarker } from "../models/marker-icon.model";
 import { BaseMapGenerator } from "./base-map-generator";
 import { ShortestPath } from "./shortest-path";
 

@@ -15,7 +15,7 @@ import { EditorService } from './services/editor.service';
 import { CharacterEditorService } from './services/character-editor.service';
 import { NewFogOfWarService } from './services/new-visibility.service';
 import { GameMarkersService } from './services/game-markers.service';
-import { PlayerEventsService } from './services/player-events.service';
+import { GameEventsService } from './services/game-events.service';
 
 @NgModule({
   declarations: [AppComponent, CanvasComponent, EditorPaletteComponent, CharacterEditorPaletteComponent, GlobalMapComponent],
@@ -30,7 +30,7 @@ import { PlayerEventsService } from './services/player-events.service';
     Engine,
     CharacterEditorService,
     GameMarkersService,
-    PlayerEventsService
+    GameEventsService
   ],
   bootstrap: [AppComponent],
 })

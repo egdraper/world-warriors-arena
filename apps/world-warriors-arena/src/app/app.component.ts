@@ -10,7 +10,7 @@ import { EditorService } from './services/editor.service';
 import { GameMarkersService } from './services/game-markers.service';
 import { NewFogOfWarService } from './services/new-visibility.service';
 import { GSM } from './app.service.manager';
-import { PlayerEventsService } from './services/player-events.service';
+import { GameEventsService } from './services/game-events.service';
 
 @Component({
   selector: 'world-warriors-arena-root',
@@ -29,7 +29,7 @@ export class AppComponent {
     engine: Engine,
     characterEditorService: CharacterEditorService,
     gameMarkerService: GameMarkersService,
-    playerEventService: PlayerEventsService
+    playerEventService: GameEventsService
   ) {
     GSM.Assets = assetsService
     GSM.Canvas = canvasService
@@ -40,7 +40,7 @@ export class AppComponent {
     GSM.Engine = engine
     GSM.CharacterEditor = characterEditorService
     GSM.GameMarker = gameMarkerService
-    GSM.PlayerEvent = playerEventService
+    GSM.GameEvent = playerEventService
   }
 
   public ngOnInit(): void {

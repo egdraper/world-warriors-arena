@@ -10,30 +10,29 @@ export class DragAssetEventHandler extends GameEventHandler {
   public prevCell: Cell
   public asset: MotionAsset
 
-  public criteriaMet(): boolean {
-    this.handlerActive = 
-         GameSettings.gm
-      && this.eventService.mouseDown 
-      && this.eventService.ctrlDown 
-      && (!!this.eventService.hoverDetails.hoveringPlayer || this.draggingAsset)
-   
-    return this.handlerActive
-  }
+  // Requirements
+  public trackingLocked = true
+  public mouseDown = true
+  public ctrlPressed = true
+  public hoveringPlayer = true
+  public or() { return this.draggingAsset && this.keyPressDetails.mouseDown}
 
   public startEventProcess(): void {
     console.log("I got Started")
     this.draggingAsset = true
-    this.eventService.cursor = "grabbing"
-    this.prevCell = this.eventService.hoverDetails.hoveringPlayer.cell
-    this.asset = this.eventService.hoverDetails.hoveringPlayer
-    this.eventService.hoverDetails.hoveringPlayer.cell = undefined
-    
+    this.cursor.style = "grabbing"
+    this.prevCell = this.mouseEventDetails?.hoveringPlayer?.cell
+    this.asset = this.mouseEventDetails?.hoveringPlayer
+
+    if(this.mouseEventDetails?.hoveringPlayer) {
+    this.mouseEventDetails.hoveringPlayer.cell = undefined
+    }
   }
 
   public endEvent(): void {
-    this.eventService.cursor = "grab"
+    this.cursor.style = "grab"
     this.draggingAsset = false
-    this.asset.cell = GSM.Map.activeMap.getGridCellByCoordinate(this.eventService.hoverDetails.mouseX, this.eventService.hoverDetails.mouseY)
+    this.asset.cell = GSM.Map.activeMap.getGridCellByCoordinate(this.mouseEventDetails.mouseX, this.mouseEventDetails.mouseY)
     this.asset.positionX = this.asset.cell.posX
     this.asset.positionY = this.asset.cell.posY
     this.asset = undefined

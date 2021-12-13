@@ -3,7 +3,7 @@ import { GSM } from "../app.service.manager";
 import { getBackgroundCollection, getObjectCollection } from "../game-assets/tile-assets.db";
 import { DefaultMapSettings, SpriteBackgroundTile, SpriteTile } from "../models/cell.model";
 import { GameSettings } from "../models/game-settings";
-import { PageTransitionMarker } from "../models/markers-icons";
+import { PageTransitionMarker } from "../models/marker-icon.model";
 import { RandomMapGenerator } from "../utils/random-map-generator";
 
 @Injectable()

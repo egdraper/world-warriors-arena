@@ -2,7 +2,7 @@
 import { Injectable } from "@angular/core";
 import { Subject } from "rxjs";
 import { GSM } from "../app.service.manager";
-import { MarkerIcon } from "../models/markers-icons";
+import { MarkerIcon } from "../models/marker-icon.model";
 
 @Injectable()
 export class GameMarkersService {
