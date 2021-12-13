@@ -1,9 +1,9 @@
 import { Component, ElementRef, HostListener, ViewChild } from '@angular/core';
 import { GSM } from '../../app.service.manager';
-import { Engine } from '../../services/engine.service';
+import { growableItems } from '../../game-assets/tile-assets.db';
 import { Cell } from '../../models/cell.model';
 import { GameSettings } from '../../models/game-settings';
-import { growableItems, TerrainType } from '../../game-assets/tile-assets.db';
+import { Engine } from '../../services/engine.service';
 
 @Component({
   selector: 'world-warriors-arena-canvas',
@@ -27,31 +27,29 @@ export class CanvasComponent {
   public drawingContext: CanvasRenderingContext2D;
 
   public canvasService = GSM.Canvas
+  public playerEvent = GSM.GameEvent
+
   public hoveringCell: Cell
+  public grabbingCharacter: boolean = false
 
   private mouseIsDown = false
   private controlPressed = false
-  private shiftPressed = false
   private rightArrowDown = false
   private leftArrowDown = false
   private upArrowDown = false
   private downArrowDown = false
 
-  private rightQuadrant = false
-  private leftQuadrant = false
-  private bottomQuadrant = false
-  private topQuadrant = false
 
-  private placingPortal = false
+
 
   constructor() {
-    this.subscribeToEngine() 
+    this.subscribeToEngine()
   }
 
   // this needs to be put in a public function so we can pass in grid information 
   public ngAfterViewInit(): void {
     // Background
-    this.backgroundContext = this.backgroundCanvas.nativeElement.getContext('2d', {alpha: false});
+    this.backgroundContext = this.backgroundCanvas.nativeElement.getContext('2d', { alpha: false });
     GSM.Canvas.backgroundCTX = this.backgroundContext
     GSM.Canvas.backgroundCanvas = this.backgroundCanvas
 
@@ -92,48 +90,49 @@ export class CanvasComponent {
       case "Control":
         this.controlPressed = true
         GSM.Map.hoveringCell = this.hoveringCell
+        GSM.GameEvent.keyPressDetails.ctrlPressed = true
         break;
       case "Shift":
-        this.shiftPressed = true
-        break;    
+        GSM.GameEvent.keyPressDetails.shiftPressed = true
+        break;
       case "ArrowRight":
         this.rightArrowDown = true
         break;
       case "ArrowLeft":
         this.leftArrowDown = true
         break;
-        case "ArrowUp":
+      case "ArrowUp":
         this.upArrowDown = true
         break;
-        case "ArrowDown":
+      case "ArrowDown":
         this.downArrowDown = true
-        break;      
+        break;
       case "e":
-        this.placingPortal = true
-        break;      
+        // this.placingPortal = true
+        break;
       default:
         break;
     }
+
+    GSM.GameEvent.update()
   }
 
   @HostListener("document:keyup", ["$event"])
   public onKeyUp(event: KeyboardEvent): void {
     switch (event.key) {
-      case "Delete": 
+      case "Delete":
         GSM.Assets.removeGameComponent()
         break
       case "Control":
         this.controlPressed = false
+        GSM.GameEvent.keyPressDetails.ctrlPressed = false
         GSM.Map.hoveringCell = undefined
         break;
       case "Shift":
-        this.shiftPressed = false
-        this.topQuadrant = false
-        this.bottomQuadrant = false
-        this.rightQuadrant = false
-        this.leftQuadrant = false
-        break;    
+        GSM.GameEvent.keyPressDetails.shiftPressed = false
+        break;
       case "ArrowRight":
+        GSM.GameMarker
         this.rightArrowDown = false
         break;
       case "ArrowLeft":
@@ -144,118 +143,59 @@ export class CanvasComponent {
         break;
       case "ArrowDown":
         this.downArrowDown = false
-        break;      
+        break;
       case "e":
-        this.placingPortal = false
-        break;        
+        // this.placingPortal = false
+        break;
       case "q":
         this.togglePlayMode()
         break;
       default:
         break;
     }
+    GSM.GameEvent.update()
   }
 
-  public onCanvasClick(event: any): void {    
+  public onCanvasClick(event: any): void {
     this.mouseIsDown = true
-    const selectedCell = this.getCellFromMouseEvent(event)
-    console.log(selectedCell)
-    const assetInCell = GSM.Assets.getAssetFromCell(selectedCell, GSM.Map.activeMap.id)
-
-    // Game Marker
-    const markerIcon = GSM.GameMarker.getHoveringIcon()
-    
-    if(markerIcon && this.controlPressed) {
-      markerIcon.onClickWithCtrl()
-      return
-    }
-        
-    if(markerIcon) {
-      markerIcon.onClick()
-      return
-    }
-    // select Asset
-    if(assetInCell && !GSM.Assets.selectedGameComponent) {
-      GSM.Assets.selectAsset(assetInCell)
-      GSM.Canvas.centerOverAsset(assetInCell)
-      return
-    }
-
-    // deselect Asset
-    if(assetInCell && GSM.Assets.selectedGameComponent && assetInCell.id === GSM.Assets.selectedGameComponent.id) {
-      GSM.Assets.deselectAsset()
-      return
-    }
-
-    // change/select new Asset
-    if(assetInCell && assetInCell.id !== GSM.Assets.selectedGameComponent.id) {
-      GSM.Assets.deselectAsset()
-      GSM.Assets.selectAsset(assetInCell)
-      GSM.Canvas.centerOverAsset(assetInCell)
-      return
-    }
-
-    // place portal
-    if(this.placingPortal) {
-      GSM.Canvas.portalEntry.push(selectedCell)
-      return
-    }
-
-    // place portal endpoint
-    if(GSM.Canvas.portalEntry.length > 0) {
-      GSM.Canvas.portalEntry.forEach(cell => cell.portalTo = {gridId: GSM.Map.activeMap.id, cell: selectedCell})
-      GSM.Canvas.portalEntry = []
-      return
-    }
-
-    // move character
-    if(!assetInCell && GSM.Assets.selectedGameComponent ) {
-      GSM.Assets.selectedGameComponent.startMovement(GSM.Assets.selectedGameComponent.cell, selectedCell, GSM.Assets.gameComponents)
-    }
-
-    // place character {
-    if(GSM.CharacterEditor.selectedCharacter && this.controlPressed) {
-      GSM.CharacterEditor.addCharacter(selectedCell, GSM.Map.activeMap.id)
-    }
-     
-    this.onMouseMove(event)
+    GSM.GameEvent.keyPressDetails.mouseDown = true
+    GSM.GameEvent.update()
   }
 
   public onMouseMove(event: any): void {
-    if(!GSM.Map.activeMap) { return }
-    
-    const clickX = event.offsetX + (-1 * GSM.Canvas.canvasViewPortOffsetX * GameSettings.scale)
-    const clickY = event.offsetY + (-1 * GSM.Canvas.canvasViewPortOffsetY * GameSettings.scale)
-    GSM.GameMarker.checkForHover()
-    GSM.GameMarker.mouseX = clickX
-    GSM.GameMarker.mouseY = clickY
+    if (!GSM.Map.activeMap) { return }
 
-    this.hoveringCell = GSM.Map.activeMap.getGridCellByCoordinate(clickX, clickY)
+    const mousePosX = event.offsetX + (-1 * GSM.Canvas.canvasViewPortOffsetX * GameSettings.scale)
+    const mousePosY = event.offsetY + (-1 * GSM.Canvas.canvasViewPortOffsetY * GameSettings.scale)
+    this.hoveringCell = GSM.Map.activeMap.getGridCellByCoordinate(mousePosX, mousePosY)
+
+    // Game Marker (required here because mouseDetails depends on this check being called beforehand)
+    GSM.GameMarker.checkForHover()
+    GSM.GameMarker.mouseX = mousePosX
+    GSM.GameMarker.mouseY = mousePosY
+
+    // For Drawing
     GSM.Map.hoveringCell = this.hoveringCell
 
-    // scroll with mouse movement
-    if (this.shiftPressed) {
-      this.rightQuadrant = clickX > (-1 * GSM.Canvas.canvasViewPortOffsetX + GSM.Canvas.canvasSizeX) - GSM.Canvas.canvasSizeX / 3 
-      this.bottomQuadrant = clickY > (-1 * GSM.Canvas.canvasViewPortOffsetY + GSM.Canvas.canvasSizeY) - GSM.Canvas.canvasSizeY / 3
-      this.topQuadrant = clickX < (-1 * GSM.Canvas.canvasViewPortOffsetX + GSM.Canvas.canvasSizeX / 3) && (GSM.Canvas.canvasViewPortOffsetX < 0)
-      this.leftQuadrant = clickY < (-1 * GSM.Canvas.canvasViewPortOffsetY + GSM.Canvas.canvasSizeY / 3) && (GSM.Canvas.canvasViewPortOffsetY < 0)
-    }
+    GSM.GameEvent.mouseDetails.cellId = this.hoveringCell.id
+    GSM.GameEvent.mouseDetails.hoveringPlayer = GSM.Assets.getAssetFromCell(this.hoveringCell, GSM.Map.activeMap.id)
+    GSM.GameEvent.mouseDetails.hoveringBackground = this.hoveringCell.backgroundTile
+    GSM.GameEvent.mouseDetails.hoveringTerrain = this.hoveringCell.imageTile
+    GSM.GameEvent.mouseDetails.hoveringObject = undefined
+    GSM.GameEvent.mouseDetails.markerIcon = GSM.GameMarker.getHoveringIcon()
+    GSM.GameEvent.mouseDetails.mouseX = mousePosX
+    GSM.GameEvent.mouseDetails.mouseY = mousePosY
+    GSM.GameEvent.mouseDetails.mouseMove.next({mouseX: mousePosX, mouseY: mousePosY})
+    GSM.GameEvent.update()
 
-    // place portal
-    if(this.placingPortal && this.mouseIsDown && !GSM.Canvas.portalEntry.find(cell => cell.id === this.hoveringCell.id)) {
-      GSM.Canvas.portalEntry.push(this.hoveringCell)
-      console.log(GSM.Canvas.portalEntry)
-      return
-    }
 
-    // Control Pressed
     if (event.offsetX < 0 || event.offsetY < 0) { return }
     if (!this.mouseIsDown || !this.controlPressed) { return }
 
-    this.rightQuadrant = clickX > (-1 * GSM.Canvas.canvasViewPortOffsetX + GSM.Canvas.canvasSizeX) - 96
-    this.bottomQuadrant = clickY > (-1 * GSM.Canvas.canvasViewPortOffsetY + GSM.Canvas.canvasSizeY) - 96
-    this.topQuadrant = clickX < (-1 * GSM.Canvas.canvasViewPortOffsetX + 96) && (GSM.Canvas.canvasViewPortOffsetX < 0)
-    this.leftQuadrant = clickY < (-1 * GSM.Canvas.canvasViewPortOffsetY + 96) && (GSM.Canvas.canvasViewPortOffsetY < 0)
+    // this.rightQuadrant = clickX > (-1 * GSM.Canvas.canvasViewPortOffsetX + GSM.Canvas.canvasSizeX) - 96
+    // this.bottomQuadrant = clickY > (-1 * GSM.Canvas.canvasViewPortOffsetY + GSM.Canvas.canvasSizeY) - 96
+    // this.topQuadrant = clickX < (-1 * GSM.Canvas.canvasViewPortOffsetX + 96) && (GSM.Canvas.canvasViewPortOffsetX < 0)
+    // this.leftQuadrant = clickY < (-1 * GSM.Canvas.canvasViewPortOffsetY + 96) && (GSM.Canvas.canvasViewPortOffsetY < 0)
 
     if (GSM.Map.activeMap.defaultSettings.inverted) { // Rename to GSM.Map.removing or something
       GSM.Assets.addInvertedMapAsset(this.hoveringCell)
@@ -265,15 +205,20 @@ export class CanvasComponent {
 
       GSM.Assets.addMapAsset(this.hoveringCell, selectedAsset, drawableItem)
     }
+    // GSM.GameEvent.mouseDetails = false
+
   }
 
   public onMouseUp(event: any): void {
     this.mouseIsDown = false
+    this.grabbingCharacter = false
+    GSM.GameEvent.keyPressDetails.mouseDown = false
+    GSM.GameEvent.update()
   }
 
   public subscribeToEngine(): void {
     Engine.onFire.subscribe((frame) => {
-      if(!GameSettings.gm) { return }
+      if (!GameSettings.gm) { return }
       if (this.rightArrowDown) {
         GSM.Canvas.scrollViewPort(1, 0)
       }
@@ -286,35 +231,19 @@ export class CanvasComponent {
       if (this.downArrowDown) {
         GSM.Canvas.scrollViewPort(0, 1)
       }
-
-
-      if (this.rightQuadrant) {
-        GSM.Canvas.scrollViewPort(1, 0)
-      }
-      
-      if (this.leftQuadrant) {
-        GSM.Canvas.scrollViewPort(0, -1)
-      }
-      
-      if (this.topQuadrant) {
-        GSM.Canvas.scrollViewPort(-1, 0)
-      }
-      
-      if (this.bottomQuadrant) {
-        GSM.Canvas.scrollViewPort(0, 1)
-      }
+   
     })
   }
 
   private togglePlayMode(): void {
-    if(!GSM.Map.activeMap) { return }
+    if (!GSM.Map.activeMap) { return }
 
     GSM.Canvas.editMode = !GSM.Canvas.editMode
     setTimeout(() => {
       if (!GSM.Canvas.editMode) {
         GSM.Map.activeMap.largeImage.createLargeImage(GSM.Map.activeMap.width * 32, GSM.Map.activeMap.height * 32, GSM.Map)
       } else {
-        if(GSM.Map.activeMap) {
+        if (GSM.Map.activeMap) {
           GSM.Map.activeMap.largeImage.background = undefined
         }
       }
@@ -324,7 +253,32 @@ export class CanvasComponent {
   private getCellFromMouseEvent(event: MouseEvent): Cell {
     const clickX = event.offsetX + (-1 * GSM.Canvas.canvasViewPortOffsetX * GameSettings.scale)
     const clickY = event.offsetY + (-1 * GSM.Canvas.canvasViewPortOffsetY * GameSettings.scale)
-   
+
     return GSM.Map.activeMap.getGridCellByCoordinate(clickX, clickY)
   }
 }
+
+
+// Portal code - do not remove
+// private placingPortal = false
+
+    // place portal
+    // if (this.placingPortal) {
+    //   GSM.Canvas.portalEntry.push(selectedCell)
+    //   return
+    // }
+
+    // // place portal endpoint
+    // if (GSM.Canvas.portalEntry.length > 0) {
+    //   GSM.Canvas.portalEntry.forEach(cell => cell.portalTo = { gridId: GSM.Map.activeMap.id, cell: selectedCell })
+    //   GSM.Canvas.portalEntry = []
+    //   return
+    // }
+
+    
+    // place portal
+    // if (this.placingPortal && this.mouseIsDown && !GSM.Canvas.portalEntry.find(cell => cell.id === this.hoveringCell.id)) {
+    //   GSM.Canvas.portalEntry.push(this.hoveringCell)
+    //   console.log(GSM.Canvas.portalEntry)
+    //   return
+    // }

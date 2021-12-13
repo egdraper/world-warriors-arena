@@ -17,8 +17,12 @@ export class AssetsService {
     this.selectedGameComponent = undefined
   }
 
+
   public getAssetFromCell(cell: Cell, gridId: string): MotionAsset {
-    return this.gameComponents.find(asset => asset.gridId === gridId && asset.cell.id === cell.id)
+    return this.gameComponents.find(asset => {
+      if(!asset.cell) { return false }  
+      return asset.gridId === gridId && asset.cell.id === cell.id
+    })
   }
 
   public addInvertedMapAsset(selectedCell: Cell): void {

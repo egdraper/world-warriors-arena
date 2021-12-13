@@ -5,6 +5,7 @@ import { BlackOutEdgesPainter } from "../painters/black-out-edges.paint";
 import { BlackOutFogPainter } from "../painters/black-out-fog.paint";
 import { FogOfWarPainter } from "../painters/fog-of-war.paint";
 import { GridLinePainter } from "../painters/grid-lines.paint";
+import { MovingAssetPainter } from "../painters/moving-asset.paint";
 import { GameMarkerPainter } from "../painters/portal-tokens.paint";
 
 @Injectable()
@@ -16,6 +17,7 @@ export class DrawService {
   public fogOfWarPainter: FogOfWarPainter
   public assetPainter: AssetPainter
   public gameMarkerPainter: GameMarkerPainter
+  public movingAsset: MovingAssetPainter
 
   constructor(
   ) { 
@@ -26,5 +28,6 @@ export class DrawService {
     this.fogOfWarPainter = new FogOfWarPainter()
     this.assetPainter = new AssetPainter()
     this.gameMarkerPainter = new GameMarkerPainter()
+    this.movingAsset = new MovingAssetPainter()
   }
 }

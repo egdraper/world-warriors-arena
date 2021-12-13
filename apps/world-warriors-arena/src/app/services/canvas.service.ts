@@ -73,32 +73,32 @@ export class CanvasService {
     this.saveState()
   }
 
-  public scrollViewPort(x: number, y: number): void {
+  public scrollViewPort(x: number, y: number, speedX: number = 32, speedY: number = 32): void {
     let adjustX = 0
     let adjustY = 0
 
     if (x > 0 && this.cellOffsetX + this.maxCellCountX < GSM.Map.activeMap.width) {
       this.cellOffsetX += (1 / GameSettings.scale)
-      adjustX = -32
+      adjustX = -1 * speedX
       adjustY = 0
     }
 
     if (x < 0 && this.cellOffsetX > 0) {
       this.cellOffsetX -= (1 / GameSettings.scale)
-      adjustX = 32
+      adjustX = speedX
       adjustY = 0
     }
 
     if (y > 0 && this.cellOffsetY + this.maxCellCountY < GSM.Map.activeMap.height) {
       this.cellOffsetY += (1 / GameSettings.scale)
       adjustX = 0
-      adjustY = -32
+      adjustY = -1 * speedY
     }
 
     if (y < 0 && this.cellOffsetY > 0) {
       this.cellOffsetY -= (1 / GameSettings.scale)
       adjustX = 0
-      adjustY = 32
+      adjustY = speedY
     }
    
     this.adustViewPort(adjustX, adjustY)
@@ -126,7 +126,7 @@ export class CanvasService {
   }
   
   public centerOverAsset(asset: Asset): void {
-    if(!asset) {return}
+    if(!asset || !asset.cell) {return}
 
     // select Asset
     this.resetViewport()
