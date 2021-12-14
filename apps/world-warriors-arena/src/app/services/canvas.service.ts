@@ -145,7 +145,6 @@ export class CanvasService {
   }
 
   public adustViewPort(xPos: number, yPos: number, gridWidth?: number, gridHeight?: number) {
-    // console.log(xPos, yPos, this.canvasViewPortOffsetX, this.canvasViewPortOffsetY)
     if (yPos > 0 && this.canvasViewPortOffsetY >= 0) {
       yPos = 0
     } if (xPos > 0 && this.canvasViewPortOffsetX >= 0) {

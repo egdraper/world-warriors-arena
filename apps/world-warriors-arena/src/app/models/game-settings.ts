@@ -10,6 +10,7 @@ export class GameSettings {
   public static scale = 1
   public static fog = true
   public static blackout = true
+  public static speed = 2
 }
 
 export class DebugSettings {

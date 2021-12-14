@@ -18,7 +18,6 @@ export class DragAssetEventHandler extends GameEventHandler {
   public or() { return this.draggingAsset && this.keyPressDetails.mouseDown}
 
   public startEventProcess(): void {
-    console.log("I got Started")
     this.draggingAsset = true
     this.cursor.style = "grabbing"
     this.prevCell = this.mouseEventDetails?.hoveringPlayer?.cell

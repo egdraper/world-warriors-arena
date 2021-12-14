@@ -34,6 +34,10 @@ export class BlackOutFogPainter extends Painter {
 
   public revealBlackoutFog(): void {
     if (GSM.Assets.selectedGameComponent) {
+      if(!GSM.FogOfWar.blackOutRimPoints[GSM.Map.activeMap.id]) {
+        GSM.FogOfWar.blackOutRimPoints[GSM.Map.activeMap.id] = []
+      }
+
       const fogOfWarRim = GSM.FogOfWar.fogOfWarRimPoints[GSM.Assets.selectedGameComponent.cell.id].map(a => a)
 
       GSM.Canvas.blackoutCTX.globalCompositeOperation = 'destination-out'
@@ -43,10 +47,10 @@ export class BlackOutFogPainter extends Painter {
         GSM.Canvas.blackoutCTX.filter = "blur(35px)";  // "feather"
       }
 
-      if (GSM.FogOfWar.blackOutRimPoints.length === 0) {
-        GSM.FogOfWar.blackOutRimPoints = fogOfWarRim
+      if (GSM.FogOfWar.blackOutRimPoints[GSM.Map.activeMap.id].length === 0) {
+        GSM.FogOfWar.blackOutRimPoints[GSM.Map.activeMap.id] = fogOfWarRim
       }
-      const blackOutRim = GSM.FogOfWar.blackOutRimPoints
+      const blackOutRim = GSM.FogOfWar.blackOutRimPoints[GSM.Map.activeMap.id]
 
       const fogNonObstructedCells = GSM.FogOfWar.nonObstructedCells[GSM.Assets.selectedGameComponent.cell.id]
 
@@ -122,7 +126,7 @@ export class BlackOutFogPainter extends Painter {
           tempBlackOutRim.push(cell)
         })
 
-        GSM.FogOfWar.blackOutRimPoints = tempBlackOutRim
+        GSM.FogOfWar.blackOutRimPoints[GSM.Map.activeMap.id] = tempBlackOutRim
       }
       this.movementComplete = false
 
@@ -138,7 +142,7 @@ export class BlackOutFogPainter extends Painter {
         })
       }
       
-      // this.clearOutVisibleArea(GSM.FogOfWar.blackOutRimPoints, GSM.Canvas.blackoutCTX)
+      this.clearOutVisibleArea(GSM.FogOfWar.blackOutRimPoints[GSM.Map.activeMap.id], GSM.Canvas.blackoutCTX)
     }
   }
 

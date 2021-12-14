@@ -78,8 +78,6 @@ export class AssetPainter extends LayerPainter {
 
               this.drawOnCell(drawableCell)
               this.drawOnBackgroundCell(drawableCell)
-              // console.log("CCC")
-
             }
           }
 
@@ -101,7 +99,7 @@ export class AssetPainter extends LayerPainter {
         }
       }
       catch (e) {
-        debugger
+        // debugger
       }
       // this.drawGridLines()
     }
@@ -167,7 +165,6 @@ export class AssetPainter extends LayerPainter {
 
   public drawEditableCharacter(): void {
     if (!GSM.CharacterEditor.selectedCharacterImageUrl || !GSM.Map.hoveringCell) { return }
-    // console.log(GSM.Map.hoveringCell.x, GSM.Map.hoveringCell.y)
     GSM.Canvas.foregroundCTX.drawImage(
       GSM.CharacterEditor.selectedCharacterImageUrl,
       26,

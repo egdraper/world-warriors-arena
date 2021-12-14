@@ -8,7 +8,7 @@ import { GSM } from "../app.service.manager";
 export class NewFogOfWarService {
   public edgeCells: Cell[] = []
   public visitedCells = new Set<Cell>()
-  public blackOutRimPoints: Array<Cell> = []
+  public blackOutRimPoints: { [gridId: string]: Array<Cell> } = {}
   public nonObstructedCells: { [id: string]: Set<Cell> } = {}
   public fogOfWarRimPoints: { [id: string]: Cell[] } = {}
 
@@ -21,7 +21,6 @@ export class NewFogOfWarService {
       row.forEach(cell => {
         if (!cell.obstacle) {
           cell.revealed = false
-          console.log(cell.id)
           this.fogOfWarRimPoints[cell.id] = []
           this.edgeCells.forEach(edgeCell => {
             this.checkForObstacle(cell, edgeCell)
@@ -29,7 +28,6 @@ export class NewFogOfWarService {
 
           const cleanSet = new Set(this.fogOfWarRimPoints[cell.id])
           this.fogOfWarRimPoints[cell.id] = Array.from(cleanSet)
-
         }
       })
     })
@@ -37,7 +35,6 @@ export class NewFogOfWarService {
 
   public getSingleView(cell: Cell): Cell[] {
     cell.revealed = false
-    console.log(cell.id)
     this.fogOfWarRimPoints[cell.id] = []
     this.edgeCells.forEach(edgeCell => {
       this.checkForObstacle(cell, edgeCell)
@@ -45,7 +42,6 @@ export class NewFogOfWarService {
 
     const cleanSet = new Set(this.fogOfWarRimPoints[cell.id])
     return Array.from(cleanSet)
-
   }
 
   private checkForObstacle(assetCell: Cell, edgeCell: Cell): boolean {
