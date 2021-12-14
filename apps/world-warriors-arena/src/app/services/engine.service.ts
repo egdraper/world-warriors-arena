@@ -11,7 +11,7 @@ export class Engine {
   public static onFire = new Subject<number>()
   public assets: AnimationComponent[] = []
   public shortLivedAnimations: ShortLivedAnimation[] = []
-  public frame: number = 1
+  public frame = 1
 
   private shortLivedAnimation: ShortLivedAnimationPainter
 

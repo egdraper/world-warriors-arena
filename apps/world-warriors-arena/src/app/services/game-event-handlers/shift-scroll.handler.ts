@@ -7,8 +7,8 @@ export class ShiftScrollEventHandler extends GameEventHandler {
   public id = "ShiftScrollEventHandler"
 
   private subscriptions: Subscription[] = []
-  private scrollSpeedX: number = 32
-  private scrollSpeedY: number = 32
+  private scrollSpeedX = 32
+  private scrollSpeedY = 32
 
   private rightQuadrant = false
   private leftQuadrant = false

@@ -5,7 +5,7 @@ import { DragAssetEventHandler } from './game-event-handlers/drag-asset.handler'
 import { GMHoverAssetEventHandler, GMHoverCtrlAssetEventHandler } from './game-event-handlers/gm-hover-asset.handler'
 import { MoveAssetEventHandler } from './game-event-handlers/move-asset.handler'
 import { PageTransitionMarkerCtrlClickHandler } from './game-event-handlers/page-transition-marker-ctrl-click.handler'
-import { PageTransitionMarkerHandler } from './game-event-handlers/page-transtiion-marker-click.handler'
+import { PageTransitionMarkerHandler } from './game-event-handlers/page-transition-marker-click.handler'
 import { PlaceAssetEventHandler } from './game-event-handlers/place-asset.handler'
 import { PlayerSelectAssetEventHandler } from './game-event-handlers/select-asset.handler'
 import { PlayerSwapAssetEventHandler } from './game-event-handlers/swap-asset.handler'
@@ -13,6 +13,7 @@ import { DragSelectedAssetEventHandler } from './game-event-handlers/drag-select
 import { ShiftScrollEventHandler } from './game-event-handlers/shift-scroll.handler'
 import { DrawTerrainEventHandler } from './game-event-handlers/draw-terrain.handler'
 import { DrawInvertedEventHandler } from './game-event-handlers/draw-inverted.handler'
+import { ArrowKeysPressedEventHandler } from './game-event-handlers/arrow-keys-press.handler'
 
 @Injectable({
   providedIn: 'root'
@@ -37,6 +38,7 @@ export class GameEventsService {
     this.register(new ShiftScrollEventHandler())
     this.register(new DrawTerrainEventHandler())
     this.register(new DrawInvertedEventHandler())
+    this.register(new ArrowKeysPressedEventHandler())
   }
 
   public update(): void {

@@ -1,14 +1,13 @@
+import { AssetsService } from "./services/assets.service";
 import { CanvasService } from "./services/canvas.service";
 import { CharacterEditorService } from "./services/character-editor.service";
-import { EditorService } from "./services/editor.service";
-import { AssetsService } from "./services/assets.service";
-import { GameMarkersService } from "./services/game-markers.service";
 import { DrawService } from "./services/draw.service";
+import { EditorService } from "./services/editor.service";
 import { Engine } from "./services/engine.service";
+import { GameEventsService } from "./services/game-events.service";
+import { GameMarkersService } from "./services/game-markers.service";
 import { MapService } from "./services/map.service";
 import { NewFogOfWarService } from "./services/new-visibility.service";
-import { ShortestPath } from "./utils/shortest-path";
-import { GameEventsService } from "./services/game-events.service";
 
 export class GSM {
   public static Canvas: CanvasService

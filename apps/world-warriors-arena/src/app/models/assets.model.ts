@@ -9,7 +9,7 @@ import { ShortestPath } from '../utils/shortest-path';
 export class GameComponent {
   public id: string
   public cell: Cell = null
-  public gridId: string = "0"
+  public gridId = "0"
 
   constructor() {
     this.id = uuidv4()
@@ -121,7 +121,7 @@ export abstract class MotionAsset extends Asset {
     // called automatically every 1/60 of a second from the engine
     let nextXMove = 0
     let nextYMove = 0
-    let speed = 2
+    const speed = 2
 
     if (this.nextCell.x !== this.cell.x) { nextXMove = this.nextCell.x > this.cell.x ? speed : speed * -1 }
     if (this.nextCell.y !== this.cell.y) { nextYMove = this.nextCell.y > this.cell.y ? speed : speed * -1 }

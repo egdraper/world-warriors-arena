@@ -46,7 +46,7 @@ export class BlackOutFogPainter extends Painter {
       if (GSM.FogOfWar.blackOutRimPoints.length === 0) {
         GSM.FogOfWar.blackOutRimPoints = fogOfWarRim
       }
-      let blackOutRim = GSM.FogOfWar.blackOutRimPoints
+      const blackOutRim = GSM.FogOfWar.blackOutRimPoints
 
       const fogNonObstructedCells = GSM.FogOfWar.nonObstructedCells[GSM.Assets.selectedGameComponent.cell.id]
 
@@ -54,7 +54,7 @@ export class BlackOutFogPainter extends Painter {
         const tempBlackOutRim: Cell[] = []
 
 
-        for (let cell of fogOfWarRim) {
+        for (const cell of fogOfWarRim) {
           const _index = blackOutRim.findIndex(_cell => cell.id === _cell.id)
 
           if (_index === -1) {
@@ -93,7 +93,7 @@ export class BlackOutFogPainter extends Painter {
           }
 
           if (blackHasFogsMatch) {
-            let index = dBlack.indexOf(blackHasFogsMatch)
+            const index = dBlack.indexOf(blackHasFogsMatch)
             for (let i = 0; i <= index; i++) {
               tempBlackOutRim.push(dBlack.shift())
             }
@@ -102,7 +102,7 @@ export class BlackOutFogPainter extends Painter {
           }
 
           if (fogHasBlacksMatch) {
-            let index = dFog.indexOf(fogHasBlacksMatch)
+            const index = dFog.indexOf(fogHasBlacksMatch)
             for (let i = 0; i <= index; i++) {
               tempBlackOutRim.push(dFog.shift())
             }

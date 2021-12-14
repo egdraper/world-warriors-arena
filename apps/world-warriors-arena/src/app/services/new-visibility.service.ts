@@ -109,7 +109,7 @@ export class NewFogOfWarService {
     let checkLocationX = assetCenterX
 
     let reachedDestination = false
-    let foundObstacle = false
+    const foundObstacle = false
 
     while (!reachedDestination) {
       checkLocationX += (xRatio * xRatioMultiplier)

@@ -9,7 +9,7 @@ import { RandomMapGenerator } from "../utils/random-map-generator";
 @Injectable()
 export class EditorService {
   public selectedAsset: SpriteTile
-  public selectedGrowableAsset: string = "DrawableDirtRoad"
+  public selectedGrowableAsset = "DrawableDirtRoad"
   public layerID = 1 
 
   public findBackgroundCollection(category: string): SpriteBackgroundTile[] {
@@ -61,6 +61,21 @@ export class EditorService {
    
     RandomMapGenerator.generateAttachmentMap(GSM.Map.activeMap, mapDetails, markerIcon)
     GSM.Canvas.setupCanvases()
+  }
+
+  public togglePlayMode(): void {
+    if (!GSM.Map.activeMap) { return }
+
+    GSM.Canvas.editMode = !GSM.Canvas.editMode
+    setTimeout(() => {
+      if (!GSM.Canvas.editMode) {
+        GSM.Map.activeMap.largeImage.createLargeImage(GSM.Map.activeMap.width * 32, GSM.Map.activeMap.height * 32, GSM.Map)
+      } else {
+        if (GSM.Map.activeMap) {
+          GSM.Map.activeMap.largeImage.background = undefined
+        }
+      }
+    })
   }
 
 } 

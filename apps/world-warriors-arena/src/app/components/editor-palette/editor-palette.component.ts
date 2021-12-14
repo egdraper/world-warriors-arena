@@ -12,7 +12,7 @@ import { GameSettings } from '../../models/game-settings';
 export class EditorPaletteComponent implements OnInit {
   public images: any[] = []
   public imageArray: any[] = []
-  public currentImageSrc: string = ""
+  public currentImageSrc = ""
   public lockState = "Locked"
   public mapService = GSM.Map
   public canvasService = GSM.Canvas

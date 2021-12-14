@@ -12,8 +12,8 @@ export class KeyPressEventDetails {
   public arrowLeftPressed?: boolean = false
   public arrowUpPressed?: boolean = false
   public arrowRightPressed?: boolean = false
-  public mouseDown?: boolean = false
   public keyPressed?: string = ""
+  public mouseDown?: boolean = false
 }
 
 export class MouseEventDetails {
@@ -23,8 +23,8 @@ export class MouseEventDetails {
   hoveringBackground: SpriteBackgroundTile
   hoveringObject: SpriteTile
   markerIcon: MarkerIcon
-  mouseX: number = 0
-  mouseY: number = 0
+  mouseX = 0
+  mouseY = 0
   mouseMove: Subject<MousePosition> = new Subject()
 }
 

@@ -1,10 +1,7 @@
 import { Subject } from "rxjs"
-import { MotionAsset } from "../../models/assets.model"
-import { MarkerIconType, MousePosition, SpriteBackgroundTile, SpriteTile } from "../../models/cell.model"
+import { MarkerIconType, MousePosition } from "../../models/cell.model"
 import { KeyPressEventDetails, MouseEventDetails } from "../../models/game-event-handler.model"
 import { GameSettings } from "../../models/game-settings"
-import { MarkerIcon } from "../../models/marker-icon.model"
-import { GameEventsService } from "../game-events.service"
 
 export abstract class GameEventHandler implements KeyPressEventDetails {
   public id: string
@@ -27,6 +24,7 @@ export abstract class GameEventHandler implements KeyPressEventDetails {
   public hoveringTerrain: boolean
   public hoveringBackground: boolean
   public hoveringObject: boolean
+  public keyPressed: string
 
   // Getters Setters
   public _handlerActive = false
@@ -61,6 +59,7 @@ export abstract class GameEventHandler implements KeyPressEventDetails {
       && (this.hoveringTerrain !== undefined ? this.hoveringTerrain === !!this.mouseEventDetails.hoveringTerrain : true)
       && (this.markerIconType !== undefined ? this.markerIconType === this.mouseEventDetails.markerIcon.type : true)
       && (this.mouseDown !== undefined ? this.mouseDown === this.keyPressDetails.mouseDown : true)
+      && (this.keyPressed !== undefined ? this.keyPressed === this.keyPressDetails.keyPressed : true)
 
     this.handlerActive = (baseKeyConditions && this.and()) || this.or()
   }

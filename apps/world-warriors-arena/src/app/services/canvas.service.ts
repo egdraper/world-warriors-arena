@@ -22,7 +22,7 @@ export class CanvasService {
   public cellOffsetX = 0
   public cellOffsetY = 0
   public portalEntry: Cell[] = []
-  public editMode: boolean = true
+  public editMode = true
 
   public largeImageBackground: HTMLImageElement
   public largeImageForeground: HTMLImageElement

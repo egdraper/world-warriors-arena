@@ -10,7 +10,6 @@
           "error",
           {
             "enforceBuildableLibDependency": true,
-            "no-inferrable-types": false,
             "allow": [],
             "depConstraints": [
               {

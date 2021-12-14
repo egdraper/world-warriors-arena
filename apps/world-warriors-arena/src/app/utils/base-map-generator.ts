@@ -125,7 +125,7 @@ export class BaseMapGenerator {
   }
 
   protected static setEdgeLayerRandomization(cell: Cell, neighborIndex: number, defaultMapSettings: DefaultMapSettings): void {
-    const random = !!!Math.floor(Math.random() * 2)
+    const random = !Math.floor(Math.random() * 2)
     if (random) {
       if (cell.neighbors[neighborIndex]) {
         cell.neighbors[neighborIndex].obstacle = true
@@ -140,7 +140,7 @@ export class BaseMapGenerator {
   protected randomlyPlaceInvisibleObstacles(map: GameMap): void {
     map.gridDisplay.forEach(row => {
       row.forEach(cell => {
-        cell.obstacle = !!!Math.floor(Math.random() * 4)
+        cell.obstacle = !Math.floor(Math.random() * 4)
       })
     })
   }
@@ -185,7 +185,7 @@ export class BaseMapGenerator {
   }
 
   protected static populateCell(cell: Cell, neighborIndex: number, weight: number, defaultMapSettings: DefaultMapSettings): void {
-    const isPlaced = !!!Math.floor(Math.random() * weight)
+    const isPlaced = !Math.floor(Math.random() * weight)
     if (!cell) { return }
     if (cell.neighbors[neighborIndex] && neighborIndex < 8 && isPlaced) {
       const neighbor = cell.neighbors[neighborIndex]

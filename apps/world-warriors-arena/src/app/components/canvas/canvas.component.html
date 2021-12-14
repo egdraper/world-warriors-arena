@@ -1,18 +1,10 @@
-<canvas #drawCanvas *ngIf="canvasService.editMode" id="drawCanvas">
-</canvas>
-<!-- <h1>X{{hoveringCell?.x}}:Y{{hoveringCell?.y}}<h1> -->
+<canvas #drawCanvas *ngIf="canvasService.editMode" id="drawCanvas"></canvas>
 
 <div class="game-canvas">
   <canvas #backgroundCanvas id="backgroundCanvas"></canvas>
   <canvas #overlayCanvas id="overlayCanvas"></canvas>
-
   <canvas #foregroundCanvas id="foregroundCanvas"></canvas>
-
-
-  <canvas #fogCanvas id="fogCanvas">
-  </canvas>
-
-
+  <canvas #fogCanvas id="fogCanvas"></canvas>
   <canvas 
     #blackoutCanvas 
     id="blackoutCanvas" 
@@ -23,8 +15,4 @@
     (keydown)="onKeyDown($event)"
     (keyup)="onKeyUp($event)">
   </canvas>
-  <div class="character-hover">
-    <!-- <h1>{{hoveringCell?.occupiedBy?.image?.src}}
-    </h1> -->
-  </div>
 </div>
