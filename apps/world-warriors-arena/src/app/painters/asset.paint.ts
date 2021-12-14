@@ -12,7 +12,7 @@ export class AssetPainter extends LayerPainter {
     Engine.onFire.subscribe(this.paint.bind(this))
   }
 
-  public frame: number = 0
+  public frame = 0
   // Draws Grid Lines  
   public paint(frame: number): void {
     this.frame = frame
@@ -26,10 +26,10 @@ export class AssetPainter extends LayerPainter {
     if (GSM.Canvas.foregroundCTX) {
 
       // Ensure the viewport does not kick back a negative number (cells don't work with negatives)
-      let topLeftPosX = -1 * GSM.Canvas.canvasViewPortOffsetX
-      let topLeftPosY = -1 * GSM.Canvas.canvasViewPortOffsetY
-      let topRightPosX = topLeftPosX + GSM.Canvas.canvasSizeX + (32 * (1 / GameSettings.scale))
-      let bottomPosY = topLeftPosY + GSM.Canvas.canvasSizeY + (32 * (1 / GameSettings.scale))
+      const topLeftPosX = -1 * GSM.Canvas.canvasViewPortOffsetX
+      const topLeftPosY = -1 * GSM.Canvas.canvasViewPortOffsetY
+      const topRightPosX = topLeftPosX + GSM.Canvas.canvasSizeX + (32 * (1 / GameSettings.scale))
+      const bottomPosY = topLeftPosY + GSM.Canvas.canvasSizeY + (32 * (1 / GameSettings.scale))
 
       const cellTopLeft = GSM.Map.activeMap.getGridCellByCoordinate(topLeftPosX, topLeftPosY)
       let cellTopRight = GSM.Map.activeMap.getGridCellByCoordinate(topRightPosX, topLeftPosY)
@@ -164,13 +164,14 @@ export class AssetPainter extends LayerPainter {
     )
 
   }
+
   public drawEditableCharacter(): void {
-    if (!GSM.CharacterEditor.selectedCharacter || !GSM.Map.hoveringCell) { return }
+    if (!GSM.CharacterEditor.selectedCharacterImageUrl || !GSM.Map.hoveringCell) { return }
     // console.log(GSM.Map.hoveringCell.x, GSM.Map.hoveringCell.y)
     GSM.Canvas.foregroundCTX.drawImage(
-      GSM.CharacterEditor.selectedCharacter.image,
-      GSM.CharacterEditor.selectedCharacter.frameXPosition[1],
-      GSM.CharacterEditor.selectedCharacter.frameYPosition,
+      GSM.CharacterEditor.selectedCharacterImageUrl,
+      26,
+      0,
       25,
       36,
       GSM.Map.hoveringCell.posX - 8,

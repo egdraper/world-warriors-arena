@@ -30,7 +30,7 @@ export class CanvasComponent {
   public playerEvent = GSM.GameEvent
 
   public hoveringCell: Cell
-  public grabbingCharacter: boolean = false
+  public grabbingCharacter = false
 
   private mouseIsDown = false
   private controlPressed = false
@@ -38,9 +38,6 @@ export class CanvasComponent {
   private leftArrowDown = false
   private upArrowDown = false
   private downArrowDown = false
-
-
-
 
   constructor() {
     this.subscribeToEngine()
@@ -87,6 +84,7 @@ export class CanvasComponent {
     }
 
     switch (event.key) {
+      case "Meta":
       case "Control":
         this.controlPressed = true
         GSM.Map.hoveringCell = this.hoveringCell
@@ -123,6 +121,7 @@ export class CanvasComponent {
       case "Delete":
         GSM.Assets.removeGameComponent()
         break
+      case "Meta":
       case "Control":
         this.controlPressed = false
         GSM.GameEvent.keyPressDetails.ctrlPressed = false

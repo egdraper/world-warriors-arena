@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core'
 import { MouseEventDetails, KeyPressEventDetails } from '../models/game-event-handler.model'
 import { GameEventHandler } from './game-event-handlers/base.handler'
 import { DragAssetEventHandler } from './game-event-handlers/drag-asset.handler'
-import { GMHoverAssetEventHandler } from './game-event-handlers/gm-hover-asset.handler'
+import { GMHoverAssetEventHandler, GMHoverCtrlAssetEventHandler } from './game-event-handlers/gm-hover-asset.handler'
 import { MoveAssetEventHandler } from './game-event-handlers/move-asset.handler'
 import { PageTransitionMarkerCtrlClickHandler } from './game-event-handlers/page-transition-marker-ctrl-click.handler'
 import { PageTransitionMarkerHandler } from './game-event-handlers/page-transtiion-marker-click.handler'
@@ -23,6 +23,7 @@ export class GameEventsService {
 
   constructor() {
     this.register(new GMHoverAssetEventHandler())
+    this.register(new GMHoverCtrlAssetEventHandler())
     this.register(new DragAssetEventHandler())
     this.register(new PageTransitionMarkerCtrlClickHandler())
     this.register(new PageTransitionMarkerHandler())

@@ -10,13 +10,12 @@ export class AssetsService {
   public selectedGameComponents: MotionAsset[] = [] 
   public obstacles: string[] = []
 
-  public placementChanged: boolean = true
+  public placementChanged = true
 
   public removeGameComponent(): void {
     this.gameComponents = this.gameComponents.filter(asset => asset != this.selectedGameComponent)
     this.selectedGameComponent = undefined
   }
-
 
   public getAssetFromCell(cell: Cell, gridId: string): MotionAsset {
     return this.gameComponents.find(asset => {
