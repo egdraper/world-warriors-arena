@@ -1,16 +1,15 @@
-import { Component, ElementRef, HostListener, ViewChild } from '@angular/core';
+/* eslint-disable @typescript-eslint/no-unused-vars */
+import { AfterViewInit, Component, ElementRef, HostListener, ViewChild } from '@angular/core';
 import { GSM } from '../../app.service.manager';
-import { growableItems } from '../../game-assets/tile-assets.db';
 import { Cell } from '../../models/cell.model';
 import { GameSettings } from '../../models/game-settings';
-import { Engine } from '../../services/engine.service';
 
 @Component({
   selector: 'world-warriors-arena-canvas',
   templateUrl: './canvas.component.html',
   styleUrls: ['./canvas.component.scss']
 })
-export class CanvasComponent {
+export class CanvasComponent implements AfterViewInit{
   @ViewChild('overlayCanvas') overlayCanvas: ElementRef<HTMLCanvasElement>;
   @ViewChild('foregroundCanvas') foregroundCanvas: ElementRef<HTMLCanvasElement>;
   @ViewChild('backgroundCanvas') backgroundCanvas: ElementRef<HTMLCanvasElement>;
@@ -30,21 +29,6 @@ export class CanvasComponent {
   public playerEvent = GSM.GameEvent
 
   public hoveringCell: Cell
-  public grabbingCharacter: boolean = false
-
-  private mouseIsDown = false
-  private controlPressed = false
-  private rightArrowDown = false
-  private leftArrowDown = false
-  private upArrowDown = false
-  private downArrowDown = false
-
-
-
-
-  constructor() {
-    this.subscribeToEngine()
-  }
 
   // this needs to be put in a public function so we can pass in grid information 
   public ngAfterViewInit(): void {
@@ -52,7 +36,6 @@ export class CanvasComponent {
     this.backgroundContext = this.backgroundCanvas.nativeElement.getContext('2d', { alpha: false });
     GSM.Canvas.backgroundCTX = this.backgroundContext
     GSM.Canvas.backgroundCanvas = this.backgroundCanvas
-
 
     // Foreground
     this.foregroundContext = this.foregroundCanvas.nativeElement.getContext('2d');
@@ -69,7 +52,7 @@ export class CanvasComponent {
     GSM.Canvas.fogCTX = this.fogContext
     GSM.Canvas.fogCanvas = this.fogCanvas
 
-    // Fog
+    // Fog Blackout
     this.blackoutContext = this.blackoutCanvas.nativeElement.getContext('2d');
     GSM.Canvas.blackoutCTX = this.blackoutContext
     GSM.Canvas.blackoutCanvas = this.blackoutCanvas
@@ -87,8 +70,8 @@ export class CanvasComponent {
     }
 
     switch (event.key) {
+      case "Meta":
       case "Control":
-        this.controlPressed = true
         GSM.Map.hoveringCell = this.hoveringCell
         GSM.GameEvent.keyPressDetails.ctrlPressed = true
         break;
@@ -96,16 +79,16 @@ export class CanvasComponent {
         GSM.GameEvent.keyPressDetails.shiftPressed = true
         break;
       case "ArrowRight":
-        this.rightArrowDown = true
+        GSM.GameEvent.keyPressDetails.arrowRightPressed = true
         break;
       case "ArrowLeft":
-        this.leftArrowDown = true
+        GSM.GameEvent.keyPressDetails.arrowLeftPressed = true
         break;
       case "ArrowUp":
-        this.upArrowDown = true
+        GSM.GameEvent.keyPressDetails.arrowUpPressed = true
         break;
       case "ArrowDown":
-        this.downArrowDown = true
+        GSM.GameEvent.keyPressDetails.arrowDownPressed = true
         break;
       case "e":
         // this.placingPortal = true
@@ -123,8 +106,8 @@ export class CanvasComponent {
       case "Delete":
         GSM.Assets.removeGameComponent()
         break
+      case "Meta":
       case "Control":
-        this.controlPressed = false
         GSM.GameEvent.keyPressDetails.ctrlPressed = false
         GSM.Map.hoveringCell = undefined
         break;
@@ -132,23 +115,22 @@ export class CanvasComponent {
         GSM.GameEvent.keyPressDetails.shiftPressed = false
         break;
       case "ArrowRight":
-        GSM.GameMarker
-        this.rightArrowDown = false
+        GSM.GameEvent.keyPressDetails.arrowRightPressed = false
         break;
       case "ArrowLeft":
-        this.leftArrowDown = false
+        GSM.GameEvent.keyPressDetails.arrowLeftPressed = false
         break;
       case "ArrowUp":
-        this.upArrowDown = false
+        GSM.GameEvent.keyPressDetails.arrowUpPressed = false
         break;
       case "ArrowDown":
-        this.downArrowDown = false
+        GSM.GameEvent.keyPressDetails.arrowDownPressed = false
         break;
       case "e":
         // this.placingPortal = false
         break;
       case "q":
-        this.togglePlayMode()
+        GSM.Editor.togglePlayMode()
         break;
       default:
         break;
@@ -156,13 +138,12 @@ export class CanvasComponent {
     GSM.GameEvent.update()
   }
 
-  public onCanvasClick(event: any): void {
-    this.mouseIsDown = true
+  public onCanvasClick(event: MouseEvent): void {
     GSM.GameEvent.keyPressDetails.mouseDown = true
     GSM.GameEvent.update()
   }
 
-  public onMouseMove(event: any): void {
+  public onMouseMove(event: MouseEvent): void {
     if (!GSM.Map.activeMap) { return }
 
     const mousePosX = event.offsetX + (-1 * GSM.Canvas.canvasViewPortOffsetX * GameSettings.scale)
@@ -177,6 +158,7 @@ export class CanvasComponent {
     // For Drawing
     GSM.Map.hoveringCell = this.hoveringCell
 
+    // For Event Handlers
     GSM.GameEvent.mouseDetails.cellId = this.hoveringCell.id
     GSM.GameEvent.mouseDetails.hoveringPlayer = GSM.Assets.getAssetFromCell(this.hoveringCell, GSM.Map.activeMap.id)
     GSM.GameEvent.mouseDetails.hoveringBackground = this.hoveringCell.backgroundTile
@@ -185,76 +167,13 @@ export class CanvasComponent {
     GSM.GameEvent.mouseDetails.markerIcon = GSM.GameMarker.getHoveringIcon()
     GSM.GameEvent.mouseDetails.mouseX = mousePosX
     GSM.GameEvent.mouseDetails.mouseY = mousePosY
-    GSM.GameEvent.mouseDetails.mouseMove.next({mouseX: mousePosX, mouseY: mousePosY})
+    GSM.GameEvent.mouseDetails.mouseMove.next({mousePosX: mousePosX, mousePosY: mousePosY})
     GSM.GameEvent.update()
-
-
-    if (event.offsetX < 0 || event.offsetY < 0) { return }
-    if (!this.mouseIsDown || !this.controlPressed) { return }
-
-    // this.rightQuadrant = clickX > (-1 * GSM.Canvas.canvasViewPortOffsetX + GSM.Canvas.canvasSizeX) - 96
-    // this.bottomQuadrant = clickY > (-1 * GSM.Canvas.canvasViewPortOffsetY + GSM.Canvas.canvasSizeY) - 96
-    // this.topQuadrant = clickX < (-1 * GSM.Canvas.canvasViewPortOffsetX + 96) && (GSM.Canvas.canvasViewPortOffsetX < 0)
-    // this.leftQuadrant = clickY < (-1 * GSM.Canvas.canvasViewPortOffsetY + 96) && (GSM.Canvas.canvasViewPortOffsetY < 0)
-
-    if (GSM.Map.activeMap.defaultSettings.inverted) { // Rename to GSM.Map.removing or something
-      GSM.Assets.addInvertedMapAsset(this.hoveringCell)
-    } else if (this.mouseIsDown && this.controlPressed) {
-      const selectedAsset = GSM.Editor.selectedAsset
-      const drawableItem = growableItems.find(item => item.id === GSM.Editor.selectedGrowableAsset)
-
-      GSM.Assets.addMapAsset(this.hoveringCell, selectedAsset, drawableItem)
-    }
-    // GSM.GameEvent.mouseDetails = false
-
   }
 
-  public onMouseUp(event: any): void {
-    this.mouseIsDown = false
-    this.grabbingCharacter = false
+  public onMouseUp(event: MouseEvent): void {
     GSM.GameEvent.keyPressDetails.mouseDown = false
     GSM.GameEvent.update()
-  }
-
-  public subscribeToEngine(): void {
-    Engine.onFire.subscribe((frame) => {
-      if (!GameSettings.gm) { return }
-      if (this.rightArrowDown) {
-        GSM.Canvas.scrollViewPort(1, 0)
-      }
-      if (this.leftArrowDown) {
-        GSM.Canvas.scrollViewPort(-1, 0)
-      }
-      if (this.upArrowDown) {
-        GSM.Canvas.scrollViewPort(0, -1)
-      }
-      if (this.downArrowDown) {
-        GSM.Canvas.scrollViewPort(0, 1)
-      }
-   
-    })
-  }
-
-  private togglePlayMode(): void {
-    if (!GSM.Map.activeMap) { return }
-
-    GSM.Canvas.editMode = !GSM.Canvas.editMode
-    setTimeout(() => {
-      if (!GSM.Canvas.editMode) {
-        GSM.Map.activeMap.largeImage.createLargeImage(GSM.Map.activeMap.width * 32, GSM.Map.activeMap.height * 32, GSM.Map)
-      } else {
-        if (GSM.Map.activeMap) {
-          GSM.Map.activeMap.largeImage.background = undefined
-        }
-      }
-    })
-  }
-
-  private getCellFromMouseEvent(event: MouseEvent): Cell {
-    const clickX = event.offsetX + (-1 * GSM.Canvas.canvasViewPortOffsetX * GameSettings.scale)
-    const clickY = event.offsetY + (-1 * GSM.Canvas.canvasViewPortOffsetY * GameSettings.scale)
-
-    return GSM.Map.activeMap.getGridCellByCoordinate(clickX, clickY)
   }
 }
 

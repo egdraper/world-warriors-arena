@@ -1,13 +1,13 @@
 import { GSM } from "../../app.service.manager"
 import { MotionAsset } from "../../models/assets.model"
 import { Cell } from "../../models/cell.model"
-import { GameSettings } from "../../models/game-settings"
 import { GameEventHandler } from "./base.handler"
 
 export class DragAssetEventHandler extends GameEventHandler {
   public id = "DragAssetEventHandler"
   public draggingAsset = false
   public prevCell: Cell
+  public assetImage: HTMLImageElement
   public asset: MotionAsset
 
   // Requirements
@@ -18,10 +18,10 @@ export class DragAssetEventHandler extends GameEventHandler {
   public or() { return this.draggingAsset && this.keyPressDetails.mouseDown}
 
   public startEventProcess(): void {
-    console.log("I got Started")
     this.draggingAsset = true
     this.cursor.style = "grabbing"
     this.prevCell = this.mouseEventDetails?.hoveringPlayer?.cell
+    this.assetImage = this.mouseEventDetails?.hoveringPlayer.image
     this.asset = this.mouseEventDetails?.hoveringPlayer
 
     if(this.mouseEventDetails?.hoveringPlayer) {
@@ -36,5 +36,6 @@ export class DragAssetEventHandler extends GameEventHandler {
     this.asset.positionX = this.asset.cell.posX
     this.asset.positionY = this.asset.cell.posY
     this.asset = undefined
+    this.assetImage = undefined
   }
 }

@@ -7,6 +7,7 @@ export class PlayerSelectAssetEventHandler extends GameEventHandler {
 
   public hoveringPlayer = true
   public mouseDown = true
+  public ctrlPressed = false
   public and() { return !GSM.Assets.selectedGameComponent }
 
   public startEventProcess(): void {

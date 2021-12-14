@@ -5,11 +5,13 @@ import { Cell } from "./cell.model";
 export class Character extends MotionAsset {
   public frameCounter = 0
   public frameXPosition = [0, 26, 52, 26]
-  public image = new Image()
+  public image
 
   constructor(
-    public imageUrl: string,
+    public imageUrl: HTMLImageElement,
     public cell: Cell,
+    public gridId: string,
+    public animationFrame: number[]
   ) {
     super();
     
@@ -20,7 +22,7 @@ export class Character extends MotionAsset {
     }
 
     // temp: Randomly chooses character sprites
-    this.image.src = imageUrl
+    this.image = imageUrl
 
     this.image.onload = () => {
       GSM.Canvas.foregroundCTX.imageSmoothingEnabled = false

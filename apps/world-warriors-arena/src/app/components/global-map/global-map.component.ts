@@ -12,8 +12,8 @@ export class GlobalMapComponent implements OnInit {
   public gridOfGrids: GridMapCell[][] = []
 
   public gridCanvasContext: CanvasRenderingContext2D;
-  public maxHeight: number = 5
-  public maxWidth: number = 5
+  public maxHeight = 5
+  public maxWidth = 5
 
   private controlPressed = false
   private mouseIsDown = false

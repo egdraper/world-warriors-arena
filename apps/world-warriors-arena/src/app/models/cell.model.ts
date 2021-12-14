@@ -121,8 +121,8 @@ export interface Visited {
 
 export class GridDetails {
   public name?: string = ""
-  public width: number = 0
-  public height: number = 0
+  public width = 0
+  public height = 0
   public grid?: {[cell: string]: Cell }
 }
 
@@ -167,3 +167,7 @@ export enum MarkerIconType {
   query = "Query"
 }
 
+export class MousePosition {
+  public mousePosX: number
+  public mousePosY: number
+}

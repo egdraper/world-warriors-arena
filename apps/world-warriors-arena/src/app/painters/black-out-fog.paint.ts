@@ -34,6 +34,10 @@ export class BlackOutFogPainter extends Painter {
 
   public revealBlackoutFog(): void {
     if (GSM.Assets.selectedGameComponent) {
+      if(!GSM.FogOfWar.blackOutRimPoints[GSM.Map.activeMap.id]) {
+        GSM.FogOfWar.blackOutRimPoints[GSM.Map.activeMap.id] = []
+      }
+
       const fogOfWarRim = GSM.FogOfWar.fogOfWarRimPoints[GSM.Assets.selectedGameComponent.cell.id].map(a => a)
 
       GSM.Canvas.blackoutCTX.globalCompositeOperation = 'destination-out'
@@ -43,10 +47,10 @@ export class BlackOutFogPainter extends Painter {
         GSM.Canvas.blackoutCTX.filter = "blur(35px)";  // "feather"
       }
 
-      if (GSM.FogOfWar.blackOutRimPoints.length === 0) {
-        GSM.FogOfWar.blackOutRimPoints = fogOfWarRim
+      if (GSM.FogOfWar.blackOutRimPoints[GSM.Map.activeMap.id].length === 0) {
+        GSM.FogOfWar.blackOutRimPoints[GSM.Map.activeMap.id] = fogOfWarRim
       }
-      let blackOutRim = GSM.FogOfWar.blackOutRimPoints
+      const blackOutRim = GSM.FogOfWar.blackOutRimPoints[GSM.Map.activeMap.id]
 
       const fogNonObstructedCells = GSM.FogOfWar.nonObstructedCells[GSM.Assets.selectedGameComponent.cell.id]
 
@@ -54,7 +58,7 @@ export class BlackOutFogPainter extends Painter {
         const tempBlackOutRim: Cell[] = []
 
 
-        for (let cell of fogOfWarRim) {
+        for (const cell of fogOfWarRim) {
           const _index = blackOutRim.findIndex(_cell => cell.id === _cell.id)
 
           if (_index === -1) {
@@ -93,7 +97,7 @@ export class BlackOutFogPainter extends Painter {
           }
 
           if (blackHasFogsMatch) {
-            let index = dBlack.indexOf(blackHasFogsMatch)
+            const index = dBlack.indexOf(blackHasFogsMatch)
             for (let i = 0; i <= index; i++) {
               tempBlackOutRim.push(dBlack.shift())
             }
@@ -102,7 +106,7 @@ export class BlackOutFogPainter extends Painter {
           }
 
           if (fogHasBlacksMatch) {
-            let index = dFog.indexOf(fogHasBlacksMatch)
+            const index = dFog.indexOf(fogHasBlacksMatch)
             for (let i = 0; i <= index; i++) {
               tempBlackOutRim.push(dFog.shift())
             }
@@ -122,7 +126,7 @@ export class BlackOutFogPainter extends Painter {
           tempBlackOutRim.push(cell)
         })
 
-        GSM.FogOfWar.blackOutRimPoints = tempBlackOutRim
+        GSM.FogOfWar.blackOutRimPoints[GSM.Map.activeMap.id] = tempBlackOutRim
       }
       this.movementComplete = false
 
@@ -138,7 +142,7 @@ export class BlackOutFogPainter extends Painter {
         })
       }
       
-      // this.clearOutVisibleArea(GSM.FogOfWar.blackOutRimPoints, GSM.Canvas.blackoutCTX)
+      this.clearOutVisibleArea(GSM.FogOfWar.blackOutRimPoints[GSM.Map.activeMap.id], GSM.Canvas.blackoutCTX)
     }
   }
 

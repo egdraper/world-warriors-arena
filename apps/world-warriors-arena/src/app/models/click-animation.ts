@@ -6,8 +6,8 @@ export class ShortLivedAnimation {
   public image = new Image()
 
   public id: string
-  public animationFrame: number = 1
-  public cyclesRemaining: number = 0
+  public animationFrame = 1
+  public cyclesRemaining = 0
   public longLive = false
   public frameXCounter = 0
   public frameYCounter = 0

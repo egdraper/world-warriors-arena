@@ -72,7 +72,7 @@ export class RandomMapGenerator extends BaseMapGenerator {
   }
 
   public static setEdgeLayerRandomization(cell: Cell, neighborIndex: number, defaultMapSettings: DefaultMapSettings): void {
-    const random = !!!Math.floor(Math.random() * 2)
+    const random = !Math.floor(Math.random() * 2)
     if (random) {
       if (cell.neighbors[neighborIndex]) {
         cell.neighbors[neighborIndex].obstacle = true
@@ -87,7 +87,7 @@ export class RandomMapGenerator extends BaseMapGenerator {
   public static randomlyPlaceInvisibleObstacles(map: GameMap): void {
     map.gridDisplay.forEach(row => {
       row.forEach(cell => {
-        cell.obstacle = !!!Math.floor(Math.random() * 4)
+        cell.obstacle = !Math.floor(Math.random() * 4)
       })
     })
   }

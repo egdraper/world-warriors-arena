@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { Engine } from './services/engine.service';
 import { AssetsService } from './services/assets.service';
 import { Cell } from './models/cell.model';
@@ -17,7 +17,7 @@ import { GameEventsService } from './services/game-events.service';
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.scss'],
 })
-export class AppComponent {
+export class AppComponent implements OnInit {
   public selectedCell: Cell
   constructor(
     assetsService: AssetsService,

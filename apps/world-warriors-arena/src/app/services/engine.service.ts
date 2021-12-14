@@ -11,7 +11,7 @@ export class Engine {
   public static onFire = new Subject<number>()
   public assets: AnimationComponent[] = []
   public shortLivedAnimations: ShortLivedAnimation[] = []
-  public frame: number = 1
+  public frame = 1
 
   private shortLivedAnimation: ShortLivedAnimationPainter
 
@@ -72,8 +72,8 @@ export class Engine {
     // // }
     GSM.Draw.assetPainter.drawEditableCharacter()
     GSM.Draw.assetPainter.drawEditableObject()
-    // GSM.Draw.fogOfWarPainter.paint()
-    // GSM.Draw.blackOutFogPainter.paint()
+    GSM.Draw.fogOfWarPainter.paint()
+    GSM.Draw.blackOutFogPainter.paint()
     // GSM.Draw.drawBlackOutEdges()    
     Engine.onFire.next(this.frame)   
     

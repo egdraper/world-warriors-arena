@@ -1,6 +1,5 @@
 
 import { GSM } from "../app.service.manager";
-import { Engine } from "../services/engine.service";
 import { ShortLivedAnimation } from "./click-animation";
 
 export class SelectionIndicator extends ShortLivedAnimation {

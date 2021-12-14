@@ -9,7 +9,7 @@ import { ShortestPath } from '../utils/shortest-path';
 export class GameComponent {
   public id: string
   public cell: Cell = null
-  public gridId: string = "0"
+  public gridId = "0"
 
   constructor() {
     this.id = uuidv4()
@@ -27,10 +27,9 @@ export class Asset extends AnimationComponent {
   public image = new Image()
   public positionX = 0
   public positionY = 0
-  public frameCounter = 0
-
+  public frameCounter = 0 
   public setDirection(keyEvent: KeyboardEvent): void { return }
-
+  
   public update() {
     if (this.frameCounter < 3) {
       this.frameCounter++
@@ -48,9 +47,10 @@ export abstract class MotionAsset extends Asset {
   public selectionIndicator: SelectionIndicator
   public destinationIndicator: ClickAnimation
   public onFinished: () => void
-
+  
   private redirection: { start: Cell, end: Cell, charactersOnGrid: MotionAsset[] }
   private nextCell: Cell
+  private prevCell: Cell
 
   public set spriteDirection(value: string) {
     if (value === "down") { this.frameYPosition = 0 }
@@ -85,7 +85,7 @@ export abstract class MotionAsset extends Asset {
     }
   }
 
-  private prevCell: Cell
+
   public startMovement(startCell: Cell, endCell: Cell, charactersOnGrid: MotionAsset[], onFinished?: ()=> void): void {
     if(onFinished) { this.onFinished = onFinished }
     this.destinationIndicator = new ClickAnimation(350, `../../../assets/images/DestinationX.png`, endCell)
@@ -121,7 +121,7 @@ export abstract class MotionAsset extends Asset {
     // called automatically every 1/60 of a second from the engine
     let nextXMove = 0
     let nextYMove = 0
-    let speed = 2
+    const speed = GameSettings.speed
 
     if (this.nextCell.x !== this.cell.x) { nextXMove = this.nextCell.x > this.cell.x ? speed : speed * -1 }
     if (this.nextCell.y !== this.cell.y) { nextYMove = this.nextCell.y > this.cell.y ? speed : speed * -1 }

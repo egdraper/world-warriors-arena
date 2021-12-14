@@ -21,8 +21,6 @@ export class CharacterEditorPaletteComponent implements OnInit {
 
   public tileClick(image: HTMLImageElement): void {
     GSM.Assets.deselectAsset()
-    GSM.CharacterEditor.selectedCharacterUrl = image
-    GSM.CharacterEditor.selectedCharacter = 
-      new Character(image.src, null)
+    GSM.CharacterEditor.selectedCharacterImageUrl = image
   }
 }

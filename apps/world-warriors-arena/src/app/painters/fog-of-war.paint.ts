@@ -37,7 +37,6 @@ export class FogOfWarPainter extends Painter {
         GSM.Canvas.fogCTX.filter = "blur(35px)";  // "feather"
       }
 
-      console.log(centerCells[0])
       this.clearOutVisibleArea(centerCells, GSM.Canvas.fogCTX)
     }
   }
