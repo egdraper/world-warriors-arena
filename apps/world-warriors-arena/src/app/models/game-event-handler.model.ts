@@ -1,7 +1,7 @@
 
 import { Subject } from "rxjs"
 import { MotionAsset } from "./assets.model"
-import { SpriteTile, SpriteBackgroundTile } from "./cell.model"
+import { SpriteTile, SpriteBackgroundTile, MousePosition } from "./cell.model"
 import { MarkerIcon } from "./marker-icon.model"
 
 export class KeyPressEventDetails {
@@ -25,6 +25,6 @@ export class MouseEventDetails {
   markerIcon: MarkerIcon
   mouseX: number = 0
   mouseY: number = 0
-  mouseMove: Subject<{mouseX: number, mouseY: number}> = new Subject()
+  mouseMove: Subject<MousePosition> = new Subject()
 }
 

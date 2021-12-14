@@ -184,28 +184,8 @@ export class CanvasComponent {
     GSM.GameEvent.mouseDetails.markerIcon = GSM.GameMarker.getHoveringIcon()
     GSM.GameEvent.mouseDetails.mouseX = mousePosX
     GSM.GameEvent.mouseDetails.mouseY = mousePosY
-    GSM.GameEvent.mouseDetails.mouseMove.next({mouseX: mousePosX, mouseY: mousePosY})
+    GSM.GameEvent.mouseDetails.mouseMove.next({mousePosX: mousePosX, mousePosY: mousePosY})
     GSM.GameEvent.update()
-
-
-    if (event.offsetX < 0 || event.offsetY < 0) { return }
-    if (!this.mouseIsDown || !this.controlPressed) { return }
-
-    // this.rightQuadrant = clickX > (-1 * GSM.Canvas.canvasViewPortOffsetX + GSM.Canvas.canvasSizeX) - 96
-    // this.bottomQuadrant = clickY > (-1 * GSM.Canvas.canvasViewPortOffsetY + GSM.Canvas.canvasSizeY) - 96
-    // this.topQuadrant = clickX < (-1 * GSM.Canvas.canvasViewPortOffsetX + 96) && (GSM.Canvas.canvasViewPortOffsetX < 0)
-    // this.leftQuadrant = clickY < (-1 * GSM.Canvas.canvasViewPortOffsetY + 96) && (GSM.Canvas.canvasViewPortOffsetY < 0)
-
-    if (GSM.Map.activeMap.defaultSettings.inverted) { // Rename to GSM.Map.removing or something
-      GSM.Assets.addInvertedMapAsset(this.hoveringCell)
-    } else if (this.mouseIsDown && this.controlPressed) {
-      const selectedAsset = GSM.Editor.selectedAsset
-      const drawableItem = growableItems.find(item => item.id === GSM.Editor.selectedGrowableAsset)
-
-      GSM.Assets.addMapAsset(this.hoveringCell, selectedAsset, drawableItem)
-    }
-    // GSM.GameEvent.mouseDetails = false
-
   }
 
   public onMouseUp(event: any): void {
@@ -229,8 +209,7 @@ export class CanvasComponent {
       }
       if (this.downArrowDown) {
         GSM.Canvas.scrollViewPort(0, 1)
-      }
-   
+      }   
     })
   }
 
@@ -247,13 +226,6 @@ export class CanvasComponent {
         }
       }
     })
-  }
-
-  private getCellFromMouseEvent(event: MouseEvent): Cell {
-    const clickX = event.offsetX + (-1 * GSM.Canvas.canvasViewPortOffsetX * GameSettings.scale)
-    const clickY = event.offsetY + (-1 * GSM.Canvas.canvasViewPortOffsetY * GameSettings.scale)
-
-    return GSM.Map.activeMap.getGridCellByCoordinate(clickX, clickY)
   }
 }
 

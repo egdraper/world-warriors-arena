@@ -11,6 +11,8 @@ import { PlayerSelectAssetEventHandler } from './game-event-handlers/select-asse
 import { PlayerSwapAssetEventHandler } from './game-event-handlers/swap-asset.handler'
 import { DragSelectedAssetEventHandler } from './game-event-handlers/drag-selected-asset.handler'
 import { ShiftScrollEventHandler } from './game-event-handlers/shift-scroll.handler'
+import { DrawTerrainEventHandler } from './game-event-handlers/draw-terrain.handler'
+import { DrawInvertedEventHandler } from './game-event-handlers/draw-inverted.handler'
 
 @Injectable({
   providedIn: 'root'
@@ -33,6 +35,8 @@ export class GameEventsService {
     this.register(new PlaceAssetEventHandler())
     this.register(new DragSelectedAssetEventHandler())
     this.register(new ShiftScrollEventHandler())
+    this.register(new DrawTerrainEventHandler())
+    this.register(new DrawInvertedEventHandler())
   }
 
   public update(): void {

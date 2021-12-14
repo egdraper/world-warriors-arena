@@ -1,6 +1,5 @@
 import { Subscription } from "rxjs"
 import { GSM } from "../../app.service.manager"
-import { GameSettings } from "../../models/game-settings"
 import { Engine } from "../engine.service"
 import { GameEventHandler } from "./base.handler"
 
@@ -24,10 +23,10 @@ export class ShiftScrollEventHandler extends GameEventHandler {
     this.cursor.style = "move"
 
     this.subscriptions.push(this.mouseEventDetails.mouseMove.subscribe(mouseMove => {
-      this.rightQuadrant = mouseMove.mouseX > (-1 * GSM.Canvas.canvasViewPortOffsetX + GSM.Canvas.canvasSizeX) - GSM.Canvas.canvasSizeX / 3
-      this.bottomQuadrant = mouseMove.mouseY > (-1 * GSM.Canvas.canvasViewPortOffsetY + GSM.Canvas.canvasSizeY) - GSM.Canvas.canvasSizeY / 3
-      this.topQuadrant = mouseMove.mouseX < (-1 * GSM.Canvas.canvasViewPortOffsetX + GSM.Canvas.canvasSizeX / 3) && (GSM.Canvas.canvasViewPortOffsetX < 0)
-      this.leftQuadrant = mouseMove.mouseY < (-1 * GSM.Canvas.canvasViewPortOffsetY + GSM.Canvas.canvasSizeY / 3) && (GSM.Canvas.canvasViewPortOffsetY < 0)   
+      this.rightQuadrant = mouseMove.mousePosX > (-1 * GSM.Canvas.canvasViewPortOffsetX + GSM.Canvas.canvasSizeX) - GSM.Canvas.canvasSizeX / 3
+      this.bottomQuadrant = mouseMove.mousePosY > (-1 * GSM.Canvas.canvasViewPortOffsetY + GSM.Canvas.canvasSizeY) - GSM.Canvas.canvasSizeY / 3
+      this.topQuadrant = mouseMove.mousePosX < (-1 * GSM.Canvas.canvasViewPortOffsetX + GSM.Canvas.canvasSizeX / 3) && (GSM.Canvas.canvasViewPortOffsetX < 0)
+      this.leftQuadrant = mouseMove.mousePosY < (-1 * GSM.Canvas.canvasViewPortOffsetY + GSM.Canvas.canvasSizeY / 3) && (GSM.Canvas.canvasViewPortOffsetY < 0)   
     }))
 
     // TODO. Get Progressive scrolling to work (slow at first then speeds up)

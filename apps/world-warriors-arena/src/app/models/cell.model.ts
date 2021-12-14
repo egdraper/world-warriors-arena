@@ -167,3 +167,7 @@ export enum MarkerIconType {
   query = "Query"
 }
 
+export class MousePosition {
+  public mousePosX: number
+  public mousePosY: number
+}

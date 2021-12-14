@@ -1,6 +1,6 @@
 import { Subject } from "rxjs"
 import { MotionAsset } from "../../models/assets.model"
-import { MarkerIconType, SpriteBackgroundTile, SpriteTile } from "../../models/cell.model"
+import { MarkerIconType, MousePosition, SpriteBackgroundTile, SpriteTile } from "../../models/cell.model"
 import { KeyPressEventDetails, MouseEventDetails } from "../../models/game-event-handler.model"
 import { GameSettings } from "../../models/game-settings"
 import { MarkerIcon } from "../../models/marker-icon.model"
@@ -44,7 +44,7 @@ export abstract class GameEventHandler implements KeyPressEventDetails {
     return this._handlerActive
   }
 
-  public onMouseMove: Subject<{mouseX:number, mouseY: number}> = new Subject()
+  public onMouseMove: Subject<MousePosition> = new Subject()
 
   public criteriaMet(): void {
     const baseKeyConditions = 
@@ -67,6 +67,6 @@ export abstract class GameEventHandler implements KeyPressEventDetails {
 
   protected and(): boolean { return true }
   protected or(): boolean { return false }
-  public startEventProcess(): void { }
-  public endEvent(): void { }
+  public startEventProcess(): void { return }
+  public endEvent(): void { return }
 }
