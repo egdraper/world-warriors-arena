@@ -3,7 +3,6 @@ import { growableItems } from "../game-assets/tile-assets.db"
 import { Cell, SpriteTile } from "../models/cell.model"
 import { LayerPainter } from "./painter"
 
-
 export class BackgroundPainter extends LayerPainter {
   // Draws Grid Lines  
   public paint(): void {
@@ -20,13 +19,11 @@ export class BackgroundPainter extends LayerPainter {
           }
           this.drawOnBackgroundCell(cell)
         } catch {
-          debugger
+          // debugger
         }
       }
     }
   }
-
-
 
   private calculateGrowableBackgroundTerrain(selectedCell: Cell): void {
     const growableItem = growableItems.find(item => {

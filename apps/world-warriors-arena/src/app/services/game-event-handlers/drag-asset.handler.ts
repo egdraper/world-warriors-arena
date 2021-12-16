@@ -15,7 +15,9 @@ export class DragAssetEventHandler extends GameEventHandler {
   public mouseDown = true
   public ctrlPressed = true
   public hoveringPlayer = true
-  public or() { return this.draggingAsset && this.keyPressDetails.mouseDown}
+  public or() { 
+    return this.draggingAsset && this.keyPressDetails.mouseDown
+  }
 
   public startEventProcess(): void {
     this.draggingAsset = true
@@ -25,7 +27,7 @@ export class DragAssetEventHandler extends GameEventHandler {
     this.asset = this.mouseEventDetails?.hoveringPlayer
 
     if(this.mouseEventDetails?.hoveringPlayer) {
-    this.mouseEventDetails.hoveringPlayer.cell = undefined
+      this.mouseEventDetails.hoveringPlayer.cell = undefined
     }
   }
 

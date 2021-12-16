@@ -4,10 +4,11 @@ import { growableItems } from '../../game-assets/tile-assets.db';
 import { MousePosition } from '../../models/cell.model';
 import { Engine } from '../engine.service';
 import { GameEventHandler } from './base.handler';
+import { DragAssetEventHandler } from './drag-asset.handler';
 
 export class DrawTerrainEventHandler extends GameEventHandler {
   public id = 'DrawTerrainEventHandler';
-  private drawing = false;
+  public drawing = false;
   private subscriptions: Subscription[] = [];
 
   private rightQuadrant = false;
@@ -18,18 +19,20 @@ export class DrawTerrainEventHandler extends GameEventHandler {
   // Requirements
   public ctrlPressed = true;
   public mouseDown = true;
+  public hoveringPlayer = false;
   public and() {
-    return (
-      !!GSM.Editor.selectedGrowableAsset &&
-      !GSM.Map.activeMap.defaultSettings.inverted
-    );
+    return !!GSM.Editor.selectedGrowableAsset 
+      && !GSM.Map.activeMap.defaultSettings.inverted 
+      && !(GSM.GameEvent.getEvent("DragAssetEventHandler") as DragAssetEventHandler).draggingAsset
   }
   public or() {
-    return this.drawing && this.keyPressDetails.mouseDown;
+    return this.drawing 
+      && this.keyPressDetails.mouseDown 
+      && !(GSM.GameEvent.getEvent("DragAssetEventHandler") as DragAssetEventHandler).draggingAsset;
   }
 
   public startEventProcess(): void {
-    this.cursor.style = 'pointer';
+    this.cursor.style = 'all-scroll';
     this.drawing = true;
     this.subscriptions.push(this.mouseEventDetails.mouseMove.subscribe(this.handleMouseMove.bind(this)));
     this.subscribeToEngine();

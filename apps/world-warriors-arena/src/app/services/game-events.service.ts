@@ -23,6 +23,7 @@ export class GameEventsService {
   public mouseDetails: MouseEventDetails = new MouseEventDetails()
   public keyPressDetails: KeyPressEventDetails = new KeyPressEventDetails()
   public cursor: { style: string } = { style: "pointer" }
+  public activeEvent: string = ""
 
   constructor() {
     this.register(new GMHoverAssetEventHandler())

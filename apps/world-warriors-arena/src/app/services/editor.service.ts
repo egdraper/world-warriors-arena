@@ -9,7 +9,7 @@ import { RandomMapGenerator } from "../utils/random-map-generator";
 @Injectable()
 export class EditorService {
   public selectedAsset: SpriteTile
-  public selectedGrowableAsset = "DrawableDirtRoad"
+  public selectedGrowableAsset = ""
   public layerID = 1 
 
   public findBackgroundCollection(category: string): SpriteBackgroundTile[] {

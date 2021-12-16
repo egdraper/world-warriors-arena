@@ -115,8 +115,6 @@ export abstract class MotionAsset extends Asset {
     this.destinationIndicator = undefined
   }
 
-
-
   public move() {
     // called automatically every 1/60 of a second from the engine
     let nextXMove = 0
