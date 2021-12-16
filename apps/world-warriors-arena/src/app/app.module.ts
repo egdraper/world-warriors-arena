@@ -16,9 +16,10 @@ import { CharacterEditorService } from './services/character-editor.service';
 import { NewFogOfWarService } from './services/new-visibility.service';
 import { GameMarkersService } from './services/game-markers.service';
 import { GameEventsService } from './services/game-events.service';
+import { MinimapComponent } from './components/minimap/minimap.component';
 
 @NgModule({
-  declarations: [AppComponent, CanvasComponent, EditorPaletteComponent, CharacterEditorPaletteComponent, GlobalMapComponent],
+  declarations: [AppComponent, CanvasComponent, EditorPaletteComponent, CharacterEditorPaletteComponent, GlobalMapComponent, MinimapComponent],
   imports: [BrowserModule],
   providers: [
     AssetsService,

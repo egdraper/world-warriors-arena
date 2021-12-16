@@ -22,6 +22,10 @@ export class EditorPaletteComponent implements OnInit {
     this.imageArray = GSM.Editor.findObjectCollection("trees")
   }
 
+  public onMiniMapClick(): void {
+    GSM.Canvas.showMiniMap = !GSM.Canvas.showMiniMap
+  }
+
   public onSelectionChange(change: any): void {
     GSM.Editor.selectedGrowableAsset = growableItems.find(item => item.name === change.value).id
   }

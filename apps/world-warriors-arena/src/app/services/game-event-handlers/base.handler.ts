@@ -32,10 +32,10 @@ export abstract class GameEventHandler implements KeyPressEventDetails {
     if (isActive === this._handlerActive) { return }
     this._handlerActive = isActive
     if (isActive) {
-      console.log(this.id, "started")
+      // console.log(this.id, "started")
       this.startEventProcess()
     } else {
-      console.log(this.id, "ended")
+      // console.log(this.id, "ended")
       this.endEvent()
     }
   }

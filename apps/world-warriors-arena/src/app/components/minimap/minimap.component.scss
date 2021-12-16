@@ -1,0 +1,52 @@
+$border-outer-color: #888888;
+$border-inner-topleft-color: #333333;
+$border-inner-bottomright-color: #666666;
+$background-color: #222222;
+$light-text-color: #dddddd;
+$dark-text-color: #000000;
+$warning-btn-color: tomato;
+$error-btn-color: maroon;
+$submit-btn-color: olivedrab;
+$selected-btn-color: #dddddd;
+
+.mini-window {
+  background-color: white;
+  position: absolute;
+  left: 144px;
+  top: 144px;
+  width: calc(100vw - 288px);
+  height: calc(100vh - 288px);
+  z-index: 1000;
+
+  .mini-canvas {
+    background-color: $background-color;
+    margin: -1px;
+    margin-bottom: -5px;
+    width: calc(100vw - 292px);
+    height: calc(100vh - 290px);
+
+    canvas {
+      margin: -1px;
+      margin-bottom: -5px;
+      width: calc(100vw - 292px);
+      height: calc(100vh - 290px);
+    }
+  }
+}
+
+.outer-border {
+  border-color: $border-outer-color;
+  border-radius: 4px;
+  border-style: solid;
+  border-width: 8px;
+  box-shadow: 3px 3px rgba(111, 111, 111, 0.8);
+}
+.inner-border {
+  border-top-color: $border-inner-topleft-color;
+  border-left-color: $border-inner-topleft-color;
+  border-bottom-color: $border-inner-bottomright-color;
+  border-right-color: $border-inner-bottomright-color;
+  border-style: solid;
+  border-width: 4px;
+  border-radius: 2px;
+}

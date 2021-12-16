@@ -4,6 +4,8 @@
 <div class="button" (click)="invertedClicked()">Invert</div>
 <div class="button" (click)="baseClicked()">Layer</div>
 <div class="button" (click)="canvasService.resetViewport()">Reset View Port</div>
+<div class="button" (click)="onMiniMapClick()">MiniMap</div>
+
 <div class="button" 
   (click)="changeLockState()"
   [class.disabled]="assetService?.selectedGameComponent?.moving" 
