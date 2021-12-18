@@ -11,6 +11,7 @@ export class GameSettings {
   public static fog = true
   public static blackout = true
   public static speed = 2
+  public static miniMapScale = 1
 }
 
 export class DebugSettings {

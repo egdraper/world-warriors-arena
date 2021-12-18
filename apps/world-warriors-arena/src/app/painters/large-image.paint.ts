@@ -3,6 +3,7 @@ import { GSM } from "../app.service.manager"
 import { growableItems } from "../game-assets/tile-assets.db"
 import { MotionAsset } from "../models/assets.model"
 import { Cell, SpriteTile } from "../models/cell.model"
+import { GameMap } from "../models/game-map"
 import { GameSettings } from "../models/game-settings"
 import { MapService } from "../services/map.service"
 
@@ -16,11 +17,11 @@ export class LargeCanvasImage {
     public drawingCTX: CanvasRenderingContext2D
   ){}
 
-  public createLargeImage(gridWidth: number, gridHeight: number, mapService: MapService): HTMLImageElement {
+  public createLargeImage(gridWidth: number, gridHeight: number, map: GameMap): HTMLImageElement {
     this.drawingCTX.canvas.height = gridWidth
     this.drawingCTX.canvas.width = gridHeight
 
-    this.drawLargeImageObstacles(this.drawingCTX, mapService)
+    this.drawLargeImageObstacles(this.drawingCTX, map)
 
     const bimg = this.drawingCanvas.nativeElement.toDataURL("image/png")
     const bimage = new Image()
@@ -31,14 +32,14 @@ export class LargeCanvasImage {
   }
 
 
-  private drawLargeImageObstacles(ctx: CanvasRenderingContext2D, mapService: MapService): void {
-    mapService.activeMap.gridDisplay.forEach((row: Cell[]) => {
+  private drawLargeImageObstacles(ctx: CanvasRenderingContext2D, map: GameMap): void {
+    map.gridDisplay.forEach((row: Cell[]) => {
       row.forEach((cell: Cell) => {
         this.drawLargeImageBackgroundCell(cell, ctx)
       })
     })
-    this.drawGridLines(mapService, ctx)
-    mapService.activeMap.gridDisplay.forEach((row: Cell[]) => {
+    this.drawGridLines(map, ctx)
+    map.gridDisplay.forEach((row: Cell[]) => {
       row.forEach((cell: Cell) => {
         if (cell.growableTileId && !cell.growableTileOverride) {
           this.calculateGrowableTerrain(cell)
@@ -49,9 +50,9 @@ export class LargeCanvasImage {
   }
 
   // Draws Grid Lines  
-  private drawGridLines(mapService: MapService, ctx: CanvasRenderingContext2D): void {
-    for (let h = 0; h <= mapService.activeMap.height; h++) {
-      for (let w = 0; w <= mapService.activeMap.width; w++) {
+  private drawGridLines(map: GameMap, ctx: CanvasRenderingContext2D): void {
+    for (let h = 0; h <= map.height; h++) {
+      for (let w = 0; w <= map.width; w++) {
         // Horizontal lines
         const dim = GameSettings.cellDimension
 

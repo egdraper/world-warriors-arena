@@ -1,6 +1,6 @@
 <div class="mini-window outer-border">
     <div class="mini-canvas inner-border">
-        <h1 style="color:aliceblue;">{{miniMapManager?.mousePosX}}</h1>
+        <!-- <h1 style="color:aliceblue;">{{miniMapManager?.mousePosX}}</h1> -->
         <canvas 
           #miniMap 
           id="mini-map"
@@ -10,5 +10,7 @@
           (keydown)="miniMapManager.onKeyDown($event)"
           (keyUp)="miniMapManager.onKeyUp()"
           ></canvas>
+        </div>
     </div>
-</div>
+    
+    <!-- (wheel)="miniMapManager.onWheel($event)" -->

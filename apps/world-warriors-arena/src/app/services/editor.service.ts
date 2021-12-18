@@ -69,7 +69,7 @@ export class EditorService {
     GSM.Canvas.editMode = !GSM.Canvas.editMode
     setTimeout(() => {
       if (!GSM.Canvas.editMode) {
-        GSM.Map.activeMap.largeImage.createLargeImage(GSM.Map.activeMap.width * 32, GSM.Map.activeMap.height * 32, GSM.Map)
+        GSM.Map.activeMap.largeImage.createLargeImage(GSM.Map.activeMap.width * 32, GSM.Map.activeMap.height * 32, GSM.Map.activeMap)
       } else {
         if (GSM.Map.activeMap) {
           GSM.Map.activeMap.largeImage.background = undefined
