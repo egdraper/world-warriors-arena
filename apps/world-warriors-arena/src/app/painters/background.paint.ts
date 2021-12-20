@@ -4,6 +4,11 @@ import { Cell, SpriteTile } from "../models/cell.model"
 import { LayerPainter } from "./painter"
 
 export class BackgroundPainter extends LayerPainter {
+  constructor() {
+     super()
+     this.start()
+  }
+
   // Draws Grid Lines  
   public paint(): void {
     if (!GSM.Map.activeMap) { return }
@@ -72,13 +77,13 @@ export class BackgroundPainter extends LayerPainter {
     })
 
     if (!tile) {
-      tile = growableItem.spritesTiles.find((cliff: SpriteTile) => cliff.default)
+      tile = growableItem.spritesTiles.find((backgroundTile: SpriteTile) => backgroundTile.default)
     }
 
     selectedCell.backgroundTile = {
       spriteSheet: tile.spriteSheet,
-      spriteGridPosX: [tile.spriteGridPosX],
-      spriteGridPosY: [tile.spriteGridPosY],
+      spriteGridPosX: [tile.spriteGridPosX + growableItem.spriteSheetOffsetX],
+      spriteGridPosY: [tile.spriteGridPosY + growableItem.spriteSheetOffsetY],
       id: tile.id + tile.spriteGridPosX + tile.spriteGridPosY
     }
   }

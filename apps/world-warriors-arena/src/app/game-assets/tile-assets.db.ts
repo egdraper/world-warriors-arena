@@ -2,13 +2,11 @@ import { DrawableTiles } from "../models/cell.model"
 import { camping } from "./camping.db"
 import { grassToGrassCliffs } from "./cliffs.db"
 import { crates } from "./crates.db"
-import { dirtRoad } from "./dirt-road.db"
+import { roadSprites } from "./dirt-road.db"
 import { caveDirt, dirt } from "./dirt.db"
 import { dungeon1, dungeonTiles } from "./dungeon.db"
 import { greenGrass } from "./greenGrass.db"
 import { trees, trees2 } from "./trees.db"
-
-
 
 export const enum TerrainType {
   Block = "Block",
@@ -32,7 +30,25 @@ export const growableItems: DrawableTiles[] = [{
   id: "DrawableDirtRoad",
   terrainType: TerrainType.Background,
   name: "Drawable Dirt Road",
-  spritesTiles: dirtRoad
+  spritesTiles: roadSprites,
+  spriteSheetOffsetX: 0,
+  spriteSheetOffsetY: 18,
+ },
+ {
+  id: "DrawableStoneGrassRoad",
+  terrainType: TerrainType.Background,
+  name: "Stone Road",
+  spritesTiles: roadSprites,
+  spriteSheetOffsetX: 0,
+  spriteSheetOffsetY: 5,
+ },
+ {
+  id: "DrawableOtherGrassRoad",
+  terrainType: TerrainType.Background,
+  name: "Other Road",
+  spritesTiles: roadSprites,
+  spriteSheetOffsetX: 0,
+  spriteSheetOffsetY: 12,
  },
  {
   id: "DrawableDungeon",
@@ -66,7 +82,7 @@ export function getObjectCollection(name: string): any {
   case "crates": 
     return crates  
   case "dirtRoad": 
-    return dirtRoad
+    return roadSprites
   case "camping": 
     return camping
   case "dungeon": 

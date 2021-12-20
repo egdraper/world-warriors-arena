@@ -3,23 +3,10 @@ import { GSM } from '../../app.service.manager';
 import { GameMap } from '../../models/game-map';
 import { GameSettings } from '../../models/game-settings';
 import { PageTransitionMarker } from '../../models/marker-icon.model';
+import { MiniMapDetails } from '../../models/mini-map.model';
 import { LargeCanvasImage } from '../../painters/large-image.paint';
-import { MinimapComponent } from './minimap.component';
 
-export class MiniMapDetails {
-  map: GameMap
-  posX: number
-  posY: number
-  leftOf?: MiniMapDetails
-  rightOf?: MiniMapDetails
-  above?: MiniMapDetails
-  below?: MiniMapDetails
-  connectionType?: "transition" | "phase" | "portal"
-  width: number
-  height: number
-  image: HTMLImageElement
-  gameMarkers?: PageTransitionMarker[]
-}
+
 
 export class MiniMapManager {
   public miniMaps: MiniMapDetails[] = []
@@ -35,6 +22,7 @@ export class MiniMapManager {
   private screenOffsetX = 0
   private screenOffsetY = 0
   private hoveringMiniMap: MiniMapDetails
+  private timesMouseDown = false
   
   constructor(
     public miniMapCanvas: ElementRef<HTMLCanvasElement>,
@@ -88,6 +76,11 @@ export class MiniMapManager {
       }      
     })
     })
+
+    setTimeout(() => {
+      this.timesMouseDown = false
+    }, 200);
+    this.timesMouseDown = true
   }
 
   public onMouseUp(event: MouseEvent): void {
@@ -111,14 +104,14 @@ export class MiniMapManager {
         this.refresh()
         return
       }
-
-      if(!this.trackedMarker && hovering && !pageMarker.gridConnection) {
-        GSM.Map.switchGrid(miniMap.map.id)
-        GSM.Canvas.showMiniMap = false
-        return
-      }
     }) 
-    })
+  })
+
+  if(!this.trackedMarker && this.hoveringMiniMap && this.timesMouseDown) {
+    GSM.Map.switchGrid(this.hoveringMiniMap.map.id)
+    GSM.Canvas.showMiniMap = false
+    return
+  }
     this.mouseDown = false
     this.trackedMarker = undefined
   }
@@ -208,7 +201,7 @@ export class MiniMapManager {
     );
 
     this.miniMapContext.beginPath(); 
-    this.miniMapContext.strokeStyle = strokeStyle;  // some color/style
+    this.miniMapContext.strokeStyle = miniMap.map.id === GSM.Map.activeMap.id ? "#009" : strokeStyle;  // some color/style
     this.miniMapContext.lineWidth = 4;         // thickness
     this.miniMapContext.strokeRect(miniMap.posX - 4, miniMap.posY - 4, miniMap.width + 8, miniMap.height + 8);
 
@@ -255,7 +248,7 @@ export class MiniMapManager {
         this.miniMapContext.strokeStyle = "#0f0"  // some color/style
         this.miniMapContext.lineWidth = 5         // thickness
         this.miniMapContext.moveTo(markerPosX + 8, markerPosY + 8)
-        this.miniMapContext.lineTo(this.mousePosX, this.mousePosY)
+        this.miniMapContext.lineTo(this.mousePosX - this.screenOffsetX, this.mousePosY - this.screenOffsetY)
         this.miniMapContext.stroke()
       } else {
       if(pageMarkerIcon.gridConnection) {

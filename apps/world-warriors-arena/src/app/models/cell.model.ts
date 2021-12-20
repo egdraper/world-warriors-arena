@@ -133,6 +133,8 @@ export class DrawableTiles {
   public spritesTiles: SpriteTile[]
   public inverted?: boolean
   public layers?: number
+  public spriteSheetOffsetX?: number
+  public spriteSheetOffsetY?: number
 }
 
 export class GridMapCell {
