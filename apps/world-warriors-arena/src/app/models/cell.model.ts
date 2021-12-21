@@ -89,6 +89,7 @@ export class SpriteTile {
   default?: boolean
   obstacleSide?: "right" | "left" | "top" | "bottom"
   allowForPassThrough?: boolean
+  addon?: string
   drawWhen?: {
     topNeighbor: boolean,
     topRightNeighbor: boolean,
@@ -172,4 +173,5 @@ export enum MarkerIconType {
 export class MousePosition {
   public mousePosX: number
   public mousePosY: number
+  public cell: Cell
 }

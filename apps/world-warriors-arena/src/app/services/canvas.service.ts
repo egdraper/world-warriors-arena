@@ -5,6 +5,7 @@ import { Cell } from "../models/cell.model";
 import { GameSettings } from "../models/game-settings";
 import { GameMap } from "../models/game-map";
 import { GSM } from "../app.service.manager";
+import { Subject } from "rxjs";
 
 @Injectable()
 export class CanvasService {
@@ -185,7 +186,6 @@ export class CanvasService {
     this.overlayCTX.translate(map.changePageXOffset, map.changePageYOffset)
     this.foregroundCTX.translate(map.changePageXOffset, map.changePageYOffset)
   }
-
     
   public resetViewport(): void {
     const xPos = -1 * this.canvasViewPortOffsetX

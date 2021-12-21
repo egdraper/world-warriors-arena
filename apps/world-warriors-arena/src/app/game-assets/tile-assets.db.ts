@@ -4,7 +4,7 @@ import { grassToGrassCliffs } from "./cliffs.db"
 import { crates } from "./crates.db"
 import { roadSprites } from "./dirt-road.db"
 import { caveDirt, dirt } from "./dirt.db"
-import { dungeon1, dungeonTiles } from "./dungeon.db"
+import { dungeon1, dungeonTileAddons } from "./dungeon.db"
 import { greenGrass } from "./greenGrass.db"
 import { trees, trees2 } from "./trees.db"
 
@@ -88,7 +88,7 @@ export function getObjectCollection(name: string): any {
   case "dungeon": 
     return dungeon1
   case "dungeonTiles": 
-    return dungeonTiles
+    return dungeonTileAddons
   }
 }
 

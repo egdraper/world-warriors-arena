@@ -96,4 +96,8 @@ export class GameMap {
       }
     }
   }
+
+  private rotateGrid(direction: string) {
+    
+  }
 }

@@ -17,9 +17,38 @@ export class EditorPaletteComponent implements OnInit {
   public mapService = GSM.Map
   public canvasService = GSM.Canvas
   public assetService = GSM.Assets
+  public currentMenu = ""
+  public iconsPx = [
+    {pos: 0, name: "Lock", visible: true},
+    {pos: -36, name: "Unlock", visible: false},
+    {pos: -64, name: "Clear Terrain", visible: true},
+    {pos: -96, name: "Terrain Editor", visible: true},
+    {pos: -128, name: "Background Editor", visible: true},
+    {pos: -160, name: "Portal Editor", visible: true},
+    {pos: -192, name: "Mini Map", visible: true},
+    {pos: -224, name: "Character Editor", visible: true},
+    {pos: -256, name: "Object Editor", visible: true},
+  ]
+
+
+  public switchMenu(icon: {pos: number, name: string, visible: boolean}): void {
+    this.currentMenu = icon.name
+
+    if(icon.name === "Clear Terrain") {
+      this.invertedClicked()
+    }
+  }
+
 
   public ngOnInit(): void {
     this.imageArray = GSM.Editor.findObjectCollection("trees")
+  }
+  
+  public ngAfterViewInit(): void {
+    setTimeout(()=> 
+    this.onGenerateCoreMapClick()
+    )
+
   }
 
   public onMiniMapClick(): void {

@@ -1,11 +1,35 @@
 <div class="mini-window outer-border">
   <div class="mini-canvas inner-border">
-
+    <div class="menu-icons">
+      <div 
+        *ngFor="let icon of iconsPx"
+        class="editor-icon"
+        (click)="switchMenu(icon)">
+           
+        <div
+          *ngIf="icon.visible"
+          [style.width.px]="32"
+          [style.height.px]="32"
+          [style.overflow]="'hidden'"
+        >
+          <img
+            src="assets/images/Icons.png"
+            [style.top.px]="icon.pos"
+            [style.left.px]="0"
+            [style.position]="'relative'"
+          />
+        </div>
+      </div>
+    </div>
+    <world-warriors-arena-terrain-editor *ngIf="currentMenu === 'Terrain Editor'"></world-warriors-arena-terrain-editor>
+    <world-warriors-arena-background-editor *ngIf="currentMenu === 'Background Editor'"></world-warriors-arena-background-editor>
+    <world-warriors-arena-object-editor *ngIf="currentMenu === 'Character Editor'"></world-warriors-arena-object-editor>
+    <world-warriors-arena-character-editor *ngIf="currentMenu === 'Object Editor'"></world-warriors-arena-character-editor>
   </div>
 </div>
 
-
-<!-- <div class="button" (click)="onGenerateCoreMapClick()">
+<!-- 
+<div class="button" (click)="onGenerateCoreMapClick()">
   G
 </div>
 <div class="button" (click)="invertedClicked()">Invert</div>
@@ -73,6 +97,3 @@
 
 <h1 [style.color]="'white'"> Selected Cell (x:{{grid?.hoveringCell?.x}} - y:{{grid?.hoveringCell?.y}}) </h1>
 <h1 [style.color]="'white'"> Obstacle {{grid?.hoveringCell?.obstacle}} </h1> -->
-
-
-
