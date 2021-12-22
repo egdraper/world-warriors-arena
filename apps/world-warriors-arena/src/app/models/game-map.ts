@@ -8,6 +8,13 @@ export class GameMap {
   public height = 15
   public width = 15
   public grid: { [cell: string]: Cell } = {}
+  public baseLayer: { [cell: string]: Cell } = {}
+  public terrainLayer: { [cell: string]: Cell } = {}
+  public DomicileLayer: { [cell: string]: Cell } = {}
+  public structureLayer: { [cell: string]: Cell } = {}
+  public gatewayLayer: { [cell: string]: Cell } = {}
+  public creatureLayer: { [cell: string]: Cell } = {}
+  public WallLayer: { [cell: string]: Cell } = {}
   public defaultSettings: DefaultMapSettings
   public gridDisplay: Cell[][] = [];
   public widthPx = 0

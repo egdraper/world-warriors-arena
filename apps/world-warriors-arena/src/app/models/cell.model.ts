@@ -2,6 +2,13 @@ import { TerrainType } from "../game-assets/tile-assets.db"
 
 export const GRID_CELL_MULTIPLIER = 32
 
+export interface BaseCell {
+  id: string,
+  x: number,
+  y: number,
+  imageTileId: {x: number, y: number},
+}
+
 export interface Cell {
   id: string;
   x: number; // X Grid Coordinates
