@@ -65,47 +65,47 @@ $selected-btn-color: #dddddd;
 
 
 
-// .pallet-container {
-//   display: flex;
-//   flex-wrap: wrap;
-// }
+.pallet-container {
+  display: flex;
+  flex-wrap: wrap;
+}
 
-// .image-container {
-//   margin: 2px;
-//   border: solid 1px slategrey;
-//   color: white;
+.image-container {
+  margin: 2px;
+  border: solid 1px slategrey;
+  color: white;
 
-//   :hover {
-//     filter: blur(1px);
-//   }
-// }
+  :hover {
+    filter: blur(1px);
+  }
+}
 
-// .button {
-//   height: 50px;
-//   width: 50px;
-//   background-color:#666666;
-//   margin: auto;
-//   color: #aaaaaa;
-//   margin: 3px;
-//   align-items: center;
-//   justify-content: center;
-//   cursor: pointer;
+.button {
+  height: 50px;
+  width: 50px;
+  background-color:#666666;
+  margin: auto;
+  color: #aaaaaa;
+  margin: 3px;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
 
-//   &:hover {
-//     background-color: #444444;
-//   }
+  &:hover {
+    background-color: #444444;
+  }
 
-// }
+}
 
-// .selected {
-//   background-color:#222222;
-// }
+.selected {
+  background-color:#222222;
+}
 
-// .disabled {
-//   background-color: #aaaaaa;
-//   pointer-events: none;
-// }
+.disabled {
+  background-color: #aaaaaa;
+  pointer-events: none;
+}
 
-// select {
-//   width: 100%;
-// }
+select {
+  width: 100%;
+}

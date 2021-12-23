@@ -55,7 +55,6 @@ export class Point {
 }
 export class SpriteTile {
   id: string
-  spriteSheet: HTMLImageElement
   spriteGridPosX: number
   spriteGridPosY: number
   tileHeight: number
