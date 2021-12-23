@@ -2,13 +2,6 @@ import { TerrainType } from "../game-assets/tile-assets.db"
 
 export const GRID_CELL_MULTIPLIER = 32
 
-export interface BaseCell {
-  id: string,
-  x: number,
-  y: number,
-  imageTileId: {x: number, y: number},
-}
-
 export interface Cell {
   id: string;
   x: number; // X Grid Coordinates
@@ -60,23 +53,6 @@ export class Point {
     public y: number
   ) { }
 }
-
-export enum GrowablePanelPosition {
-  topLeftPanel = "topLeftPanel",
-  topCenterPanel = "topCenterPanel",
-  topRightPanel = "topRightPanel",
-  growableLeftPanel = "growableLeftPanel",
-  growableCenterPanel = "growableCenterPanel",
-  growableRightPanel = "growableRightPanel",
-  bottomLeftPanel = "bottomLeftPanel",
-  bottomCenterPanel = "bottomCenterPanel",
-  bottomRightPanel = "bottomRightPanel",
-  bottomLeftPanelAngle = "bottomLeftPanelAngle",
-  bottomRightPanelAngle = "bottomRightPanelAngle",
-  bottomLeftPanelFillerAngle = "bottomLeftPanelFillerAngle",
-  bottomRightPanelFillerAngle = "bottomRightPanelFillerAngle",
-}
-
 export class SpriteTile {
   id: string
   spriteSheet: HTMLImageElement
@@ -92,9 +68,7 @@ export class SpriteTile {
   obstacle: boolean
   obstacleObstructionX?: number
   obstacleObstructionY?: number
-  position?: GrowablePanelPosition
   default?: boolean
-  obstacleSide?: "right" | "left" | "top" | "bottom"
   allowForPassThrough?: boolean
   addon?: string
   drawWhen?: {
