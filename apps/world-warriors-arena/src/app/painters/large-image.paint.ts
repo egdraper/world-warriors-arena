@@ -40,7 +40,7 @@ export class LargeCanvasImage {
     this.drawGridLines(map, ctx)
     map.gridDisplay.forEach((row: Cell[]) => {
       row.forEach((cell: Cell) => {
-        if (cell.spriteType && !cell.growableTileOverride) {
+        if (cell.spriteTypeId && !cell.growableTileOverride) {
           this.calculateGrowableTerrain(cell)
         }
         this.drawLargeImageCells(cell, ctx)
@@ -108,7 +108,7 @@ export class LargeCanvasImage {
   // This is used for drawable terrain, it determines which tile goes where when drawing terrain.
   private calculateGrowableTerrain(selectedCell: Cell): void {
     const drawableItem = growableItems.find(item => {
-      return selectedCell.spriteType.includes(item.id)
+      return selectedCell.spriteTypeId.includes(item.id)
     })
 
     const topNeighbor = selectedCell.neighbors[0]
@@ -121,14 +121,14 @@ export class LargeCanvasImage {
     const topLeftNeighbor = selectedCell.neighbors[7]
 
     const neighbors = {
-      topLeftMatch: topLeftNeighbor?.spriteType === selectedCell.spriteType,
-      topCenterMatch: topNeighbor?.spriteType === selectedCell.spriteType,
-      topRightMatch: topRightNeighbor?.spriteType === selectedCell.spriteType,
-      centerLeftMatch: leftNeighbor?.spriteType === selectedCell.spriteType,
-      centerRightMatch: rightNeighbor?.spriteType === selectedCell.spriteType,
-      bottomLeftMatch: bottomLeftNeighbor?.spriteType === selectedCell.spriteType,
-      bottomCenterMatch: bottomNeighbor?.spriteType === selectedCell.spriteType,
-      bottomRightMatch: bottomRightNeighbor?.spriteType === selectedCell.spriteType
+      topLeftMatch: topLeftNeighbor?.spriteTypeId === selectedCell.spriteTypeId,
+      topCenterMatch: topNeighbor?.spriteTypeId === selectedCell.spriteTypeId,
+      topRightMatch: topRightNeighbor?.spriteTypeId === selectedCell.spriteTypeId,
+      centerLeftMatch: leftNeighbor?.spriteTypeId === selectedCell.spriteTypeId,
+      centerRightMatch: rightNeighbor?.spriteTypeId === selectedCell.spriteTypeId,
+      bottomLeftMatch: bottomLeftNeighbor?.spriteTypeId === selectedCell.spriteTypeId,
+      bottomCenterMatch: bottomNeighbor?.spriteTypeId === selectedCell.spriteTypeId,
+      bottomRightMatch: bottomRightNeighbor?.spriteTypeId === selectedCell.spriteTypeId
     }
 
     let tile = drawableItem.drawingRules.find((spriteTile: SpriteTile) => {

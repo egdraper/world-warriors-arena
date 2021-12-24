@@ -99,8 +99,7 @@ export class GlobalMapComponent implements OnInit {
     const map = GSM.Map.createNewGrid(60, 60, mapDetails)
     GSM.Canvas.setupCanvases()
 
-    GSM.Draw.backgroundPainter.paint()
-    
+   
     GridMapGenerator.autoFillBackgroundTerrain(map ,"caveDirt")
     GridMapGenerator.generateMap(map, this.gridOfGrids[0][0], mapDetails)
   }

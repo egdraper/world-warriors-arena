@@ -41,7 +41,7 @@ export class GridMapGenerator extends BaseMapGenerator {
   public static addFullTerrain(defaultMapSettings: DefaultMapSettings): void {
     GSM.Map.activeMap.gridDisplay.forEach(row => {
       row.forEach(cell => {
-        cell.spriteType = defaultMapSettings.terrainTypeId
+        cell.spriteTypeId = defaultMapSettings.terrainTypeId
         cell.obstacle = true
       })
     })
@@ -50,16 +50,16 @@ export class GridMapGenerator extends BaseMapGenerator {
   protected static clearOpening(path: Cell[]): void {
     path.forEach(cell => {
       cell.obstacle = false
-      cell.spriteType = undefined
+      cell.spriteTypeId = undefined
 
       for (let i = 0; i < 8; i++) {
         if (cell.neighbors[i]) {
           cell.neighbors[i].obstacle = false
-          cell.neighbors[i].spriteType = undefined
+          cell.neighbors[i].spriteTypeId = undefined
           for (let l = 0; l < 8; l++) {
             if (cell.neighbors[i].neighbors[l]) {
               cell.neighbors[i].neighbors[l].obstacle = false
-              cell.neighbors[i].neighbors[l].spriteType = undefined
+              cell.neighbors[i].neighbors[l].spriteTypeId = undefined
             }
           }
         }

@@ -25,13 +25,13 @@ export class AssetsService {
   }
 
   public addInvertedMapAsset(selectedCell: Cell): void {
-    selectedCell.spriteType = undefined
+    selectedCell.spriteTypeId = undefined
     selectedCell.obstacle = false
     selectedCell.imageTile = undefined
 
     for (let i = 0; i < 8; i++) {
       if (selectedCell.neighbors[i]) {
-        selectedCell.neighbors[i].spriteType = undefined
+        selectedCell.neighbors[i].spriteTypeId = undefined
         selectedCell.neighbors[i].imageTile = undefined
         selectedCell.neighbors[i].obstacle = false
       }
@@ -41,21 +41,13 @@ export class AssetsService {
     // this.obstacles.push(selectedCell.id)
   }
 
-  public addMapAsset(selectedCell: Cell, selectedAsset: SpriteTile, drawableItem?: SpriteDetails): void {
+  public addTerrain(selectedCell: Cell, drawableItem?: SpriteDetails): void {
     if (!selectedCell) { return }
 
-    selectedCell.imageTile = selectedAsset
+    selectedCell.spriteTypeId = drawableItem.id
     selectedCell.obstacle = true
 
-    if (!selectedAsset) {
-      this.addRequiredNeighborTiles(selectedCell, drawableItem)
-    }
-
-    if(selectedAsset && selectedCell.imageTile.id) {
-      selectedCell.growableTileOverride = true
-    } else {
-      selectedCell.growableTileOverride = false
-    }
+    this.addRequiredNeighborTiles(selectedCell, drawableItem)
 
     this.obstacles.push(selectedCell.id)
   }
@@ -95,19 +87,19 @@ export class AssetsService {
     // } else if (drawableItem.terrainType === TerrainType.Block) {
 
       if (selectedCell.neighbors[0]) {
-        selectedCell.neighbors[0].spriteType = drawableItem.id
+        selectedCell.neighbors[0].spriteTypeId = drawableItem.id
         selectedCell.neighbors[0].obstacle = true
       }
       if (selectedCell.neighbors[1]) {
-        selectedCell.neighbors[1].spriteType = drawableItem.id
+        selectedCell.neighbors[1].spriteTypeId = drawableItem.id
         selectedCell.neighbors[1].obstacle = true
       }
       if (selectedCell.neighbors[4]) {
-        selectedCell.neighbors[4].spriteType = drawableItem.id
+        selectedCell.neighbors[4].spriteTypeId = drawableItem.id
         selectedCell.neighbors[4].obstacle = true
       }
 
-      selectedCell.spriteType = drawableItem.id
+      selectedCell.spriteTypeId = drawableItem.id
     // }
   }
 }

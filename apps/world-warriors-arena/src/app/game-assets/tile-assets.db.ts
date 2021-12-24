@@ -5,7 +5,7 @@ import { crates } from "./crates.db"
 import { RoadRules } from "./dirt-road.db"
 import { caveDirt, dirt } from "./dirt.db"
 import { greenGrass } from "./greenGrass.db"
-import { rockWallGrassBase, stoneWallStoneBase, terrainRoads } from "./images"
+import { rockWallGrassBase, stoneWallStoneBase, terrainRoads, tileB_outside, treeTransparentBase } from "./images"
 import { RockWall } from "./rock-wall-terrain.db"
 import { trees, trees2 } from "./trees.db"
 
@@ -51,6 +51,12 @@ export const growableItems: SpriteDetails[] = [{
   spriteType: "DrawableNaturalWall",
   spriteImg: stoneWallStoneBase,
   drawingRules: RockWall
+}, {
+  id: "Trees-GrassBase",
+  name: "Green Trees with Grass Base",
+  spriteType: "DrawableNaturalWall",
+  spriteImg: treeTransparentBase,
+  drawingRules: trees
 }]
 
 export const growableBaseItems: SpriteDetails[] = [{

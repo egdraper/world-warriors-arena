@@ -29,3 +29,5 @@ export const rockWallGrassBase = new Image()
 rockWallGrassBase.src = "assets/images/RockWallGrassBase.png"
 export const stoneWallStoneBase = new Image()
 stoneWallStoneBase.src = "assets/images/StoneWallStoneBase.png"
+export const treeTransparentBase = new Image()
+treeTransparentBase.src = "assets/images/TreeTransparentBase.png"

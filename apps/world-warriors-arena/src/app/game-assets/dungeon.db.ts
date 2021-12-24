@@ -1,9 +1,4 @@
 import { SpriteTile } from '../models/cell.model';
-import {
-  dungeon_extension,
-  tileA5_dungeon,
-  tileB_dungeon,
-} from './images';
 
 export const rockWall: SpriteTile[] = [
   {

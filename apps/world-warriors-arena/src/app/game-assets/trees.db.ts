@@ -4,9 +4,8 @@ import { tf_winter_tileB, tileB_desert, tileB_outside } from "./images";
 export const trees: SpriteTile[] = [
   {
     id: "treeClumpTopLeft",
-    spriteSheet: tileB_outside,
     spriteGridPosX: 0,
-    spriteGridPosY: 10,
+    spriteGridPosY: 0,
     tileHeight: 1,
     tileWidth: 1,
     tileOffsetX: 0,
@@ -28,9 +27,8 @@ export const trees: SpriteTile[] = [
   },
   {
     id: "treeClumpTopCenter",
-    spriteSheet: tileB_outside,
     spriteGridPosX: 1,
-    spriteGridPosY: 10,
+    spriteGridPosY: 0,
     tileHeight: 1,
     tileWidth: 1,
     tileOffsetX: 0,
@@ -51,9 +49,8 @@ export const trees: SpriteTile[] = [
     }
   }, {
     id: "treeClumpTopRight",
-    spriteSheet: tileB_outside,
     spriteGridPosX: 2,
-    spriteGridPosY: 10,
+    spriteGridPosY: 0,
     tileHeight: 1,
     tileWidth: 1,
     tileOffsetX: 0,
@@ -75,9 +72,8 @@ export const trees: SpriteTile[] = [
   },
   {
     id: "treeClumpGrowableLeft",
-    spriteSheet: tileB_outside,
     spriteGridPosX: 0,
-    spriteGridPosY: 11,
+    spriteGridPosY: 1,
     tileHeight: 1,
     tileWidth: 1,
     tileOffsetX: 0,
@@ -98,9 +94,8 @@ export const trees: SpriteTile[] = [
     }
   }, {
     id: "treeClumpGrowableCenter",
-    spriteSheet: tileB_outside,
     spriteGridPosX: 1,
-    spriteGridPosY: 11,
+    spriteGridPosY: 1,
     tileHeight: 1,
     tileWidth: 1,
     tileOffsetX: 0,
@@ -122,9 +117,8 @@ export const trees: SpriteTile[] = [
 
   }, {
     id: "treeClumpGrowableRight",
-    spriteSheet: tileB_outside,
     spriteGridPosX: 2,
-    spriteGridPosY: 11,
+    spriteGridPosY: 1,
     tileHeight: 1,
     tileWidth: 1,
     tileOffsetX: 0,
@@ -145,9 +139,8 @@ export const trees: SpriteTile[] = [
     }
   }, {
     id: "treeClumpTrunkLeft",
-    spriteSheet: tileB_outside,
     spriteGridPosX: 2,
-    spriteGridPosY: 13,
+    spriteGridPosY: 3,
     tileHeight: 3,
     tileWidth: 1,
     tileOffsetX: 0,
@@ -170,9 +163,8 @@ export const trees: SpriteTile[] = [
   {
     id: "treeClumpTrunkCenter",
     default: true,
-    spriteSheet: tileB_outside,
     spriteGridPosX: 3,
-    spriteGridPosY: 13,
+    spriteGridPosY: 3,
     tileHeight: 3,
     tileWidth: 1,
     tileOffsetX: 0,
@@ -194,9 +186,8 @@ export const trees: SpriteTile[] = [
   },
   {
     id: "treeClumpTrunkRight",
-    spriteSheet: tileB_outside,
     spriteGridPosX: 4,
-    spriteGridPosY: 13,
+    spriteGridPosY: 3,
     tileHeight: 3,
     tileWidth: 1,
     tileOffsetX: 0,
@@ -218,9 +209,8 @@ export const trees: SpriteTile[] = [
   },
   {
     id: "treeClumpTrunkLeftAngle",
-    spriteSheet: tileB_outside,
     spriteGridPosX: 1,
-    spriteGridPosY: 13,
+    spriteGridPosY: 3,
     tileHeight: 3,
     tileWidth: 1,
     tileOffsetX: 0,
@@ -242,9 +232,8 @@ export const trees: SpriteTile[] = [
   },
   {
     id: "treeClumpTrunkRightAngle",
-    spriteSheet: tileB_outside,
     spriteGridPosX: 5,
-    spriteGridPosY: 13,
+    spriteGridPosY: 3,
     tileHeight: 3,
     tileWidth: 1,
     tileOffsetX: 0,
@@ -266,9 +255,8 @@ export const trees: SpriteTile[] = [
   },
   {
     id: "treeClumpLeftFillerAngle",
-    spriteSheet: tileB_outside,
     spriteGridPosX: 6,
-    spriteGridPosY: 10,
+    spriteGridPosY: 0,
     tileHeight: 1,
     tileWidth: 1,
     tileOffsetX: 0,
@@ -291,9 +279,8 @@ export const trees: SpriteTile[] = [
   },
   {
     id: "treeClumpRightFillerAngle",
-    spriteSheet: tileB_outside,
     spriteGridPosX: 7,
-    spriteGridPosY: 10,
+    spriteGridPosY: 0,
     tileHeight: 1,
     tileWidth: 1,
     tileOffsetX: 0,
@@ -316,9 +303,8 @@ export const trees: SpriteTile[] = [
   },
   {
     id: "treeClumpLeftFillerAngleUP",
-    spriteSheet: tileB_outside,
     spriteGridPosX: 6,
-    spriteGridPosY: 11,
+    spriteGridPosY: 1,
     tileHeight: 1,
     tileWidth: 1,
     tileOffsetX: 0,
@@ -341,9 +327,8 @@ export const trees: SpriteTile[] = [
   },
   {
     id: "treeClumpRightFillerAngleUp",
-    spriteSheet: tileB_outside,
     spriteGridPosX: 7,
-    spriteGridPosY: 11,
+    spriteGridPosY: 1,
     tileHeight: 1,
     tileWidth: 1,
     tileOffsetX: 0,
@@ -353,7 +338,6 @@ export const trees: SpriteTile[] = [
     obstacleObstructionX: 1,
     obstacleObstructionY: 1,
     drawWhen: {
-
       topNeighbor: true,
       topRightNeighbor: true,
       rightNeighbor: true,
@@ -366,9 +350,8 @@ export const trees: SpriteTile[] = [
   },
   {
     id: "treeClumpRightAngleGapFiller",
-    spriteSheet: tileB_outside,
     spriteGridPosX: 6,
-    spriteGridPosY: 14,
+    spriteGridPosY: 4,
     tileHeight: 2, 
     tileWidth: 1,
     tileOffsetX: 0,
@@ -390,9 +373,8 @@ export const trees: SpriteTile[] = [
   },
   {
     id: "treeClumpLeftAngleGapFiller",
-    spriteSheet: tileB_outside,
     spriteGridPosX: 7,
-    spriteGridPosY: 14,
+    spriteGridPosY: 4,
     tileHeight: 2, 
     tileWidth: 1,
     tileOffsetX: 0,
@@ -414,9 +396,8 @@ export const trees: SpriteTile[] = [
   },
   {
     id: "treeClumpLeftFillerAngleSingle",
-    spriteSheet: tileB_outside,
     spriteGridPosX: 7,
-    spriteGridPosY: 14,
+    spriteGridPosY: 4,
     tileHeight: 1,
     tileWidth: 1,
     tileOffsetX: 0,
@@ -438,9 +419,8 @@ export const trees: SpriteTile[] = [
   },
   {
     id: "treeClumpRightFillerAngleSingle",
-    spriteSheet: tileB_outside,
     spriteGridPosX: 6,
-    spriteGridPosY: 14,
+    spriteGridPosY: 4,
     tileHeight: 1,
     tileWidth: 1,
     tileOffsetX: 0,

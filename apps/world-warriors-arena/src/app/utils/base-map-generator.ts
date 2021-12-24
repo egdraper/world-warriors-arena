@@ -46,16 +46,16 @@ export class BaseMapGenerator {
   protected static clearOpening(path: Cell[]): void {
     path.forEach(cell => {
       cell.obstacle = false
-      cell.spriteType = undefined
+      cell.spriteTypeId = undefined
 
       for (let i = 0; i < 8; i++) {
         if (cell.neighbors[i]) {
           cell.neighbors[i].obstacle = false
-          cell.neighbors[i].spriteType = undefined
+          cell.neighbors[i].spriteTypeId = undefined
           for (let l = 0; l < 8; l++) {
             if (cell.neighbors[i].neighbors[l]) {
               cell.neighbors[i].neighbors[l].obstacle = false
-              cell.neighbors[i].neighbors[l].spriteType = undefined
+              cell.neighbors[i].neighbors[l].spriteTypeId = undefined
             }
           }
         }
@@ -69,11 +69,11 @@ export class BaseMapGenerator {
         // Outer most layer
         if (cell.x < 2 || cell.x > map.width - 3) {
           cell.obstacle = true
-          cell.spriteType = defaultMapSettings.terrainTypeId
+          cell.spriteTypeId = defaultMapSettings.terrainTypeId
         }
         if (cell.y < 3 || cell.y > map.height - 3) {
           cell.obstacle = true
-          cell.spriteType = defaultMapSettings.terrainTypeId
+          cell.spriteTypeId = defaultMapSettings.terrainTypeId
         }
 
         // left side 2nd layer
@@ -129,11 +129,11 @@ export class BaseMapGenerator {
     if (random) {
       if (cell.neighbors[neighborIndex]) {
         cell.neighbors[neighborIndex].obstacle = true
-        cell.neighbors[neighborIndex].spriteType = defaultMapSettings.terrainTypeId
+        cell.neighbors[neighborIndex].spriteTypeId = defaultMapSettings.terrainTypeId
       }
 
       cell.obstacle = true
-      cell.spriteType = defaultMapSettings.terrainTypeId
+      cell.spriteTypeId = defaultMapSettings.terrainTypeId
     }
   }
 
@@ -153,12 +153,12 @@ export class BaseMapGenerator {
 
       const startCell = map.getCell(randomX, randomY)
       startCell.obstacle = true
-      startCell.spriteType = defaultMapSettings.terrainTypeId
+      startCell.spriteTypeId = defaultMapSettings.terrainTypeId
 
       for (let i = 0; i < 8; i++) {
         if (startCell.neighbors[i]) {
           startCell.neighbors[i].obstacle = true
-          startCell.neighbors[i].spriteType = defaultMapSettings.terrainTypeId
+          startCell.neighbors[i].spriteTypeId = defaultMapSettings.terrainTypeId
 
           this.populateCell(startCell, i, weight, defaultMapSettings)
         }
@@ -169,14 +169,14 @@ export class BaseMapGenerator {
   protected static terrainCleanup(map: GameMap): void {
     map.gridDisplay.forEach(row => {
       row.forEach(cell => {
-        if(cell.spriteType) {          
-          if((cell.neighbors[1] && !cell.neighbors[1].spriteType) && (cell.neighbors[3] && !cell.neighbors[3].spriteType)) {
-            cell.spriteType = undefined
+        if(cell.spriteTypeId) {          
+          if((cell.neighbors[1] && !cell.neighbors[1].spriteTypeId) && (cell.neighbors[3] && !cell.neighbors[3].spriteTypeId)) {
+            cell.spriteTypeId = undefined
             cell.obstacle = false
           }
 
-          if((cell.neighbors[0] && !cell.neighbors[0].spriteType) && (cell.neighbors[2] && !cell.neighbors[2].spriteType)) {
-            cell.spriteType = undefined
+          if((cell.neighbors[0] && !cell.neighbors[0].spriteTypeId) && (cell.neighbors[2] && !cell.neighbors[2].spriteTypeId)) {
+            cell.spriteTypeId = undefined
             cell.obstacle = false
           }
         }
@@ -193,22 +193,22 @@ export class BaseMapGenerator {
       for (let i = 0; i < 8; i++) {
         if (neighbor.neighbors[i]) {
           neighbor.neighbors[i].obstacle = true
-          neighbor.neighbors[i].spriteType = defaultMapSettings.terrainTypeId
+          neighbor.neighbors[i].spriteTypeId = defaultMapSettings.terrainTypeId
 
 
           if (neighbor.neighbors[i].neighbors[0]) {
             neighbor.neighbors[i].neighbors[0].obstacle = true
-            neighbor.neighbors[i].neighbors[0].spriteType = defaultMapSettings.terrainTypeId
+            neighbor.neighbors[i].neighbors[0].spriteTypeId = defaultMapSettings.terrainTypeId
           }
 
           if (neighbor.neighbors[i].neighbors[1]) {
             neighbor.neighbors[i].neighbors[1].obstacle = true
-            neighbor.neighbors[i].neighbors[1].spriteType = defaultMapSettings.terrainTypeId
+            neighbor.neighbors[i].neighbors[1].spriteTypeId = defaultMapSettings.terrainTypeId
           }
 
           if (neighbor.neighbors[i].neighbors[4]) {
             neighbor.neighbors[i].neighbors[4].obstacle = true
-            neighbor.neighbors[i].neighbors[4].spriteType = defaultMapSettings.terrainTypeId
+            neighbor.neighbors[i].neighbors[4].spriteTypeId = defaultMapSettings.terrainTypeId
           }
         }
 

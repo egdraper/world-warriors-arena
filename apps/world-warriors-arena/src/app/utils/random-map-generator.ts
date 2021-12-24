@@ -76,11 +76,11 @@ export class RandomMapGenerator extends BaseMapGenerator {
     if (random) {
       if (cell.neighbors[neighborIndex]) {
         cell.neighbors[neighborIndex].obstacle = true
-        cell.neighbors[neighborIndex].spriteType = defaultMapSettings.terrainTypeId
+        cell.neighbors[neighborIndex].spriteTypeId = defaultMapSettings.terrainTypeId
       }
 
       cell.obstacle = true
-      cell.spriteType = defaultMapSettings.terrainTypeId
+      cell.spriteTypeId = defaultMapSettings.terrainTypeId
     }
   }
 

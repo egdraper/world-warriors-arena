@@ -46,11 +46,10 @@ export class DrawTerrainEventHandler extends GameEventHandler {
     this.topQuadrant = event.mousePosX < -1 * GSM.Canvas.canvasViewPortOffsetX + 96 && GSM.Canvas.canvasViewPortOffsetX < 0;
     this.leftQuadrant = event.mousePosY < -1 * GSM.Canvas.canvasViewPortOffsetY + 96 && GSM.Canvas.canvasViewPortOffsetY < 0;
 
-    const selectedAsset = GSM.Editor.selectedAsset;
     const drawableItem = growableItems.find(
       (item) => item.id === GSM.Editor.selectedGrowableAsset
     );
-    GSM.Assets.addMapAsset(hoveringCell, selectedAsset, drawableItem);
+    GSM.Assets.addTerrain(hoveringCell, drawableItem);
   }
 
   public endEvent(): void {

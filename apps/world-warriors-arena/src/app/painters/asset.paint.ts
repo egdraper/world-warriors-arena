@@ -61,14 +61,17 @@ export class AssetPainter extends LayerPainter {
           
         } else {
           GSM.Canvas.foregroundCTX.clearRect(0, 0, GSM.Map.activeMap.width * 32, GSM.Map.activeMap.height * 32);
-          // GSM.Canvas.backgroundCTX.clearRect(0, 0, GSM.Map.activeMap.width * 32, GSM.Map.activeMap.height * 32);
+          GSM.Canvas.backgroundCTX.clearRect(0, 0, GSM.Map.activeMap.width * 32, GSM.Map.activeMap.height * 32);
           for (let y = cellTopLeft.y; y <= cellBottomLeft.y; y++) {
             for (let x = cellTopLeft?.x; x <= cellTopRight?.x; x++) {
               const drawableCell = GSM.Map.activeMap.getCell(x, y)
 
-              if (drawableCell.spriteType && !drawableCell.growableTileOverride) {
+              if (drawableCell.spriteTypeId) {
                 this.calculateGrowableTerrain(drawableCell)
               }
+              // if (drawableCell.backgroundGrowableTileId) {
+              //   this.calculateGrowableBackgroundTerrain(drawableCell)
+              // }
     
               
               this.drawAsset(GSM.Assets.gameComponents.find(gameComponent => { 
@@ -76,6 +79,7 @@ export class AssetPainter extends LayerPainter {
                 return gameComponent.cell.id === drawableCell.id && GSM.Map.activeMap.id === gameComponent.gridId
               }))
 
+              this.drawOnBackgroundCell(drawableCell)
               this.drawOnCell(drawableCell)
             }
           }
@@ -146,21 +150,21 @@ export class AssetPainter extends LayerPainter {
 
  
   // Draws Items being placed in Edit mode
-  // public drawEditableObject(): void {
-  //   if (!GSM.Editor.selectedAsset || !GSM.Map.hoveringCell) { return }
-  //   GSM.Canvas.foregroundCTX.drawImage(
-  //     GSM.Editor.selectedAsset.spriteSheet,
-  //     GSM.Editor.selectedAsset.spriteGridPosX * GameSettings.cellDimension,
-  //     GSM.Editor.selectedAsset.spriteGridPosY * GameSettings.cellDimension,
-  //     GSM.Editor.selectedAsset.tileWidth * GameSettings.cellDimension,
-  //     GSM.Editor.selectedAsset.tileHeight * GameSettings.cellDimension,
-  //     GSM.Map.hoveringCell.posX + GSM.Editor.selectedAsset.tileOffsetX,
-  //     GSM.Map.hoveringCell.posY + GSM.Editor.selectedAsset.tileOffsetY,
-  //     GSM.Editor.selectedAsset.tileWidth * (GSM.Editor.selectedAsset.sizeAdjustment || GameSettings.cellDimension),
-  //     GSM.Editor.selectedAsset.tileHeight * (GSM.Editor.selectedAsset.sizeAdjustment || GameSettings.cellDimension)
-  //   )
+  public drawEditableObject(): void {
+    if (!GSM.Editor.selectedAsset || !GSM.Map.hoveringCell) { return }
+    GSM.Canvas.foregroundCTX.drawImage(
+      GSM.Editor.selectedAsset.spriteSheet,
+      GSM.Editor.selectedAsset.spriteGridPosX * GameSettings.cellDimension,
+      GSM.Editor.selectedAsset.spriteGridPosY * GameSettings.cellDimension,
+      GSM.Editor.selectedAsset.tileWidth * GameSettings.cellDimension,
+      GSM.Editor.selectedAsset.tileHeight * GameSettings.cellDimension,
+      GSM.Map.hoveringCell.posX + GSM.Editor.selectedAsset.tileOffsetX,
+      GSM.Map.hoveringCell.posY + GSM.Editor.selectedAsset.tileOffsetY,
+      GSM.Editor.selectedAsset.tileWidth * (GSM.Editor.selectedAsset.sizeAdjustment || GameSettings.cellDimension),
+      GSM.Editor.selectedAsset.tileHeight * (GSM.Editor.selectedAsset.sizeAdjustment || GameSettings.cellDimension)
+    )
 
-  // }
+  }
 
   public drawEditableCharacter(): void {
     if (!GSM.CharacterEditor.selectedCharacterImageUrl || !GSM.Map.hoveringCell) { return }
@@ -205,7 +209,7 @@ export class AssetPainter extends LayerPainter {
   // This is used for drawable terrain, it determines which tile goes where when drawing terrain.
   private calculateGrowableTerrain(selectedCell: Cell): void {
     const drawableItem = growableItems.find(item => {
-      return selectedCell.spriteType.includes(item.spriteType)
+      return selectedCell.spriteTypeId.includes(item.id)
     })
 
     const topNeighbor = selectedCell.neighbors[0]
@@ -218,14 +222,14 @@ export class AssetPainter extends LayerPainter {
     const topLeftNeighbor = selectedCell.neighbors[7]
 
     const neighbors = {
-      topLeftMatch: topLeftNeighbor?.spriteType === selectedCell.spriteType,
-      topCenterMatch: topNeighbor?.spriteType === selectedCell.spriteType,
-      topRightMatch: topRightNeighbor?.spriteType === selectedCell.spriteType,
-      centerLeftMatch: leftNeighbor?.spriteType === selectedCell.spriteType,
-      centerRightMatch: rightNeighbor?.spriteType === selectedCell.spriteType,
-      bottomLeftMatch: bottomLeftNeighbor?.spriteType === selectedCell.spriteType,
-      bottomCenterMatch: bottomNeighbor?.spriteType === selectedCell.spriteType,
-      bottomRightMatch: bottomRightNeighbor?.spriteType === selectedCell.spriteType
+      topLeftMatch: topLeftNeighbor?.spriteTypeId === selectedCell.spriteTypeId,
+      topCenterMatch: topNeighbor?.spriteTypeId === selectedCell.spriteTypeId,
+      topRightMatch: topRightNeighbor?.spriteTypeId === selectedCell.spriteTypeId,
+      centerLeftMatch: leftNeighbor?.spriteTypeId === selectedCell.spriteTypeId,
+      centerRightMatch: rightNeighbor?.spriteTypeId === selectedCell.spriteTypeId,
+      bottomLeftMatch: bottomLeftNeighbor?.spriteTypeId === selectedCell.spriteTypeId,
+      bottomCenterMatch: bottomNeighbor?.spriteTypeId === selectedCell.spriteTypeId,
+      bottomRightMatch: bottomRightNeighbor?.spriteTypeId === selectedCell.spriteTypeId
     }
 
     let tile = drawableItem.drawingRules.find((spriteTile: SpriteTile) => {
@@ -285,6 +289,65 @@ export class AssetPainter extends LayerPainter {
           32
         )
       }
+    }
+  }
+
+  private calculateGrowableBackgroundTerrain(selectedCell: Cell): void {
+    const growableItem = growableItems.find(item => {
+      return selectedCell.backgroundGrowableTileId.includes(item.id)
+    })
+
+    const topNeighbor = selectedCell.neighbors[0]
+    const topRightNeighbor = selectedCell.neighbors[4]
+    const rightNeighbor = selectedCell.neighbors[1]
+    const bottomRightNeighbor = selectedCell.neighbors[5]
+    const bottomNeighbor = selectedCell.neighbors[2]
+    const bottomLeftNeighbor = selectedCell.neighbors[6]
+    const leftNeighbor = selectedCell.neighbors[3]
+    const topLeftNeighbor = selectedCell.neighbors[7]
+
+    const neighbors = {
+      topLeftMatch: topLeftNeighbor?.backgroundGrowableTileId === selectedCell.backgroundGrowableTileId,
+      topCenterMatch: topNeighbor?.backgroundGrowableTileId === selectedCell.backgroundGrowableTileId,
+      topRightMatch: topRightNeighbor?.backgroundGrowableTileId === selectedCell.backgroundGrowableTileId,
+      centerLeftMatch: leftNeighbor?.backgroundGrowableTileId === selectedCell.backgroundGrowableTileId,
+      centerRightMatch: rightNeighbor?.backgroundGrowableTileId === selectedCell.backgroundGrowableTileId,
+      bottomLeftMatch: bottomLeftNeighbor?.backgroundGrowableTileId === selectedCell.backgroundGrowableTileId,
+      bottomCenterMatch: bottomNeighbor?.backgroundGrowableTileId === selectedCell.backgroundGrowableTileId,
+      bottomRightMatch: bottomRightNeighbor?.backgroundGrowableTileId === selectedCell.backgroundGrowableTileId
+    }
+
+    let tile = growableItem.drawingRules.find((spriteTile: SpriteTile) => {
+      const topMatch = neighbors.topCenterMatch === spriteTile.drawWhen.topNeighbor || spriteTile.drawWhen.topNeighbor === null
+      const topRightMatch = neighbors.topRightMatch === spriteTile.drawWhen.topRightNeighbor || spriteTile.drawWhen.topRightNeighbor === null
+      const rightMatch = neighbors.centerRightMatch === spriteTile.drawWhen.rightNeighbor || spriteTile.drawWhen.rightNeighbor === null
+      const bottomRightMatch = neighbors.bottomRightMatch === spriteTile.drawWhen.bottomRightNeighbor || spriteTile.drawWhen.bottomRightNeighbor === null
+      const bottomMatch = neighbors.bottomCenterMatch === spriteTile.drawWhen.bottomNeighbor || spriteTile.drawWhen.bottomNeighbor === null
+      const bottomLeftNeighborMatch = neighbors.bottomLeftMatch === spriteTile.drawWhen.bottomLeftNeighbor || spriteTile.drawWhen.bottomLeftNeighbor === null
+      const leftNeighborMatch = neighbors.centerLeftMatch === spriteTile.drawWhen.leftNeighbor || spriteTile.drawWhen.leftNeighbor === null
+      const topLeftNeighborMatch = neighbors.topLeftMatch === spriteTile.drawWhen.topLeftNeighbor || spriteTile.drawWhen.topLeftNeighbor === null
+
+      return topMatch &&
+        topRightMatch &&
+        rightMatch &&
+        bottomRightMatch &&
+        bottomMatch &&
+        bottomLeftNeighborMatch &&
+        leftNeighborMatch &&
+        topLeftNeighbor &&
+        topLeftNeighborMatch
+    })
+
+    if (!tile) {
+      tile = growableItem.drawingRules.find((backgroundTile: SpriteTile) => backgroundTile.default)
+    }
+    tile.spriteSheet = growableItem.spriteImg
+
+    selectedCell.backgroundTile = {
+      spriteSheet: tile.spriteSheet,
+      spriteGridPosX: [tile.spriteGridPosX + growableItem.spriteSheetOffsetX],
+      spriteGridPosY: [tile.spriteGridPosY + growableItem.spriteSheetOffsetY],
+      id: tile.id + tile.spriteGridPosX + tile.spriteGridPosY
     }
   }
 }
