@@ -11,7 +11,6 @@ export const crates: SpriteTile[] = [
     tileWidth: 1,
     tileOffsetX: -0,
     tileOffsetY: -0,
-    multiplier: 32,
     visionBlocking: true,
     obstacle: true,
     obstacleObstructionX: 1,

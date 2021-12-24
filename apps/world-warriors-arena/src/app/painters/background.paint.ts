@@ -55,7 +55,7 @@ export class BackgroundPainter extends LayerPainter {
       bottomRightMatch: bottomRightNeighbor?.backgroundGrowableTileId === selectedCell.backgroundGrowableTileId
     }
 
-    let tile = growableItem.spritesTiles.find((spriteTile: SpriteTile) => {
+    let tile = growableItem.drawingRules.find((spriteTile: SpriteTile) => {
       const topMatch = neighbors.topCenterMatch === spriteTile.drawWhen.topNeighbor || spriteTile.drawWhen.topNeighbor === null
       const topRightMatch = neighbors.topRightMatch === spriteTile.drawWhen.topRightNeighbor || spriteTile.drawWhen.topRightNeighbor === null
       const rightMatch = neighbors.centerRightMatch === spriteTile.drawWhen.rightNeighbor || spriteTile.drawWhen.rightNeighbor === null
@@ -77,8 +77,9 @@ export class BackgroundPainter extends LayerPainter {
     })
 
     if (!tile) {
-      tile = growableItem.spritesTiles.find((backgroundTile: SpriteTile) => backgroundTile.default)
+      tile = growableItem.drawingRules.find((backgroundTile: SpriteTile) => backgroundTile.default)
     }
+    tile.spriteSheet = growableItem.spriteImg
 
     selectedCell.backgroundTile = {
       spriteSheet: tile.spriteSheet,

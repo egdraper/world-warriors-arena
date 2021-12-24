@@ -63,7 +63,7 @@ export class GameMap {
             posY: i * 32,
             obstacle: this.defaultSettings.inverted ? true : false,
             id: `x${l}:y${i}`,
-            growableTileId: this.defaultSettings.inverted ? this.defaultSettings.terrainTypeId : undefined
+            spriteType: this.defaultSettings.inverted ? this.defaultSettings.terrainTypeId : undefined
           };
 
         imgIndexX++

@@ -53,13 +53,7 @@
 <h2 [style.color]="'white'">{{mapService?.activeMap?.id}}</h2>
 
 <select (change)="onSelectionChange($event.target)">
-  <option>Drawable Tree Cluster</option>
-  <option>Drawable Dirt Cliffs</option>
-  <option>Drawable Dirt Road</option>
-  <option>Stone Road</option>
-  <option>Other Road</option>
-  <option>Drawable Dungeon</option>
-  <option>Drawable Dungeon Tiles</option>
+  <option *ngFor="let terrainType of terrainTypes">{{terrainType.name}}</option>
 
 </select>
 <!-- 

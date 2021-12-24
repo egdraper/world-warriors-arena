@@ -22,3 +22,10 @@ export const tileA4_dungeon = new Image()
 tileA4_dungeon.src = "assets/images/tileA4_dungeon.png"
 export const dungeon_ceiling = new Image()
 dungeon_ceiling.src = "assets/images/dungeon_ceiling.png"
+
+
+//// the new standard
+export const rockWallGrassBase = new Image()
+rockWallGrassBase.src = "assets/images/RockWallGrassBase.png"
+export const stoneWallStoneBase = new Image()
+stoneWallStoneBase.src = "assets/images/StoneWallStoneBase.png"

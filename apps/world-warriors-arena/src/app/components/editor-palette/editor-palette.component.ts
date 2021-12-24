@@ -30,6 +30,7 @@ export class EditorPaletteComponent implements OnInit {
     {pos: -256, name: "Object Editor", visible: true},
   ]
 
+  public terrainTypes = growableItems
 
   public switchMenu(icon: {pos: number, name: string, visible: boolean}): void {
     this.currentMenu = icon.name
@@ -48,7 +49,6 @@ export class EditorPaletteComponent implements OnInit {
     setTimeout(()=> 
     this.onGenerateCoreMapClick()
     )
-
   }
 
   public onMiniMapClick(): void {

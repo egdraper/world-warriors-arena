@@ -5,7 +5,6 @@ import { MotionAsset } from "../models/assets.model"
 import { Cell, SpriteTile } from "../models/cell.model"
 import { GameMap } from "../models/game-map"
 import { GameSettings } from "../models/game-settings"
-import { MapService } from "../services/map.service"
 
 
 export class LargeCanvasImage {
@@ -41,7 +40,7 @@ export class LargeCanvasImage {
     this.drawGridLines(map, ctx)
     map.gridDisplay.forEach((row: Cell[]) => {
       row.forEach((cell: Cell) => {
-        if (cell.growableTileId && !cell.growableTileOverride) {
+        if (cell.spriteType && !cell.growableTileOverride) {
           this.calculateGrowableTerrain(cell)
         }
         this.drawLargeImageCells(cell, ctx)
@@ -74,21 +73,19 @@ export class LargeCanvasImage {
     }
   }
 
-
-
   private drawLargeImageCells(cell: Cell, ctx: CanvasRenderingContext2D): void {
     if (cell.imageTile) {
       console.log(cell?.x, cell.y)
       ctx.drawImage(
         cell.imageTile.spriteSheet,
-        cell.imageTile.spriteGridPosX * cell.imageTile.multiplier,
-        cell.imageTile.spriteGridPosY * cell.imageTile.multiplier,
-        cell.imageTile.tileWidth * cell.imageTile.multiplier,
-        cell.imageTile.tileHeight * cell.imageTile.multiplier,
+        cell.imageTile.spriteGridPosX * GameSettings.cellDimension,
+        cell.imageTile.spriteGridPosY * GameSettings.cellDimension,
+        cell.imageTile.tileWidth * GameSettings.cellDimension,
+        cell.imageTile.tileHeight * GameSettings.cellDimension,
         cell.posX + cell.imageTile.tileOffsetX,
         cell.posY + cell.imageTile.tileOffsetY,
-        cell.imageTile.tileWidth * (cell.imageTile.sizeAdjustment || cell.imageTile.multiplier),
-        cell.imageTile.tileHeight * (cell.imageTile.sizeAdjustment || cell.imageTile.multiplier)
+        cell.imageTile.tileWidth * (cell.imageTile.sizeAdjustment || GameSettings.cellDimension),
+        cell.imageTile.tileHeight * (cell.imageTile.sizeAdjustment || GameSettings.cellDimension)
       )
     }
   }
@@ -111,7 +108,7 @@ export class LargeCanvasImage {
   // This is used for drawable terrain, it determines which tile goes where when drawing terrain.
   private calculateGrowableTerrain(selectedCell: Cell): void {
     const drawableItem = growableItems.find(item => {
-      return selectedCell.growableTileId?.includes(item.id)
+      return selectedCell.spriteType.includes(item.id)
     })
 
     const topNeighbor = selectedCell.neighbors[0]
@@ -124,17 +121,17 @@ export class LargeCanvasImage {
     const topLeftNeighbor = selectedCell.neighbors[7]
 
     const neighbors = {
-      topLeftMatch: topLeftNeighbor?.growableTileId === selectedCell.growableTileId,
-      topCenterMatch: topNeighbor?.growableTileId === selectedCell.growableTileId,
-      topRightMatch: topRightNeighbor?.growableTileId === selectedCell.growableTileId,
-      centerLeftMatch: leftNeighbor?.growableTileId === selectedCell.growableTileId,
-      centerRightMatch: rightNeighbor?.growableTileId === selectedCell.growableTileId,
-      bottomLeftMatch: bottomLeftNeighbor?.growableTileId === selectedCell.growableTileId,
-      bottomCenterMatch: bottomNeighbor?.growableTileId === selectedCell.growableTileId,
-      bottomRightMatch: bottomRightNeighbor?.growableTileId === selectedCell.growableTileId
+      topLeftMatch: topLeftNeighbor?.spriteType === selectedCell.spriteType,
+      topCenterMatch: topNeighbor?.spriteType === selectedCell.spriteType,
+      topRightMatch: topRightNeighbor?.spriteType === selectedCell.spriteType,
+      centerLeftMatch: leftNeighbor?.spriteType === selectedCell.spriteType,
+      centerRightMatch: rightNeighbor?.spriteType === selectedCell.spriteType,
+      bottomLeftMatch: bottomLeftNeighbor?.spriteType === selectedCell.spriteType,
+      bottomCenterMatch: bottomNeighbor?.spriteType === selectedCell.spriteType,
+      bottomRightMatch: bottomRightNeighbor?.spriteType === selectedCell.spriteType
     }
 
-    let tile = drawableItem.spritesTiles.find((spriteTile: SpriteTile) => {
+    let tile = drawableItem.drawingRules.find((spriteTile: SpriteTile) => {
       const topMatch = neighbors.topCenterMatch === spriteTile.drawWhen.topNeighbor || spriteTile.drawWhen.topNeighbor === null
       const topRightMatch = neighbors.topRightMatch === spriteTile.drawWhen.topRightNeighbor || spriteTile.drawWhen.topRightNeighbor === null
       const rightMatch = neighbors.centerRightMatch === spriteTile.drawWhen.rightNeighbor || spriteTile.drawWhen.rightNeighbor === null
@@ -156,9 +153,9 @@ export class LargeCanvasImage {
     })
 
     if (!tile) {
-      tile = drawableItem.spritesTiles.find((cliff: SpriteTile) => cliff.default)
+      tile = drawableItem.drawingRules.find((cliff: SpriteTile) => cliff.default)
     }
-
+    tile.spriteSheet = drawableItem.spriteImg
     selectedCell.imageTile = tile
   }
 
