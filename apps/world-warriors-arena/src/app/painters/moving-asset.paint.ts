@@ -19,7 +19,7 @@ export class MovingAssetPainter extends Painter {
 
     if(!eventState?.draggingAsset) { return }
     const hoveringCell = GSM.Map.activeMap.getGridCellByCoordinate(GSM.GameEvent.mouseDetails.mouseX, GSM.GameEvent.mouseDetails.mouseY)
-
+    GSM.Canvas.foregroundCTX.clearRect(0, 0, GSM.Map.activeMap.width * 32, GSM.Map.activeMap.height * 32);
     GSM.Canvas.foregroundCTX.drawImage(
       eventState.assetImage,
       26,

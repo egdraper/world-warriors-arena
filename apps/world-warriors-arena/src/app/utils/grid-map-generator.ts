@@ -14,7 +14,7 @@ export class GridMapGenerator extends BaseMapGenerator {
     gridMapCell.markers.forEach(marker => {
       try {
         clearing.push(GSM.Map.activeMap.getGridCellByCoordinate(marker.x * (gridMapCell.relationX * GameSettings.scale), marker.y * (gridMapCell.relationY * GameSettings.scale)))
-      } catch { }
+      } catch { console.log("error")}
     })
     clearing = [...new Set(clearing)]
     clearing = clearing.filter(cell => cell)
@@ -41,7 +41,7 @@ export class GridMapGenerator extends BaseMapGenerator {
   public static addFullTerrain(defaultMapSettings: DefaultMapSettings): void {
     GSM.Map.activeMap.gridDisplay.forEach(row => {
       row.forEach(cell => {
-        cell.growableTileId = defaultMapSettings.terrainTypeId
+        cell.spriteTypeId = defaultMapSettings.terrainTypeId
         cell.obstacle = true
       })
     })
@@ -50,16 +50,16 @@ export class GridMapGenerator extends BaseMapGenerator {
   protected static clearOpening(path: Cell[]): void {
     path.forEach(cell => {
       cell.obstacle = false
-      cell.growableTileId = undefined
+      cell.spriteTypeId = undefined
 
       for (let i = 0; i < 8; i++) {
         if (cell.neighbors[i]) {
           cell.neighbors[i].obstacle = false
-          cell.neighbors[i].growableTileId = undefined
+          cell.neighbors[i].spriteTypeId = undefined
           for (let l = 0; l < 8; l++) {
             if (cell.neighbors[i].neighbors[l]) {
               cell.neighbors[i].neighbors[l].obstacle = false
-              cell.neighbors[i].neighbors[l].growableTileId = undefined
+              cell.neighbors[i].neighbors[l].spriteTypeId = undefined
             }
           }
         }

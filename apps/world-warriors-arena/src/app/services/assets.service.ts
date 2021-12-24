@@ -1,5 +1,5 @@
 import { Injectable } from "@angular/core";
-import { TerrainType } from "../game-assets/tile-assets.db";
+import { SpriteDetails, TerrainType } from "../game-assets/tile-assets.db";
 import { MotionAsset } from "../models/assets.model";
 import { Cell, DrawableTiles, SpriteTile } from "../models/cell.model";
 
@@ -25,13 +25,13 @@ export class AssetsService {
   }
 
   public addInvertedMapAsset(selectedCell: Cell): void {
-    selectedCell.growableTileId = undefined
+    selectedCell.spriteTypeId = undefined
     selectedCell.obstacle = false
     selectedCell.imageTile = undefined
 
     for (let i = 0; i < 8; i++) {
       if (selectedCell.neighbors[i]) {
-        selectedCell.neighbors[i].growableTileId = undefined
+        selectedCell.neighbors[i].spriteTypeId = undefined
         selectedCell.neighbors[i].imageTile = undefined
         selectedCell.neighbors[i].obstacle = false
       }
@@ -41,21 +41,13 @@ export class AssetsService {
     // this.obstacles.push(selectedCell.id)
   }
 
-  public addMapAsset(selectedCell: Cell, selectedAsset: SpriteTile, drawableItem?: DrawableTiles): void {
+  public addTerrain(selectedCell: Cell, drawableItem?: SpriteDetails): void {
     if (!selectedCell) { return }
 
-    selectedCell.imageTile = selectedAsset
+    selectedCell.spriteTypeId = drawableItem.id
     selectedCell.obstacle = true
 
-    if (!selectedAsset) {
-      this.addRequiredNeighborTiles(selectedCell, drawableItem)
-    }
-
-    if(selectedAsset && selectedCell.imageTile.id) {
-      selectedCell.growableTileOverride = true
-    } else {
-      selectedCell.growableTileOverride = false
-    }
+    this.addRequiredNeighborTiles(selectedCell, drawableItem)
 
     this.obstacles.push(selectedCell.id)
   }
@@ -79,36 +71,36 @@ export class AssetsService {
     this.selectedGameComponent = undefined
   }
 
-  private addRequiredNeighborTiles(selectedCell: Cell, drawableItem: DrawableTiles): void {
-    if (drawableItem.terrainType === TerrainType.Background) {
-      selectedCell.backgroundGrowableTileId = drawableItem.id + drawableItem.layers
+  private addRequiredNeighborTiles(selectedCell: Cell, drawableItem: SpriteDetails): void {
+    // if (drawableItem.terrainType === TerrainType.Background) {
+    //   selectedCell.backgroundspriteType = drawableItem.id
+
+    //   if (selectedCell.neighbors[0]) {
+    //     selectedCell.neighbors[0].backgroundspriteType = drawableItem.id
+    //   }
+    //   if (selectedCell.neighbors[1]) {
+    //     selectedCell.neighbors[1].backgroundspriteType = drawableItem.id
+    //   }
+    //   if (selectedCell.neighbors[4]) {
+    //     selectedCell.neighbors[4].backgroundspriteType = drawableItem.id
+    //   }
+    // } else if (drawableItem.terrainType === TerrainType.Block) {
 
       if (selectedCell.neighbors[0]) {
-        selectedCell.neighbors[0].backgroundGrowableTileId = drawableItem.id +  drawableItem.layers
-      }
-      if (selectedCell.neighbors[1]) {
-        selectedCell.neighbors[1].backgroundGrowableTileId = drawableItem.id + drawableItem.layers
-      }
-      if (selectedCell.neighbors[4]) {
-        selectedCell.neighbors[4].backgroundGrowableTileId = drawableItem.id +  drawableItem.layers
-      }
-    } else if (drawableItem.terrainType === TerrainType.Block) {
-
-      if (selectedCell.neighbors[0]) {
-        selectedCell.neighbors[0].growableTileId = drawableItem.id + drawableItem.layers
+        selectedCell.neighbors[0].spriteTypeId = drawableItem.id
         selectedCell.neighbors[0].obstacle = true
       }
       if (selectedCell.neighbors[1]) {
-        selectedCell.neighbors[1].growableTileId = drawableItem.id + drawableItem.layers
+        selectedCell.neighbors[1].spriteTypeId = drawableItem.id
         selectedCell.neighbors[1].obstacle = true
       }
       if (selectedCell.neighbors[4]) {
-        selectedCell.neighbors[4].growableTileId = drawableItem.id + drawableItem.layers
+        selectedCell.neighbors[4].spriteTypeId = drawableItem.id
         selectedCell.neighbors[4].obstacle = true
       }
 
-      selectedCell.growableTileId = drawableItem.id + drawableItem.layers
-    }
+      selectedCell.spriteTypeId = drawableItem.id
+    // }
   }
 }
 

@@ -48,7 +48,7 @@ export class RandomMapGenerator extends BaseMapGenerator {
         this.randomlyPlaceInvisibleObstacles(map)
         path = ShortestPath.find(map.grid[`x0:y${randomLeft}`], map.grid[`x${map.width - 2}:y${randomRight}`], [])
 
-      } catch { }
+      } catch { console.log("error") }
     }
     this.clearObstacles(map)
 
@@ -76,11 +76,11 @@ export class RandomMapGenerator extends BaseMapGenerator {
     if (random) {
       if (cell.neighbors[neighborIndex]) {
         cell.neighbors[neighborIndex].obstacle = true
-        cell.neighbors[neighborIndex].growableTileId = defaultMapSettings.terrainTypeId
+        cell.neighbors[neighborIndex].spriteTypeId = defaultMapSettings.terrainTypeId
       }
 
       cell.obstacle = true
-      cell.growableTileId = defaultMapSettings.terrainTypeId
+      cell.spriteTypeId = defaultMapSettings.terrainTypeId
     }
   }
 

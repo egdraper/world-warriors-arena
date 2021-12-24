@@ -167,7 +167,7 @@ export class CanvasComponent implements AfterViewInit{
     GSM.GameEvent.mouseDetails.markerIcon = GSM.GameMarker.getHoveringIcon()
     GSM.GameEvent.mouseDetails.mouseX = mousePosX
     GSM.GameEvent.mouseDetails.mouseY = mousePosY
-    GSM.GameEvent.mouseDetails.mouseMove.next({mousePosX: mousePosX, mousePosY: mousePosY})
+    GSM.GameEvent.mouseDetails.mouseMove.next({mousePosX: mousePosX, mousePosY: mousePosY, cell: this.hoveringCell})
     GSM.GameEvent.update()
   }
 

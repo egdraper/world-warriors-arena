@@ -13,7 +13,7 @@ export interface Cell {
   neighbors?: Cell[];
   destination?: boolean;
   imageTile?: SpriteTile;
-  growableTileId?: string
+  spriteTypeId?: string
   growableTileOverride?: boolean
   backgroundTile?: SpriteBackgroundTile;
   backgroundGrowableTileId?: string
@@ -53,42 +53,23 @@ export class Point {
     public y: number
   ) { }
 }
-
-export enum GrowablePanelPosition {
-  topLeftPanel = "topLeftPanel",
-  topCenterPanel = "topCenterPanel",
-  topRightPanel = "topRightPanel",
-  growableLeftPanel = "growableLeftPanel",
-  growableCenterPanel = "growableCenterPanel",
-  growableRightPanel = "growableRightPanel",
-  bottomLeftPanel = "bottomLeftPanel",
-  bottomCenterPanel = "bottomCenterPanel",
-  bottomRightPanel = "bottomRightPanel",
-  bottomLeftPanelAngle = "bottomLeftPanelAngle",
-  bottomRightPanelAngle = "bottomRightPanelAngle",
-  bottomLeftPanelFillerAngle = "bottomLeftPanelFillerAngle",
-  bottomRightPanelFillerAngle = "bottomRightPanelFillerAngle",
-}
-
 export class SpriteTile {
   id: string
-  spriteSheet: HTMLImageElement
   spriteGridPosX: number
   spriteGridPosY: number
+  spriteSheet?: HTMLImageElement
   tileHeight: number
   tileWidth: number
   tileOffsetX: number
   tileOffsetY: number
-  multiplier: number
   sizeAdjustment?: number
   visionBlocking?: boolean
   obstacle: boolean
   obstacleObstructionX?: number
   obstacleObstructionY?: number
-  position?: GrowablePanelPosition
   default?: boolean
-  obstacleSide?: "right" | "left" | "top" | "bottom"
   allowForPassThrough?: boolean
+  addon?: string
   drawWhen?: {
     topNeighbor: boolean,
     topRightNeighbor: boolean,
@@ -133,6 +114,8 @@ export class DrawableTiles {
   public spritesTiles: SpriteTile[]
   public inverted?: boolean
   public layers?: number
+  public spriteSheetOffsetX?: number
+  public spriteSheetOffsetY?: number
 }
 
 export class GridMapCell {
@@ -170,4 +153,5 @@ export enum MarkerIconType {
 export class MousePosition {
   public mousePosX: number
   public mousePosY: number
+  public cell: Cell
 }

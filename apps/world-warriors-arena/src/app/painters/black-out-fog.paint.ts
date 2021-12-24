@@ -175,7 +175,6 @@ export class BlackOutFogPainter extends Painter {
       ctx.fill();
     }
     
-
     if (DebugSettings.fogDebug) {
       ctx.beginPath();
       ctx.fillRect(centerCells[0].fogPointX, centerCells[0].fogPointY, 5, 5)

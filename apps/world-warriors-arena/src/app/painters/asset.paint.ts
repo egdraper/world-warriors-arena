@@ -48,12 +48,12 @@ export class AssetPainter extends LayerPainter {
       try {
         if (GSM.Map.activeMap.largeImage.background) {
           if((this.frame - 1) % 2 === 0 ) {
-            // GSM.Canvas.backgroundCTX.clearRect(0, 0, GSM.Map.activeGrid.width * 32, GSM.Map.activeGrid.height * 32);
-            this.drawLargeImageBackground(topLeftPosX, topLeftPosY)
+          // GSM.Canvas.backgroundCTX.clearRect(0, 0, GSM.Map.activeMap.width * 32, GSM.Map.activeMap.height * 32);
+          this.drawLargeImageBackground(topLeftPosX, topLeftPosY)
           }
           
           if(this.frame % 2 === 0) {
-            GSM.Canvas.foregroundCTX.clearRect(0, 0, GSM.Map.activeMap.width * 32, GSM.Map.activeMap.height * 32);
+            // GSM.Canvas.foregroundCTX.clearRect(0, 0, GSM.Map.activeMap.width * 32, GSM.Map.activeMap.height * 32);
             GSM.Assets.gameComponents.forEach(gameComponent => {
               this.drawAroundAsset(gameComponent)
             })
@@ -66,9 +66,12 @@ export class AssetPainter extends LayerPainter {
             for (let x = cellTopLeft?.x; x <= cellTopRight?.x; x++) {
               const drawableCell = GSM.Map.activeMap.getCell(x, y)
 
-              if (drawableCell.growableTileId && !drawableCell.growableTileOverride) {
+              if (drawableCell.spriteTypeId) {
                 this.calculateGrowableTerrain(drawableCell)
               }
+              // if (drawableCell.backgroundGrowableTileId) {
+              //   this.calculateGrowableBackgroundTerrain(drawableCell)
+              // }
     
               
               this.drawAsset(GSM.Assets.gameComponents.find(gameComponent => { 
@@ -76,26 +79,26 @@ export class AssetPainter extends LayerPainter {
                 return gameComponent.cell.id === drawableCell.id && GSM.Map.activeMap.id === gameComponent.gridId
               }))
 
-              this.drawOnCell(drawableCell)
               this.drawOnBackgroundCell(drawableCell)
+              this.drawOnCell(drawableCell)
             }
           }
 
-          if (GSM.Canvas.portalEntry) {
-            GSM.Canvas.backgroundCTX.globalAlpha = .5;
-            GSM.Canvas.portalEntry.forEach(cell => {
-              GSM.Canvas.backgroundCTX.fillStyle = 'blue';
-              GSM.Canvas.backgroundCTX.fillRect(
-                cell.posX,
-                cell.posY,
-                32,
-                32
-              )
-            })
-            GSM.Canvas.backgroundCTX.globalAlpha = 1;
+          // if (GSM.Canvas.portalEntry) {
+          //   GSM.Canvas.backgroundCTX.globalAlpha = .5;
+          //   GSM.Canvas.portalEntry.forEach(cell => {
+          //     GSM.Canvas.backgroundCTX.fillStyle = 'blue';
+          //     GSM.Canvas.backgroundCTX.fillRect(
+          //       cell.posX,
+          //       cell.posY,
+          //       32,
+          //       32
+          //     )
+          //   })
+          //   GSM.Canvas.backgroundCTX.globalAlpha = 1;
 
 
-          }
+          // }
         }
       }
       catch (e) {
@@ -151,14 +154,14 @@ export class AssetPainter extends LayerPainter {
     if (!GSM.Editor.selectedAsset || !GSM.Map.hoveringCell) { return }
     GSM.Canvas.foregroundCTX.drawImage(
       GSM.Editor.selectedAsset.spriteSheet,
-      GSM.Editor.selectedAsset.spriteGridPosX * GSM.Editor.selectedAsset.multiplier,
-      GSM.Editor.selectedAsset.spriteGridPosY * GSM.Editor.selectedAsset.multiplier,
-      GSM.Editor.selectedAsset.tileWidth * GSM.Editor.selectedAsset.multiplier,
-      GSM.Editor.selectedAsset.tileHeight * GSM.Editor.selectedAsset.multiplier,
+      GSM.Editor.selectedAsset.spriteGridPosX * GameSettings.cellDimension,
+      GSM.Editor.selectedAsset.spriteGridPosY * GameSettings.cellDimension,
+      GSM.Editor.selectedAsset.tileWidth * GameSettings.cellDimension,
+      GSM.Editor.selectedAsset.tileHeight * GameSettings.cellDimension,
       GSM.Map.hoveringCell.posX + GSM.Editor.selectedAsset.tileOffsetX,
       GSM.Map.hoveringCell.posY + GSM.Editor.selectedAsset.tileOffsetY,
-      GSM.Editor.selectedAsset.tileWidth * (GSM.Editor.selectedAsset.sizeAdjustment || GSM.Editor.selectedAsset.multiplier),
-      GSM.Editor.selectedAsset.tileHeight * (GSM.Editor.selectedAsset.sizeAdjustment || GSM.Editor.selectedAsset.multiplier)
+      GSM.Editor.selectedAsset.tileWidth * (GSM.Editor.selectedAsset.sizeAdjustment || GameSettings.cellDimension),
+      GSM.Editor.selectedAsset.tileHeight * (GSM.Editor.selectedAsset.sizeAdjustment || GameSettings.cellDimension)
     )
 
   }
@@ -188,14 +191,14 @@ export class AssetPainter extends LayerPainter {
 
       GSM.Canvas.foregroundCTX.drawImage(
         cell.imageTile.spriteSheet,
-        cell.imageTile.spriteGridPosX * cell.imageTile.multiplier,
-        cell.imageTile.spriteGridPosY * cell.imageTile.multiplier,
-        cell.imageTile.tileWidth * cell.imageTile.multiplier,
-        cell.imageTile.tileHeight * cell.imageTile.multiplier,
+        cell.imageTile.spriteGridPosX * GameSettings.cellDimension,
+        cell.imageTile.spriteGridPosY * GameSettings.cellDimension,
+        cell.imageTile.tileWidth * GameSettings.cellDimension,
+        cell.imageTile.tileHeight * GameSettings.cellDimension,
         cell.posX + cell.imageTile.tileOffsetX,
         cell.posY + cell.imageTile.tileOffsetY,
-        cell.imageTile.tileWidth * (cell.imageTile.sizeAdjustment || cell.imageTile.multiplier),
-        cell.imageTile.tileHeight * (cell.imageTile.sizeAdjustment || cell.imageTile.multiplier)
+        cell.imageTile.tileWidth * (cell.imageTile.sizeAdjustment || GameSettings.cellDimension),
+        cell.imageTile.tileHeight * (cell.imageTile.sizeAdjustment || GameSettings.cellDimension)
       )
       GSM.Canvas.foregroundCTX.globalAlpha = 1
     }
@@ -206,7 +209,7 @@ export class AssetPainter extends LayerPainter {
   // This is used for drawable terrain, it determines which tile goes where when drawing terrain.
   private calculateGrowableTerrain(selectedCell: Cell): void {
     const drawableItem = growableItems.find(item => {
-      return selectedCell.growableTileId.includes(item.id)
+      return selectedCell.spriteTypeId.includes(item.id)
     })
 
     const topNeighbor = selectedCell.neighbors[0]
@@ -219,17 +222,17 @@ export class AssetPainter extends LayerPainter {
     const topLeftNeighbor = selectedCell.neighbors[7]
 
     const neighbors = {
-      topLeftMatch: topLeftNeighbor?.growableTileId === selectedCell.growableTileId,
-      topCenterMatch: topNeighbor?.growableTileId === selectedCell.growableTileId,
-      topRightMatch: topRightNeighbor?.growableTileId === selectedCell.growableTileId,
-      centerLeftMatch: leftNeighbor?.growableTileId === selectedCell.growableTileId,
-      centerRightMatch: rightNeighbor?.growableTileId === selectedCell.growableTileId,
-      bottomLeftMatch: bottomLeftNeighbor?.growableTileId === selectedCell.growableTileId,
-      bottomCenterMatch: bottomNeighbor?.growableTileId === selectedCell.growableTileId,
-      bottomRightMatch: bottomRightNeighbor?.growableTileId === selectedCell.growableTileId
+      topLeftMatch: topLeftNeighbor?.spriteTypeId === selectedCell.spriteTypeId,
+      topCenterMatch: topNeighbor?.spriteTypeId === selectedCell.spriteTypeId,
+      topRightMatch: topRightNeighbor?.spriteTypeId === selectedCell.spriteTypeId,
+      centerLeftMatch: leftNeighbor?.spriteTypeId === selectedCell.spriteTypeId,
+      centerRightMatch: rightNeighbor?.spriteTypeId === selectedCell.spriteTypeId,
+      bottomLeftMatch: bottomLeftNeighbor?.spriteTypeId === selectedCell.spriteTypeId,
+      bottomCenterMatch: bottomNeighbor?.spriteTypeId === selectedCell.spriteTypeId,
+      bottomRightMatch: bottomRightNeighbor?.spriteTypeId === selectedCell.spriteTypeId
     }
 
-    let tile = drawableItem.spritesTiles.find((spriteTile: SpriteTile) => {
+    let tile = drawableItem.drawingRules.find((spriteTile: SpriteTile) => {
       const topMatch = neighbors.topCenterMatch === spriteTile.drawWhen.topNeighbor || spriteTile.drawWhen.topNeighbor === null
       const topRightMatch = neighbors.topRightMatch === spriteTile.drawWhen.topRightNeighbor || spriteTile.drawWhen.topRightNeighbor === null
       const rightMatch = neighbors.centerRightMatch === spriteTile.drawWhen.rightNeighbor || spriteTile.drawWhen.rightNeighbor === null
@@ -251,9 +254,9 @@ export class AssetPainter extends LayerPainter {
     })
 
     if (!tile) {
-      tile = drawableItem.spritesTiles.find((cliff: SpriteTile) => cliff.default)
+      tile = drawableItem.drawingRules.find((cliff: SpriteTile) => cliff.default)
     }
-
+    tile.spriteSheet = drawableItem.spriteImg
     selectedCell.imageTile = tile
   }
 
@@ -289,4 +292,62 @@ export class AssetPainter extends LayerPainter {
     }
   }
 
+  private calculateGrowableBackgroundTerrain(selectedCell: Cell): void {
+    const growableItem = growableItems.find(item => {
+      return selectedCell.backgroundGrowableTileId.includes(item.id)
+    })
+
+    const topNeighbor = selectedCell.neighbors[0]
+    const topRightNeighbor = selectedCell.neighbors[4]
+    const rightNeighbor = selectedCell.neighbors[1]
+    const bottomRightNeighbor = selectedCell.neighbors[5]
+    const bottomNeighbor = selectedCell.neighbors[2]
+    const bottomLeftNeighbor = selectedCell.neighbors[6]
+    const leftNeighbor = selectedCell.neighbors[3]
+    const topLeftNeighbor = selectedCell.neighbors[7]
+
+    const neighbors = {
+      topLeftMatch: topLeftNeighbor?.backgroundGrowableTileId === selectedCell.backgroundGrowableTileId,
+      topCenterMatch: topNeighbor?.backgroundGrowableTileId === selectedCell.backgroundGrowableTileId,
+      topRightMatch: topRightNeighbor?.backgroundGrowableTileId === selectedCell.backgroundGrowableTileId,
+      centerLeftMatch: leftNeighbor?.backgroundGrowableTileId === selectedCell.backgroundGrowableTileId,
+      centerRightMatch: rightNeighbor?.backgroundGrowableTileId === selectedCell.backgroundGrowableTileId,
+      bottomLeftMatch: bottomLeftNeighbor?.backgroundGrowableTileId === selectedCell.backgroundGrowableTileId,
+      bottomCenterMatch: bottomNeighbor?.backgroundGrowableTileId === selectedCell.backgroundGrowableTileId,
+      bottomRightMatch: bottomRightNeighbor?.backgroundGrowableTileId === selectedCell.backgroundGrowableTileId
+    }
+
+    let tile = growableItem.drawingRules.find((spriteTile: SpriteTile) => {
+      const topMatch = neighbors.topCenterMatch === spriteTile.drawWhen.topNeighbor || spriteTile.drawWhen.topNeighbor === null
+      const topRightMatch = neighbors.topRightMatch === spriteTile.drawWhen.topRightNeighbor || spriteTile.drawWhen.topRightNeighbor === null
+      const rightMatch = neighbors.centerRightMatch === spriteTile.drawWhen.rightNeighbor || spriteTile.drawWhen.rightNeighbor === null
+      const bottomRightMatch = neighbors.bottomRightMatch === spriteTile.drawWhen.bottomRightNeighbor || spriteTile.drawWhen.bottomRightNeighbor === null
+      const bottomMatch = neighbors.bottomCenterMatch === spriteTile.drawWhen.bottomNeighbor || spriteTile.drawWhen.bottomNeighbor === null
+      const bottomLeftNeighborMatch = neighbors.bottomLeftMatch === spriteTile.drawWhen.bottomLeftNeighbor || spriteTile.drawWhen.bottomLeftNeighbor === null
+      const leftNeighborMatch = neighbors.centerLeftMatch === spriteTile.drawWhen.leftNeighbor || spriteTile.drawWhen.leftNeighbor === null
+      const topLeftNeighborMatch = neighbors.topLeftMatch === spriteTile.drawWhen.topLeftNeighbor || spriteTile.drawWhen.topLeftNeighbor === null
+
+      return topMatch &&
+        topRightMatch &&
+        rightMatch &&
+        bottomRightMatch &&
+        bottomMatch &&
+        bottomLeftNeighborMatch &&
+        leftNeighborMatch &&
+        topLeftNeighbor &&
+        topLeftNeighborMatch
+    })
+
+    if (!tile) {
+      tile = growableItem.drawingRules.find((backgroundTile: SpriteTile) => backgroundTile.default)
+    }
+    tile.spriteSheet = growableItem.spriteImg
+
+    selectedCell.backgroundTile = {
+      spriteSheet: tile.spriteSheet,
+      spriteGridPosX: [tile.spriteGridPosX + growableItem.spriteSheetOffsetX],
+      spriteGridPosY: [tile.spriteGridPosY + growableItem.spriteSheetOffsetY],
+      id: tile.id + tile.spriteGridPosX + tile.spriteGridPosY
+    }
+  }
 }

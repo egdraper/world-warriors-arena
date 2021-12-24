@@ -16,9 +16,26 @@ import { CharacterEditorService } from './services/character-editor.service';
 import { NewFogOfWarService } from './services/new-visibility.service';
 import { GameMarkersService } from './services/game-markers.service';
 import { GameEventsService } from './services/game-events.service';
+import { MinimapComponent } from './components/minimap/minimap.component';
+import { TerrainEditorComponent } from './components/editor-palette/terrain-editor/terrain-editor.component';
+
+import { CharacterEditorComponent } from './components/editor-palette/character-editor/character-editor.component';
+import { BackgroundEditorComponent } from './components/editor-palette/background-editor/background-editor.component';
+import { ObjectEditorComponent } from './components/editor-palette/object-editor/object-editor.component';
 
 @NgModule({
-  declarations: [AppComponent, CanvasComponent, EditorPaletteComponent, CharacterEditorPaletteComponent, GlobalMapComponent],
+  declarations: [
+    AppComponent,
+    CanvasComponent,
+    EditorPaletteComponent,
+    CharacterEditorPaletteComponent,
+    GlobalMapComponent,
+    MinimapComponent,
+    TerrainEditorComponent,
+    BackgroundEditorComponent,
+    ObjectEditorComponent,
+    CharacterEditorComponent
+  ],
   imports: [BrowserModule],
   providers: [
     AssetsService,
@@ -30,7 +47,7 @@ import { GameEventsService } from './services/game-events.service';
     Engine,
     CharacterEditorService,
     GameMarkersService,
-    GameEventsService
+    GameEventsService,
   ],
   bootstrap: [AppComponent],
 })
