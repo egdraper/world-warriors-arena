@@ -1,4 +1,4 @@
-import { tileA5_dungeon, tileA5_outside, tileB_dungeon } from "./images";
+import { tileA5_dungeon, tileA5_outside } from "./images";
 
 export const caveDirt = [
   {

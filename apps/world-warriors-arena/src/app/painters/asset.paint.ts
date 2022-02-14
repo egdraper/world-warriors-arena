@@ -48,12 +48,12 @@ export class AssetPainter extends LayerPainter {
       try {
         if (GSM.Map.activeMap.largeImage.background) {
           if((this.frame - 1) % 2 === 0 ) {
-          // GSM.Canvas.backgroundCTX.clearRect(0, 0, GSM.Map.activeMap.width * 32, GSM.Map.activeMap.height * 32);
-          this.drawLargeImageBackground(topLeftPosX, topLeftPosY)
+          GSM.Canvas.backgroundCTX.clearRect(0, 0, GSM.Map.activeMap.width * 32, GSM.Map.activeMap.height * 32);
+            this.drawLargeImageBackground(topLeftPosX, topLeftPosY)
           }
           
           if(this.frame % 2 === 0) {
-            // GSM.Canvas.foregroundCTX.clearRect(0, 0, GSM.Map.activeMap.width * 32, GSM.Map.activeMap.height * 32);
+            GSM.Canvas.foregroundCTX.clearRect(0, 0, GSM.Map.activeMap.width * 32, GSM.Map.activeMap.height * 32);
             GSM.Assets.gameComponents.forEach(gameComponent => {
               this.drawAroundAsset(gameComponent)
             })
